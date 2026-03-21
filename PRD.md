@@ -5,11 +5,20 @@
 > Claude Code Opus handles implementation planning. Do NOT re-debate architecture decisions — they are final.
 
 **Project:** P5 — ShopTalk Knowledge Management Agent: Production RAG System
-**Timeline:** 5 sessions (~22h total), flexible pacing prioritizing learning depth
+**Timeline:** 7 sessions (~30h total), revised plan with +2 learning/experiment days prioritizing depth
 **Owner:** Developer (Java/TS background, completed P1 + P2 + P3 + P4)
 **Source of Truth:** [Notion Requirements](https://www.notion.so/Mini_Project_5_requirements-2ffdb630640a81668269f59ead053417)
 **Concepts Primer:** `p5-concepts-primer.html` in project root
-**PRD Version:** v3 (all design decisions finalized, ADRs distributed, test coverage 95%+)
+**PRD Version:** v4 (hardware upgrade to M5 Max 128GB, revised timeline, local model experiments added)
+
+---
+
+## Revision History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| v3 | Feb 2026 | All design decisions finalized, ADRs distributed, test coverage 95%+ |
+| v4 | Mar 18, 2026 | Hardware upgrade M2 8GB → M5 Max 128GB. Timeline expanded from 5 to 7 sessions. Added local embedding model experiments (Ollama nomic-embed-text). Added ADR-006 for local vs API embeddings. Removed all 8GB RAM constraints. Experiment runner pooling simplified (no longer a hard requirement — sufficient RAM for concurrent models, but pooling still preferred for clean benchmarking). |
 
 ---
 
@@ -20,6 +29,8 @@ Build a **production-grade RAG system** that ingests arbitrary PDF documents, re
 **The Portfolio Narrative:** P2 was the quality inspector — it tested production lines and found the retrieval-generation gap (0.747 Recall@5 vs 0.511 faithfulness). P5 is the entire factory. It builds the system that P2 measured, tackling that gap with hybrid retrieval, reranking, and citation extraction. Together: "I measured, then I built — and I improved on what I measured."
 
 **The output is a COMPLETE SYSTEM with EXPERIMENTAL EVIDENCE.** Every component must be swappable through configuration. The system must prove — with data — which configuration works best.
+
+**New in v4 — The Hardware Story:** With 128GB unified memory on M5 Max, P5 can now include a genuine local-vs-API embedding comparison. This is architecturally significant: most portfolio projects assume API-only embeddings. Documenting latency, quality, and cost tradeoffs between local models (via Ollama) and OpenAI embeddings is a data-driven architectural decision that differentiates this portfolio.
 
 ---
 
@@ -55,9 +66,9 @@ These targets must be met by **at least one configuration** in the experiment gr
 | Dimension | Minimum | Our Target |
 |-----------|---------|------------|
 | Chunking strategies | 3 | 5 (Fixed, Recursive, Sliding Window, Heading-Semantic, Embedding-Semantic) |
-| Embedding models | 2 | 3 (MiniLM, mpnet, OpenAI) |
+| Embedding models | 2 | 4 (MiniLM, mpnet, OpenAI, nomic-embed-text via Ollama) |
 | Retrieval methods | 2 | 3 (Dense, BM25, Hybrid) |
-| Configurations tested | 12 | 24+ core grid |
+| Configurations tested | 12 | 30+ core grid |
 | Test queries | 10 | 15 curated |
 
 ### 2d. System Functionality
@@ -79,6 +90,8 @@ These targets must be met by **at least one configuration** in the experiment gr
 | Query latency | Time from question to answer (including retrieval + generation) |
 | Index size | Disk storage for FAISS index + metadata per configuration |
 | Memory usage | Peak RAM during ingestion and query operations |
+| **Local vs API latency** | **(v4)** Side-by-side embedding latency: nomic-embed-text (local) vs OpenAI API |
+| **Cost per 1K embeddings** | **(v4)** Local = $0 (compute-only) vs OpenAI pricing. Document the tradeoff. |
 
 ### 2f. Test Coverage
 
@@ -101,9 +114,10 @@ These targets must be met by **at least one configuration** in the experiment gr
 | Language | Python 3.12+ | Spec requires 3.10+. We use 3.12 for native generics. |
 | PDF extraction | PyMuPDF | Spec-required. `import fitz`. |
 | Embeddings | SentenceTransformers | Spec-required. Local models. |
+| Embeddings (local) | **Ollama + nomic-embed-text** | **(v4)** Local embedding model for cost-free experimentation. 768d, ~300MB. Runs via Ollama REST API. |
 | Vector store | FAISS | Spec-required. P4 demonstrated ChromaDB — P5 uses FAISS for low-level experiment control. |
 | Sparse retrieval | rank-bm25 | Spec-required. BM25Okapi implementation. |
-| LLM generation | LiteLLM | Spec says "LiteLLM or OpenAI." LiteLLM wraps multiple providers behind one interface — satisfies spec AND teaches multi-provider pattern. Default to OpenAI models. |
+| LLM generation | LiteLLM | Spec says "LiteLLM or OpenAI." LiteLLM wraps multiple providers behind one API. Default to OpenAI models. |
 | Data validation | Pydantic v2 | Spec-required. All data models. |
 | Web UI | Streamlit | Spec-required. Interactive QA. |
 | Reranking | Cohere API + local CrossEncoder | Spec-optional but recommended. Both implemented for comparison. |
@@ -117,12 +131,12 @@ These targets must be met by **at least one configuration** in the experiment gr
 |----------|--------|-----------|
 | **No LangChain** | Build all components from scratch behind ABCs | P5's purpose is first-principles RAG engineering. Custom components behind abstract interfaces teach what LangChain hides. P2 already used LangChain text splitters. README explains the deliberate choice. |
 | **No RAGAS** | Custom 5-axis LLM-as-Judge | P2 already used RAGAS. Custom judge gives per-axis diagnostics and demonstrates understanding of what RAGAS does internally. Stronger interview story. |
-| **Braintrust** | Optional stretch — JSON baseline, Braintrust if time permits | Spec lists as optional. JSON experiment results with Pydantic validation as baseline. Add Braintrust enrichment on Day 5 if time allows. |
+| **Braintrust** | Optional stretch — JSON baseline, Braintrust if time permits | Spec lists as optional. JSON experiment results with Pydantic validation as baseline. Add Braintrust enrichment on Day 7 if time allows. |
 | **No FastAPI** | CLI + Streamlit only | P4 proved FastAPI skills. P5's value is the RAG pipeline, not another REST wrapper. Streamlit + CLI cover all spec requirements. |
-| **FAISS over ChromaDB** | FAISS with explicit persistence | P4 demonstrated ChromaDB. P5 needs low-level control for 24+ experiment configs (index types, explicit save/load). Different tools for different jobs — this IS the interview signal. |
+| **FAISS over ChromaDB** | FAISS with explicit persistence | P4 demonstrated ChromaDB. P5 needs low-level control for 30+ experiment configs (index types, explicit save/load). Different tools for different jobs — this IS the interview signal. |
 | **LiteLLM over raw OpenAI** | Multi-provider wrapper behind BaseLLM | Satisfies spec requirement. Teaches adapter pattern. Default to OpenAI models but infrastructure supports any provider. Minimal code difference from raw OpenAI SDK. |
 | **5 chunking strategies** | Fixed, Recursive, Sliding Window, Heading-Semantic, Embedding-Semantic | Spec requires minimum 3, lists 4 explicitly (incl. Sliding Window). We add Embedding-Semantic for deeper learning. All behind BaseChunker. |
-| **3 embedding models** | MiniLM (384d), mpnet (768d), OpenAI text-embedding-3-small (1536d) | Spec requires min 2. OpenAI added Day 3–4 for build-vs-buy comparison story. |
+| **4 embedding models** | MiniLM (384d), mpnet (768d), OpenAI text-embedding-3-small (1536d), nomic-embed-text (768d, local via Ollama) | **(v4)** Spec requires min 2. nomic-embed-text added for local-vs-API comparison story — same dimensionality as mpnet enables direct quality comparison. |
 | **Hybrid ground truth** | LLM generates 30, developer curates 15 | Avoids circular evaluation pitfall. Manual curation adds trustworthiness. Spec recommends this approach. |
 | **Index-reference citations** | [N] notation, parsed back to chunks | LLM more reliable at producing [1] than full source paths. Fewer tokens = fewer hallucination chances. |
 
@@ -137,13 +151,15 @@ All components must implement abstract interfaces. This is the core architectura
 | Interface | Method | Implementations |
 |-----------|--------|----------------|
 | `BaseChunker` | `chunk(document) → list[Chunk]` | FixedSizeChunker, RecursiveChunker, SlidingWindowChunker, HeadingSemanticChunker, EmbeddingSemanticChunker |
-| `BaseEmbedder` | `embed(texts) → np.ndarray`, `embed_query(query) → np.ndarray` | MiniLMEmbedder, MpnetEmbedder, OpenAIEmbedder |
+| `BaseEmbedder` | `embed(texts) → np.ndarray`, `embed_query(query) → np.ndarray` | MiniLMEmbedder, MpnetEmbedder, OpenAIEmbedder, **OllamaEmbedder** |
 | `BaseVectorStore` | `add()`, `search()`, `save()`, `load()` | FAISSVectorStore |
 | `BaseRetriever` | `retrieve(query, top_k) → list[RetrievalResult]` | DenseRetriever, BM25Retriever, HybridRetriever |
 | `BaseReranker` | `rerank(query, results, top_k) → list[RetrievalResult]` | CohereReranker, CrossEncoderReranker |
 | `BaseLLM` | `generate(prompt, system_prompt, temperature) → str` | LiteLLMClient (wraps any provider) |
 
 **Factory pattern:** YAML config strings map to class instances. `{"chunker": "recursive"}` → `RecursiveChunker(config)`. Same pattern as Java's `@Component` + `@Qualifier`.
+
+**OllamaEmbedder (v4):** Implements `BaseEmbedder`. Calls `http://localhost:11434/api/embeddings` with model `nomic-embed-text`. Returns 768d vectors. Requires Ollama running locally (`ollama serve`). The factory maps `"ollama-nomic"` → `OllamaEmbedder`. Batch embedding via sequential API calls (Ollama doesn't support batch natively — batch by chunking the list and calling sequentially).
 
 ### 4b. Data Models (Pydantic)
 
@@ -191,12 +207,12 @@ Ground Truth Queries → Run Each Config → Calculate Metrics → Save Results 
 **Decision:** Always use MiniLM (all-MiniLM-L6-v2) for chunk boundary detection, regardless of the indexing embedder.
 
 **Rationale:**
-- MiniLM is the smallest model (22.7M params, ~90MB) — minimizes RAM during chunking phase
+- MiniLM is the smallest model (22.7M params, ~90MB) — fast boundary detection
 - Boundary detection doesn't need high-quality embeddings; it only needs to measure relative similarity *between consecutive sentences* to find breakpoints
 - Decouples chunking strategy from the indexing embedder, keeping the experiment grid clean
-- The same chunks will be re-embedded by the indexing model (mpnet, OpenAI, etc.) for retrieval — only the boundaries are set by MiniLM
+- The same chunks will be re-embedded by the indexing model (mpnet, OpenAI, Ollama nomic, etc.) for retrieval — only the boundaries are set by MiniLM
 
-**Implementation:** `EmbeddingSemanticChunker.__init__` always loads MiniLM internally. The factory does NOT pass the indexing embedder to this chunker. After chunking completes, `del model` + `gc.collect()` before the indexing phase begins.
+**Implementation:** `EmbeddingSemanticChunker.__init__` always loads MiniLM internally. The factory does NOT pass the indexing embedder to this chunker.
 
 ### Decision 2: HybridRetriever Uses Internal Composition
 
@@ -240,7 +256,7 @@ Ground Truth Queries → Run Each Config → Calculate Metrics → Save Results 
 **Decision:** Parse-only validation for the experiment grid. The LLM-as-Judge's "Citation Quality" axis handles semantic validation.
 
 **Rationale:**
-- Full citation validation requires an additional LLM call per answer — at 24+ configs × 15 queries = 360+ extra LLM calls. This adds cost and time with marginal benefit
+- Full citation validation requires an additional LLM call per answer — at 30+ configs × 15 queries = 450+ extra LLM calls. This adds cost and time with marginal benefit
 - The judge already receives the full context (question, answer, source chunks). Its Citation Quality axis (1-5) implicitly checks whether citations actually support claims
 - Parse-only validation catches the mechanical failures: out-of-range [N] references, missing citations, malformed notation
 - Semantic validation via judge is MORE thorough than a simple "does chunk contain the claim" heuristic
@@ -249,28 +265,63 @@ Ground Truth Queries → Run Each Config → Calculate Metrics → Save Results 
 
 ### Decision 5: Experiment Runner — Pool Experiments by Embedding Model
 
-**Problem:** Running 24+ configs on 8GB M2 means cycling through 3 embedding models. Should each experiment manage its own model lifecycle, or should experiments be pooled?
+**Problem:** Running 30+ configs requires cycling through 4 embedding models. Should each experiment manage its own model lifecycle, or should experiments be pooled?
 
 **Decision:** Pool experiments by embedding model. Run ALL configs for one model before switching.
 
 **Execution order:**
-1. Load MiniLM → run all 10 MiniLM configs → del MiniLM → gc.collect()
-2. Load mpnet → run all 10 mpnet configs → del mpnet → gc.collect()
-3. Run all 5 BM25-only configs (no model needed)
-4. OpenAI configs last (API calls, zero local RAM)
+1. Load MiniLM → run all MiniLM configs → unload
+2. Load mpnet → run all mpnet configs → unload
+3. Run all BM25-only configs (no model needed)
+4. Ollama nomic-embed-text configs (API to local Ollama — no SentenceTransformer model needed)
+5. OpenAI configs last (API calls, zero local RAM)
 
 **Rationale:**
 - Loading a SentenceTransformer model takes 2-5 seconds. Loading it 10 times = 20-50s wasted
-- Peak memory is controlled: only one model at a time
-- This is the standard batch processing optimization: group by the expensive resource
+- Pooling produces clean benchmarking: all configs for one model run under identical conditions
+- Even with 128GB RAM, pooling is the disciplined approach — it's what you'd do in production
 
-**Implementation:** `experiment_runner.py` groups ExperimentConfigs by `embedding_model`, sorts groups by model size (smallest first), and iterates. Each group: load model → index all chunked docs for that model → run retrieval/evaluation for all configs → unload model. The runner tracks `psutil.virtual_memory().percent` after each model swap and logs a warning if >85%.
+**Implementation:** `experiment_runner.py` groups ExperimentConfigs by `embedding_model`, sorts groups by model size (smallest first), and iterates. Each group: load model → index all chunked docs for that model → run retrieval/evaluation for all configs → unload model.
+
+### Decision 6 (v4): OllamaEmbedder — Local Embedding via REST API
+
+**Problem:** How to integrate a local embedding model that runs outside the Python process (via Ollama) while conforming to the BaseEmbedder interface?
+
+**Decision:** OllamaEmbedder calls the Ollama REST API at `localhost:11434`. It implements `BaseEmbedder` identically to SentenceTransformer-based embedders from the caller's perspective.
+
+**Rationale:**
+- Ollama manages model lifecycle separately (download, load, serve) — cleaner than loading GGUF weights in-process
+- REST API means the embedder is process-isolated: a crash in Ollama doesn't kill the experiment runner
+- `nomic-embed-text` at 768d matches mpnet's dimensionality — enables direct quality comparison on the same FAISS index structure
+- Cost = $0 per embedding. Interview signal: "I benchmarked local vs API embeddings and found X% quality difference at Y ms latency delta, which informed our inference architecture."
+
+**Implementation:**
+```python
+class OllamaEmbedder(BaseEmbedder):
+    def __init__(self, model: str = "nomic-embed-text", base_url: str = "http://localhost:11434"):
+        self.model = model
+        self.base_url = base_url
+        # WHY: health check on init — fail fast if Ollama isn't running
+        self._check_connection()
+
+    def embed(self, texts: list[str]) -> np.ndarray:
+        # WHY: Ollama's /api/embeddings takes one text at a time
+        # Batch by iterating — not ideal but sufficient for ~500-800 chunks
+        embeddings = []
+        for text in texts:
+            response = httpx.post(f"{self.base_url}/api/embeddings",
+                                  json={"model": self.model, "prompt": text})
+            embeddings.append(response.json()["embedding"])
+        return np.array(embeddings, dtype=np.float32)
+```
+
+**Prerequisites:** `ollama pull nomic-embed-text` must be run before P5 experiments. Add to Day 0 setup checklist.
 
 ---
 
 ## 6. Experiment Grid
 
-### 6a. Core Grid (minimum 24 configurations)
+### 6a. Core Grid (minimum 30 configurations)
 
 ```
 Chunking (5):     fixed, recursive, sliding_window, heading_semantic, embedding_semantic
@@ -286,7 +337,8 @@ Retrieval (2):    dense, hybrid (α=0.7)
 
 - Hybrid α sweep: {0.3, 0.5, 0.7} for best chunker × best embedder = 3 more
 - Reranking: best 3 configs × 2 rerankers = 6 more
-- Total potential: **35 core + 9 extended = 44 configurations**
+- **(v4)** Ollama nomic-embed-text: best 3 chunkers × 2 retrieval methods = 6 more (direct comparison against mpnet at same 768d)
+- Total potential: **35 core + 15 extended = 50 configurations**
 
 ### 6c. Experiment Output Format (from requirements)
 
@@ -316,7 +368,9 @@ Every experiment must save results as JSON matching this structure:
     "ingestion_time_seconds": 45.2,
     "avg_query_latency_ms": 2350,
     "index_size_bytes": 15400000,
-    "peak_memory_mb": 2100
+    "peak_memory_mb": 2100,
+    "embedding_source": "local|api",
+    "cost_estimate_usd": 0.00
   },
   "judge_scores": {
     "avg_relevance": 4.2,
@@ -362,14 +416,14 @@ Every experiment must save results as JSON matching this structure:
 
 | # | Deliverable | Verification |
 |---|-------------|-------------|
-| D7 | 24+ experiment configurations tested | JSON result files per config |
+| D7 | 30+ experiment configurations tested | JSON result files per config |
 | D8 | 15+ diverse test queries with gold chunk IDs | `ground_truth.json` with curated queries |
 | D9 | All results saved with full configuration metadata | Config + metrics in every result file |
 | D10 | At least one config meets all 4 retrieval targets | Recall>0.80, Precision>0.60, MRR>0.70, NDCG>0.75 |
 
-### 7c. Comparison Analysis (4 Required Questions)
+### 7c. Comparison Analysis (5 Required Questions)
 
-The experiment report **must** explicitly answer these 4 questions with data:
+The experiment report **must** explicitly answer these questions with data:
 
 | # | Question | Expected Output |
 |---|----------|----------------|
@@ -377,6 +431,7 @@ The experiment report **must** explicitly answer these 4 questions with data:
 | Q2 | Did hybrid retrieval beat dense-only? | Side-by-side comparison with α analysis |
 | Q3 | Was reranking worth the latency cost? | Before/after metrics + latency delta |
 | Q4 | Which embedding model gave best quality/speed trade-off? | Scatter plot (quality vs latency) + recommendation |
+| **Q5** | **(v4)** How did local embeddings (Ollama) compare to API embeddings? | Quality delta, latency comparison, cost analysis. This is ADR-006 material. |
 
 ### 7d. CLI Tools
 
@@ -386,7 +441,7 @@ The experiment report **must** explicitly answer these 4 questions with data:
 | `python scripts/serve.py` | Load index → interactive QA REPL |
 | `python scripts/evaluate.py` | Run experiment grid → metrics → results |
 
-### 7e. Visualizations (minimum 10 charts)
+### 7e. Visualizations (minimum 11 charts)
 
 | # | Chart | Purpose |
 |---|-------|---------|
@@ -400,18 +455,19 @@ The experiment report **must** explicitly answer these 4 questions with data:
 | 8 | LLM Judge 5-axis radar | Generation quality profile for top configs |
 | 9 | Latency vs quality scatter | Performance trade-off visualization |
 | 10 | Per-query difficulty analysis | Where the system struggles |
+| **11** | **(v4)** Local vs API embedding comparison | Answers Q5: quality parity chart + latency/cost breakdown |
 
 ### 7f. Documentation
 
 | # | Deliverable | Content | Day |
 |---|-------------|---------|-----|
-| D11 | README.md | Problem, architecture (Mermaid diagram), results, experiment findings, demo link, setup | Day 5 |
+| D11 | README.md | Problem, architecture (Mermaid diagram), results, experiment findings, demo link, setup | Day 7 |
 | D12 | ADR-001: FAISS over ChromaDB | Low-level control for experiments vs P4's ChromaDB | Day 1 |
 | D13 | ADR-002: No LangChain — first-principles RAG | Building from ABCs teaches what LangChain hides | Day 1 |
 | D14 | ADR-003: Hybrid retrieval with min-max score fusion | Why naive combination fails. α optimization | Day 2 |
 | D15 | ADR-004: LiteLLM over raw OpenAI SDK | Multi-provider pattern. Adapter architecture | Day 2 |
 | D16 | ADR-005: YAML + Pydantic for experiment configs | Human-editable with validation. Production ML pattern | Day 3 |
-| D17 | Loom recording | 2-min walkthrough | Day 5 |
+| **D18** | **ADR-006: Local vs API embeddings** | **(v4)** Data-driven comparison: nomic-embed-text (local) vs OpenAI (API). Latency, quality, cost. | **Day 5** |
 
 ---
 
@@ -452,6 +508,7 @@ The project is not complete until you can answer:
 3. Does reranking improve top-3 results even if top-5 metrics are similar?
 4. Are citations accurate and helpful for verification?
 5. Can the system handle edge cases (very short/long documents, ambiguous questions)?
+6. **(v4)** How do local embeddings compare to API embeddings on YOUR data, and what would you recommend for a production deployment?
 
 ---
 
@@ -468,7 +525,7 @@ The project is not complete until you can answer:
 │   ├── interfaces.py                  ← All ABCs
 │   ├── extraction.py                  ← PDF extraction + cleaning
 │   ├── chunkers/                      ← 5 strategies, all BaseChunker
-│   ├── embedders/                     ← 3 models, all BaseEmbedder
+│   ├── embedders/                     ← 4 models, all BaseEmbedder (incl. OllamaEmbedder)
 │   ├── vector_store.py                ← FAISSVectorStore
 │   ├── retrievers/                    ← Dense, BM25, Hybrid
 │   ├── rerankers/                     ← Cohere, CrossEncoder
@@ -476,7 +533,7 @@ The project is not complete until you can answer:
 │   ├── pipeline.py                    ← End-to-end orchestrator
 │   ├── evaluation/                    ← Metrics, judge, ground truth
 │   ├── experiment_runner.py           ← Grid search orchestrator
-│   ├── visualization.py               ← 10+ charts
+│   ├── visualization.py               ← 11+ charts
 │   ├── factories.py                   ← Config → class mapping
 │   ├── cache.py                       ← LLM + embedding cache
 │   └── streamlit_app.py              ← Web UI
@@ -511,6 +568,7 @@ The project is not complete until you can answer:
 | ADR-003 | Hybrid retrieval with min-max score fusion | Why naive combination fails. α optimization. Ensemble principle. | **Day 2** (when hybrid retriever is built) |
 | ADR-004 | LiteLLM over raw OpenAI SDK | Multi-provider pattern. Adapter architecture. Spec alignment. | **Day 2** (when LiteLLM generator is built) |
 | ADR-005 | YAML + Pydantic for experiment configs | Human-editable with validation. Production ML pattern. | **Day 3** (when experiment configs are defined) |
+| **ADR-006** | **Local vs API embeddings (nomic-embed-text vs OpenAI)** | **(v4)** Data-driven comparison. Latency, quality, cost tradeoff on real data. Hardware-enabled architectural decision. | **Day 5** (after local embedding experiments run) |
 
 ---
 
@@ -518,34 +576,39 @@ The project is not complete until you can answer:
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| M2 RAM pressure (8GB) | OOM during embedding/indexing | One model at a time. Pool experiments by embedder. del + gc.collect(). Same P2/P3 pattern. |
+| ~~M2 RAM pressure (8GB)~~ | ~~OOM during embedding/indexing~~ | **Resolved (v4):** M5 Max 128GB eliminates RAM constraints. Pooling retained for clean benchmarking, not survival. |
+| Ollama not running during experiments | OllamaEmbedder fails | Health check in `__init__`. Skip Ollama configs gracefully with warning if Ollama unavailable. Don't block core grid. |
 | PyMuPDF extracts garbage from complex PDFs | Useless chunks | Choose well-structured technical docs. Inspect raw extraction. Add cleaning for headers/footers/ligatures. |
 | Embedding-semantic chunker too slow | Blocks Day 1 | Implement heading-semantic first (no embeddings). Embedding-semantic as Day 1 stretch. |
 | OpenAI rate limits during 30+ configs | Stalls experiment run | Cache everything. Local models first. OpenAI last. |
 | Cohere free tier limits | Not enough rerank calls | Limit reranking to top-5 configs. Local cross-encoder as fallback. |
 | LLM judge leniency bias | Inflated scores, false sense of quality | Manual calibration against 5 self-scored answers. Document offset. |
 | No config meets retrieval targets | Success criteria unmet | Iterate: try larger chunk overlap, better embedder, reranking. The debugging story itself is valuable. |
-| 22h timeline too tight | Incomplete experiments | Days 1-3 = core pipeline. Days 4-5 = experiments + polish. Minimum viable: reduce to 12 configs. |
+| 30h timeline too tight | Incomplete experiments | Days 1-3 = core pipeline. Days 4-5 = experiments. Days 6-7 = polish. Minimum viable: reduce to 12 configs. |
 
 ---
 
-## 12. Session Plan
+## 12. Session Plan (Revised v4 — 7 Days)
 
-| Session | Focus | ADRs | Exit Criteria |
-|---------|-------|------|---------------|
-| Day 1 (~4-5h) | **Foundation:** Project setup, schemas, interfaces, PDF extraction, 5 chunking strategies | ADR-001, ADR-002 | All chunkers produce valid chunks from test PDFs. Tests pass. ≥95% coverage on schemas + chunkers. |
-| Day 2 (~6-8h) | **Retrieval Pipeline:** Embedders, FAISS vector store, 3 retrievers, 2 rerankers, LiteLLM generator with citations | ADR-003, ADR-004 | End-to-end query produces cited answer. Smoke test passes. ≥95% coverage on all new components. |
-| Day 3 (~4-5h) | **Evaluation:** Retrieval metrics (from scratch), ground truth generation + curation, 5-axis judge, OpenAI embedder, YAML configs, experiment runner | ADR-005 | Evaluation framework complete. 30+ configs defined. Ready for big run. ≥95% coverage on metrics + judge. |
-| Day 4 (~4-5h) | **Experiments + Analysis:** Run full grid, generate 10+ charts, comparison report answering 4 required questions, extended experiments | — | All experiments complete. Best configs identified with evidence. |
-| Day 5 (~4-5h) | **Polish:** CLI tools, Streamlit demo, README, Loom recording | — | All deliverables complete. P5 DONE. |
+> Maps revised plan days to original PRD task scope. Day numbers are session numbers, not calendar days.
+
+| Session | Focus | Maps to Original | ADRs | Exit Criteria |
+|---------|-------|------------------|------|---------------|
+| Day 1 (~4h) | **Foundation:** Project setup, schemas, interfaces, PDF extraction, 5 chunking strategies | Original Day 1 (already complete — verify and update) | ADR-001, ADR-002 | All chunkers produce valid chunks from test PDFs. Tests pass. ≥95% coverage on schemas + chunkers. |
+| Day 2 (~4h) | **Retrieval Pipeline:** Embedders (MiniLM, mpnet), FAISS, 3 retrievers, 2 rerankers, LiteLLM generator with citations | Original Day 2 (core retrieval) | ADR-003, ADR-004 | End-to-end query produces cited answer. Smoke test passes. ≥95% coverage on all new components. |
+| Day 3 (~4h) | **Evaluation Framework:** Retrieval metrics from scratch, ground truth generation + curation, 5-axis judge, YAML configs, experiment runner | Original Day 3 | ADR-005 | Evaluation framework complete. 35+ configs defined. Ready for big run. |
+| Day 4 (~6-8h) | **Experiment Execution:** Full grid run, 11+ charts, comparison report (Q1-Q4), α sweep, reranking comparison | Original Day 4 (expanded) | — | All core experiments complete. Best configs identified with evidence. |
+| Day 5 (~4h) | **Local Model Experiments + Concept Deep-Dive:** OllamaEmbedder implementation, nomic-embed-text configs, local vs API comparison (Q5), RAGAS-style evaluation deep dive | **NEW (v4)** | ADR-006 | Local embedding experiments complete. Q5 answered with data. |
+| Day 6 (~4h) | **Streamlit UI + CLI Polish:** Build Streamlit demo, Click CLI (ingest/serve/evaluate), end-to-end verification | Original Day 5 (split) | — | All UI and CLI deliverables functional. |
+| Day 7 (~4h) | **Documentation Sprint:** README (gold standard), Loom recording, Concept Library entries, Learning Journal, self-evaluation questions answered | Original Day 5 (split) + new documentation depth | — | All deliverables complete. P5 DONE. |
 
 ---
 
 ## 13. Interview Talking Points
 
-1. **"Have you built a production RAG system?"** → P5: full pipeline with 5 chunking strategies, 3 embedding models, dense/BM25/hybrid retrieval, two-stage reranking, LLM generation with citations. All behind abstract interfaces, config-driven experimentation.
+1. **"Have you built a production RAG system?"** → P5: full pipeline with 5 chunking strategies, 4 embedding models (including local via Ollama), dense/BM25/hybrid retrieval, two-stage reranking, LLM generation with citations. All behind abstract interfaces, config-driven experimentation.
 
-2. **"How did you decide which configuration to use?"** → Ran 30+ experiments, measured 4 retrieval metrics + 5 generation quality axes. Config [X] won. Hybrid retrieval at α=0.7 outperformed dense by [Y]%. Reranking added [Z]ms but improved precision by [W]%.
+2. **"How did you decide which configuration to use?"** → Ran 35+ experiments, measured 4 retrieval metrics + 5 generation quality axes. Config [X] won. Hybrid retrieval at α=0.7 outperformed dense by [Y]%. Reranking added [Z]ms but improved precision by [W]%.
 
 3. **"Why from scratch instead of LangChain?"** → Deliberate first-principles choice. I can use LangChain but wanted to prove I understand the internals. The ABC design means swapping in LangChain components is trivial.
 
@@ -553,6 +616,8 @@ The project is not complete until you can answer:
 
 5. **"How does this connect to P2?"** → P2 measured RAG. P5 builds it. P2 found the retrieval-generation gap. P5 tackles it with hybrid retrieval + reranking + citations.
 
-6. **"Why FAISS for P5, ChromaDB for P4?"** → Different requirements. P4 needed persistence + metadata filtering for a REST API. P5 needed low-level control for 30+ experiments. Right tool for the job.
+6. **"Why FAISS for P5, ChromaDB for P4?"** → Different requirements. P4 needed persistence + metadata filtering for a REST API. P5 needed low-level control for 35+ experiments. Right tool for the job.
 
 7. **"Why LiteLLM?"** → Multi-provider abstraction. Same interface whether I'm calling OpenAI, Anthropic, or Cohere. Production systems need provider flexibility — LiteLLM gives that behind BaseLLM.
+
+8. **(v4) "Have you worked with local inference?"** → Yes. I benchmarked nomic-embed-text running locally on Apple Silicon against OpenAI's API embeddings. Local embeddings were [X]% [faster/slower] with [Y]% quality delta on my retrieval metrics. For development iteration, local was [better/comparable]. For production, [recommendation]. The data drove the architectural decision — documented in ADR-006.
