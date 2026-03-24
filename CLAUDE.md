@@ -427,7 +427,7 @@ At the end of every session, Sonnet must:
 - [x] pyproject.toml with all dependencies
 - [x] `uv sync` passes
 - [x] .env configured (OPENAI_API_KEY, COHERE_API_KEY)
-- [ ] P5 card created in Notion Project Tracker
+- [x] P5 card created in Notion Project Tracker
 - [x] Test PDFs downloaded to `data/pdfs/`
 - [x] Ollama installed and nomic-embed-text pulled (v4 — verified 2026-03-21, 768d confirmed)
 
@@ -479,7 +479,10 @@ At the end of every session, Sonnet must:
 - [ ] Extended experiments (α sweep, reranking comparison)
 - [ ] Judge calibration (manual vs LLM, 5 answers)
 - [ ] Pipeline orchestrator (ties all phases together)
-- [ ] **Checkpoint:** All core experiments complete. Best config meets retrieval targets.
+- [ ] **(v5)** Iteration log: every config change logged with reason, before/after metrics, delta → `results/iteration_log.json`
+- [ ] **(v5)** Final config traceability table: every decision in best config traces to specific experiment ID
+- [ ] **(v5)** Reproducibility verification: run best config twice, all metrics within 5% variance
+- [ ] **Checkpoint:** All core experiments complete. Best config meets retrieval targets. Iteration log complete. Reproducibility verified.
 
 ### Day 5 — Local Model Experiments + Concept Deep-Dive (NEW in v4)
 - [ ] OllamaEmbedder implementation (implements BaseEmbedder, calls localhost:11434)
