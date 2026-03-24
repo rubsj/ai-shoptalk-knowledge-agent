@@ -9,7 +9,7 @@
 **Owner:** Developer (Java/TS background, completed P1 + P2 + P3 + P4)
 **Source of Truth:** [Notion Requirements](https://www.notion.so/Mini_Project_5_requirements-2ffdb630640a81668269f59ead053417)
 **Concepts Primer:** `p5-concepts-primer.html` in project root
-**PRD Version:** v4 (hardware upgrade to M5 Max 128GB, revised timeline, local model experiments added)
+**PRD Version:** v5 (v4 + iteration logs, reproducibility verification — aligned with updated bootcamp requirements)
 
 ---
 
@@ -19,6 +19,7 @@
 |---------|------|---------|
 | v3 | Feb 2026 | All design decisions finalized, ADRs distributed, test coverage 95%+ |
 | v4 | Mar 18, 2026 | Hardware upgrade M2 8GB → M5 Max 128GB. Timeline expanded from 5 to 7 sessions. Added local embedding model experiments (Ollama nomic-embed-text). Added ADR-006 for local vs API embeddings. Removed all 8GB RAM constraints. Experiment runner pooling simplified (no longer a hard requirement — sufficient RAM for concurrent models, but pooling still preferred for clean benchmarking). |
+| v5 | Mar 23, 2026 | Aligned with updated bootcamp requirements (v2). Added iteration log format as formal deliverable (Section 7g). Added reproducibility verification to Day 4 exit criteria (Section 2g). No architecture, tech stack, or timeline changes — these are traceability and rigor additions only. |
 
 ---
 
@@ -102,6 +103,23 @@ These targets must be met by **at least one configuration** in the experiment gr
 | Integration test | Full pipeline PDF → answer |
 | Metric verification | Known inputs → known outputs for all IR metrics |
 | Edge case tests | Empty documents, malformed PDFs, very long queries, no results found |
+
+### 2g. Reproducibility Verification (v5)
+
+Run the best-performing configuration **twice** under identical conditions. All retrieval metrics must be **within 5%** of each other between runs.
+
+| Check | Pass Criteria |
+|-------|--------------|
+| Recall@5 variance | < 5% between Run 1 and Run 2 |
+| Precision@5 variance | < 5% between Run 1 and Run 2 |
+| MRR variance | < 5% between Run 1 and Run 2 |
+| NDCG@5 variance | < 5% between Run 1 and Run 2 |
+
+**Why this matters:** Non-determinism can hide in the pipeline — LLM judge with temperature > 0, FAISS approximate search with non-deterministic ties, BM25 tokenization order. If metrics swing wildly between identical runs, the experiment results are unreliable and any configuration comparison is meaningless.
+
+**Implementation:** The experiment runner must support a `--reproducibility-check` flag that runs a specified config twice and reports the per-metric variance. Sources of non-determinism to control: set LLM temperature=0 for judge calls, use deterministic FAISS `IndexFlatIP` (exact search, not approximate), fix random seeds where applicable.
+
+**When to run:** Day 4, after the best config is identified. This is a validation step, not part of the grid search.
 
 ---
 
@@ -469,6 +487,40 @@ The experiment report **must** explicitly answer these questions with data:
 | D16 | ADR-005: YAML + Pydantic for experiment configs | Human-editable with validation. Production ML pattern | Day 3 |
 | **D18** | **ADR-006: Local vs API embeddings** | **(v4)** Data-driven comparison: nomic-embed-text (local) vs OpenAI (API). Latency, quality, cost. | **Day 5** |
 
+### 7g. Iteration Logs (v5)
+
+> Every configuration change must be traceable to specific experiment data. Do not make blind changes.
+
+**Format:** Each iteration entry must follow this structure:
+
+```
+Iteration: [N]
+Change: [What was changed — e.g., "Switched from fixed-size (512) to recursive (512, overlap=100)"]
+Reason: [The specific metric or observation that motivated the change]
+Metric Before: [metric_name = value for each relevant metric]
+Metric After: [metric_name = value for each relevant metric]
+Delta: [metric_name +/-value for each]
+```
+
+**What must be logged:**
+- Every chunking strategy, embedding model, or retrieval method change
+- The specific metric or observation that motivated the change
+- Before and after metric values with the delta
+- If a change made things **worse**, log that too — explain what you reverted or tried next
+
+**Final configuration traceability:** Every decision in the final recommended config must trace back to a specific experiment result:
+
+| Decision | Based On | Evidence |
+|----------|----------|----------|
+| Use [chunker] | Experiment [ID] vs [ID] | [metric]: [value] vs [value] |
+| Use [retrieval method] | Experiment [ID] vs [ID] | [metric]: [value] vs [value] |
+| Set α = [value] | Fusion weight sweep | [metric] peaked at α=[value] |
+| Use [embedder] | Experiment [ID] vs [ID] | [metric]: [value] vs [value] |
+
+**Deliverable:** `results/iteration_log.json` — structured JSON with all iteration entries. Also rendered as a table in the comparison report markdown.
+
+**When to produce:** Day 4, as experiments run. Each improvement iteration gets logged immediately, not reconstructed after the fact.
+
 ---
 
 ## 8. Evaluation Framework
@@ -550,6 +602,7 @@ The project is not complete until you can answer:
 ├── results/
 │   ├── experiments/                   ← Per-experiment JSON
 │   ├── comparison/                    ← Cross-experiment analysis
+│   ├── iteration_log.json             ← (v5) Traceable config change log
 │   └── charts/                        ← Generated PNGs
 ├── tests/                             ← pytest suite (≥95% coverage)
 └── docs/adr/                          ← Architecture Decision Records
@@ -597,7 +650,7 @@ The project is not complete until you can answer:
 | Day 1 (~4h) | **Foundation:** Project setup, schemas, interfaces, PDF extraction, 5 chunking strategies | Original Day 1 (already complete — verify and update) | ADR-001, ADR-002 | All chunkers produce valid chunks from test PDFs. Tests pass. ≥95% coverage on schemas + chunkers. |
 | Day 2 (~4h) | **Retrieval Pipeline:** Embedders (MiniLM, mpnet), FAISS, 3 retrievers, 2 rerankers, LiteLLM generator with citations | Original Day 2 (core retrieval) | ADR-003, ADR-004 | End-to-end query produces cited answer. Smoke test passes. ≥95% coverage on all new components. |
 | Day 3 (~4h) | **Evaluation Framework:** Retrieval metrics from scratch, ground truth generation + curation, 5-axis judge, YAML configs, experiment runner | Original Day 3 | ADR-005 | Evaluation framework complete. 35+ configs defined. Ready for big run. |
-| Day 4 (~6-8h) | **Experiment Execution:** Full grid run, 11+ charts, comparison report (Q1-Q4), α sweep, reranking comparison | Original Day 4 (expanded) | — | All core experiments complete. Best configs identified with evidence. |
+| Day 4 (~6-8h) | **Experiment Execution:** Full grid run, 11+ charts, comparison report (Q1-Q4), α sweep, reranking comparison, iteration log, reproducibility verification | Original Day 4 (expanded) | — | All core experiments complete. Best configs identified with evidence. Iteration log traces every config decision. Reproducibility check passes (<5% variance). |
 | Day 5 (~4h) | **Local Model Experiments + Concept Deep-Dive:** OllamaEmbedder implementation, nomic-embed-text configs, local vs API comparison (Q5), RAGAS-style evaluation deep dive | **NEW (v4)** | ADR-006 | Local embedding experiments complete. Q5 answered with data. |
 | Day 6 (~4h) | **Streamlit UI + CLI Polish:** Build Streamlit demo, Click CLI (ingest/serve/evaluate), end-to-end verification | Original Day 5 (split) | — | All UI and CLI deliverables functional. |
 | Day 7 (~4h) | **Documentation Sprint:** README (gold standard), Loom recording, Concept Library entries, Learning Journal, self-evaluation questions answered | Original Day 5 (split) + new documentation depth | — | All deliverables complete. P5 DONE. |

@@ -51,7 +51,7 @@ Each index saves to `{experiment_id}.faiss` + `{experiment_id}_chunks.json`. To 
 
 **ChromaDB** - Metadata support built-in, Python-native, solid for production APIs. But: the module-level EF singleton breaks multi-config experiments. We hit this in P4. Also, it abstracts away too much of the embedding pipeline for what we're doing here. When you're running 35 configs and need to know exactly what's happening at each step, that abstraction works against you.
 
-**Qdrant** - Rich filtering, production-grade. But it needs a running server process, and we're not building a production service. That's ops overhead we don't want for an experiment platform.
+**Qdrant** - Rich filtering, production-grade. But it needs a running server process, and we're not building a production service. More infrastructure than we need.
 
 **Raw numpy + cosine_similarity** - Zero dependencies, which is nice. But it's O(n) scan with no indexing. 35 configs × 4 papers × ~500 chunks each - that's too slow once you're actually iterating.
 
@@ -69,12 +69,6 @@ Each index saves to `{experiment_id}.faiss` + `{experiment_id}_chunks.json`. To 
 
 We get full isolation per experiment - separate files, explicit dimension at construction, and dimension mismatches blow up immediately instead of failing silently. No server to babysit.
 
-The tradeoff: we have to handle ID→chunk mapping ourselves. FAISS gives you integer IDs; mapping those back to `Chunk` objects is on us. And if we want metadata filtering (like "only chunks from page 3"), that's post-retrieval filtering - FAISS doesn't do that natively.
+We do have to handle ID→chunk mapping ourselves. FAISS gives you integer IDs; mapping those back to `Chunk` objects is on us. And if we want metadata filtering (like "only chunks from page 3"), that's post-retrieval filtering - FAISS doesn't do that natively.
 
-For future projects: P6–P9 can import the `FAISSVectorStore` class directly. The `BaseVectorStore` ABC means if we ever move to Qdrant for a production use case, we only swap the implementation class.
-
----
-
-## Takeaway
-
-ChromaDB and FAISS solve different problems. ChromaDB is built for production APIs - metadata, filtering, nice ergonomics. FAISS gives you a bare index you control completely. We're not building a production service; we're running 35+ experiment configs and need to iterate fast. The P4 singleton bug made this concrete - using a production-oriented tool for experiment work meant fighting abstractions that weren't built for our use case.
+P6–P9 can import the `FAISSVectorStore` class directly. The `BaseVectorStore` ABC means if we ever move to Qdrant for a production use case, we only swap the implementation class. The broader lesson from P4 is straightforward: using a production-oriented tool for experiment work meant fighting abstractions that weren't built for our use case.
