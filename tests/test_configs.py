@@ -1,4 +1,4 @@
-"""Tests for src/configs/*.yaml — experiment grid structure and Pydantic validation."""
+"""Tests for experiments/configs/*.yaml — experiment grid structure and Pydantic validation."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from src.factories import load_configs
 from src.schemas import ExperimentConfig
 
 
-CONFIGS_DIR = "src/configs"
+CONFIGS_DIR = "experiments/configs"
 
 
 def _all_configs() -> list[ExperimentConfig]:

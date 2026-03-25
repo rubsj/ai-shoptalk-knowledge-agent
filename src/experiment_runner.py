@@ -35,6 +35,7 @@ from src.schemas import (
     ExperimentConfig,
     ExperimentResult,
     GroundTruthSet,
+    JudgeResult,
     JudgeScores,
     PerformanceMetrics,
     QueryResult,
@@ -45,6 +46,10 @@ from src.vector_store import FAISSVectorStore
 logger = logging.getLogger(__name__)
 
 _EMBEDDER_ORDER: list[str | None] = ["minilm", "mpnet", None, "openai"]
+
+# text-embedding-3-small pricing: $0.02 per 1M tokens
+_OPENAI_EMBED_COST_PER_TOKEN = 0.02 / 1_000_000
+_AVG_TOKENS_PER_CHUNK = 150  # ~512 chars ≈ 150 tokens
 
 
 def _group_configs_by_embedder(
@@ -95,9 +100,8 @@ def _run_single_config(
     # 4. Create LLM for answer generation
     llm = create_llm(cache=cache)
 
-    # 5. Run evaluation queries
+    # 5. Run evaluation queries with per-query judge scoring
     query_results: list[QueryResult] = []
-    qa_pairs_for_judge: list[dict] = []
     total_latency_ms = 0.0
 
     for gt_query in ground_truth.queries:
@@ -131,6 +135,11 @@ def _run_single_config(
             ndcg_at_5=ndcg_at_k(retrieved_ids, graded_relevance, k=5),
         )
 
+        # Per-query judge scoring
+        judge_result: JudgeResult | None = None
+        if judge is not None:
+            judge_result = judge.score(gt_query.question, answer, retrieved_chunks)
+
         query_results.append(
             QueryResult(
                 query_id=gt_query.query_id,
@@ -138,11 +147,9 @@ def _run_single_config(
                 answer=answer,
                 retrieved_chunk_ids=retrieved_ids,
                 retrieval_scores=q_metrics,
+                judge_result=judge_result,
                 latency_ms=latency_ms,
             )
-        )
-        qa_pairs_for_judge.append(
-            {"query": gt_query.question, "answer": answer, "chunks": retrieved_chunks}
         )
 
     # 6. Aggregate metrics over all queries
@@ -154,10 +161,28 @@ def _run_single_config(
         ndcg_at_5=sum(r.retrieval_scores.ndcg_at_5 for r in query_results) / n,
     )
 
-    # 7. Run judge if provided
+    # 7. Aggregate per-query judge results into JudgeScores
     judge_scores: JudgeScores | None = None
     if judge is not None:
-        judge_scores = judge.score_batch(qa_pairs_for_judge)
+        per_query_judges = [qr.judge_result for qr in query_results if qr.judge_result is not None]
+        if per_query_judges:
+            n_j = len(per_query_judges)
+            avg_relevance = sum(r.relevance for r in per_query_judges) / n_j
+            avg_accuracy = sum(r.accuracy for r in per_query_judges) / n_j
+            avg_completeness = sum(r.completeness for r in per_query_judges) / n_j
+            avg_conciseness = sum(r.conciseness for r in per_query_judges) / n_j
+            avg_citation_quality = sum(r.citation_quality for r in per_query_judges) / n_j
+            overall_average = (
+                avg_relevance + avg_accuracy + avg_completeness + avg_conciseness + avg_citation_quality
+            ) / 5
+            judge_scores = JudgeScores(
+                avg_relevance=avg_relevance,
+                avg_accuracy=avg_accuracy,
+                avg_completeness=avg_completeness,
+                avg_conciseness=avg_conciseness,
+                avg_citation_quality=avg_citation_quality,
+                overall_average=overall_average,
+            )
 
     # 8. Measure FAISS index size via temp save
     index_size_bytes = 0
@@ -187,12 +212,19 @@ def _run_single_config(
         else "local"
     )
 
+    # 10. Compute cost estimate for API embedders
+    cost_estimate_usd = 0.0
+    if embedding_source == "api":
+        total_tokens = len(all_chunks) * _AVG_TOKENS_PER_CHUNK
+        cost_estimate_usd = total_tokens * _OPENAI_EMBED_COST_PER_TOKEN
+
     performance = PerformanceMetrics(
         ingestion_time_seconds=ingestion_time,
         avg_query_latency_ms=total_latency_ms / n if n > 0 else 0.0,
         index_size_bytes=index_size_bytes,
         peak_memory_mb=peak_memory_mb,
         embedding_source=embedding_source,
+        cost_estimate_usd=cost_estimate_usd,
     )
 
     return ExperimentResult(
@@ -206,9 +238,9 @@ def _run_single_config(
 
 
 def run_experiment_grid(
-    config_dir: str = "src/configs",
-    ground_truth_path: str = "data/ground_truth/ground_truth.json",
-    output_path: str = "data/results/results.json",
+    config_dir: str = "experiments/configs",
+    ground_truth_path: str = "data/ground_truth.json",
+    output_dir: str = "results/experiments",
     documents: list[Document] | None = None,
     run_judge: bool = True,
 ) -> list[ExperimentResult]:
@@ -217,6 +249,9 @@ def run_experiment_grid(
     Groups configs by embedding_model so each model is loaded exactly once.
     Execution order follows _EMBEDDER_ORDER: minilm → mpnet → None → openai.
     Between groups: del embedder + gc.collect() to free RAM.
+
+    Saves per-experiment JSON to {output_dir}/{experiment_id}.json and
+    a summary.json with all results for easy loading.
     """
     if documents is None:
         documents = []
@@ -224,13 +259,16 @@ def run_experiment_grid(
     configs = load_configs(config_dir)
     ground_truth = load_ground_truth(ground_truth_path)
 
-    cache_dir = str(Path(output_path).parent / "llm_cache")
+    cache_dir = str(Path(output_dir) / "llm_cache")
     cache = JSONCache(cache_dir)
     judge: LLMJudge | None = None
     if run_judge:
         judge = LLMJudge(model="gpt-4o", cache=cache)
 
     groups = _group_configs_by_embedder(configs)
+
+    out_path = Path(output_dir)
+    out_path.mkdir(parents=True, exist_ok=True)
 
     all_results: list[ExperimentResult] = []
     for embedder_name in _EMBEDDER_ORDER:
@@ -263,13 +301,16 @@ def run_experiment_grid(
             )
             all_results.append(result)
 
+            # Save per-experiment JSON incrementally
+            result_file = out_path / f"{result.experiment_id}.json"
+            result_file.write_text(json.dumps(result.model_dump(mode="json"), indent=2, default=str))
+
         del embedder
         gc.collect()
 
-    output_dir = Path(output_path).parent
-    output_dir.mkdir(parents=True, exist_ok=True)
-    results_data = [r.model_dump(mode="json") for r in all_results]
-    Path(output_path).write_text(json.dumps(results_data, indent=2, default=str))
-    logger.info("Saved %d results to %s", len(all_results), output_path)
+    # Save summary with all results
+    summary_data = [r.model_dump(mode="json") for r in all_results]
+    (out_path / "summary.json").write_text(json.dumps(summary_data, indent=2, default=str))
+    logger.info("Saved %d results to %s", len(all_results), output_dir)
 
     return all_results

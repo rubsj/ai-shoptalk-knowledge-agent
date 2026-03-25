@@ -106,6 +106,12 @@ def _make_retrieval_result(chunk_id: str = "chunk1"):
     )
 
 
+def _make_judge_result() -> JudgeResult:
+    return JudgeResult(
+        relevance=4, accuracy=4, completeness=4, conciseness=4, citation_quality=4
+    )
+
+
 def _make_judge_scores() -> JudgeScores:
     return JudgeScores(
         avg_relevance=4.0,
@@ -115,6 +121,14 @@ def _make_judge_scores() -> JudgeScores:
         avg_citation_quality=4.0,
         overall_average=4.0,
     )
+
+
+def _make_mock_result(experiment_id: str = "test-id") -> MagicMock:
+    """Create a mock ExperimentResult with experiment_id and model_dump."""
+    mock = MagicMock(spec=ExperimentResult)
+    mock.experiment_id = experiment_id
+    mock.model_dump.return_value = {"experiment_id": experiment_id}
+    return mock
 
 
 # ---------------------------------------------------------------------------
@@ -259,6 +273,7 @@ class TestRunSingleConfig:
         mock_faiss.assert_not_called()
         assert result.performance.embedding_source == "none"
         assert result.performance.index_size_bytes == 0
+        assert result.performance.cost_estimate_usd == 0.0
 
     @patch("src.experiment_runner.psutil")
     @patch("src.experiment_runner.FAISSVectorStore")
@@ -267,7 +282,7 @@ class TestRunSingleConfig:
     @patch("src.experiment_runner.create_chunker")
     @patch("src.experiment_runner.build_qa_prompt", return_value="prompt")
     @patch("src.experiment_runner.extract_citations", return_value=[])
-    def test_judge_called_when_provided(
+    def test_judge_called_per_query(
         self,
         mock_extract,
         mock_prompt,
@@ -283,24 +298,30 @@ class TestRunSingleConfig:
         mock_create_llm.return_value.generate.return_value = "answer"
 
         mock_judge = MagicMock()
-        mock_judge.score_batch.return_value = _make_judge_scores()
+        mock_judge.score.return_value = _make_judge_result()
 
         config = _dense_config()
         mock_embedder = MagicMock()
         mock_embedder.dimensions = 384
         mock_embedder.embed.return_value = MagicMock()
 
+        gt = _make_ground_truth(n_queries=2)
         result = _run_single_config(
             config=config,
             embedder=mock_embedder,
             documents=[_make_document()],
-            ground_truth=_make_ground_truth(),
+            ground_truth=gt,
             judge=mock_judge,
             cache=None,
         )
 
-        mock_judge.score_batch.assert_called_once()
+        # judge.score called once per query, not score_batch
+        assert mock_judge.score.call_count == 2
         assert result.judge_scores is not None
+        # Per-query judge_result populated
+        for qr in result.query_results:
+            assert qr.judge_result is not None
+            assert isinstance(qr.judge_result, JudgeResult)
 
     @patch("src.experiment_runner.psutil")
     @patch("src.experiment_runner.FAISSVectorStore")
@@ -335,6 +356,7 @@ class TestRunSingleConfig:
         )
 
         assert result.judge_scores is None
+        assert result.query_results[0].judge_result is None
 
     @patch("src.experiment_runner.psutil")
     @patch("src.experiment_runner.FAISSVectorStore")
@@ -380,7 +402,7 @@ class TestRunSingleConfig:
     @patch("src.experiment_runner.create_chunker")
     @patch("src.experiment_runner.build_qa_prompt", return_value="prompt")
     @patch("src.experiment_runner.extract_citations", return_value=[])
-    def test_openai_embedding_source_is_api(
+    def test_openai_embedding_source_is_api_with_cost(
         self,
         mock_extract,
         mock_prompt,
@@ -410,6 +432,10 @@ class TestRunSingleConfig:
         )
 
         assert result.performance.embedding_source == "api"
+        # 1 chunk × 150 avg tokens × $0.02/1M tokens = 0.000003
+        assert result.performance.cost_estimate_usd > 0.0
+        expected_cost = (1 * 150 / 1_000_000) * 0.02
+        assert abs(result.performance.cost_estimate_usd - expected_cost) < 1e-12
 
     @patch("src.experiment_runner.psutil")
     @patch("src.experiment_runner.FAISSVectorStore")
@@ -448,6 +474,7 @@ class TestRunSingleConfig:
         )
 
         assert result.performance.embedding_source == "local"
+        assert result.performance.cost_estimate_usd == 0.0
 
     @patch("src.experiment_runner.psutil")
     @patch("src.experiment_runner.FAISSVectorStore")
@@ -491,6 +518,56 @@ class TestRunSingleConfig:
 
         assert r1.experiment_id != r2.experiment_id
 
+    @patch("src.experiment_runner.psutil")
+    @patch("src.experiment_runner.FAISSVectorStore")
+    @patch("src.experiment_runner.create_retriever")
+    @patch("src.experiment_runner.create_llm")
+    @patch("src.experiment_runner.create_chunker")
+    @patch("src.experiment_runner.build_qa_prompt", return_value="prompt")
+    @patch("src.experiment_runner.extract_citations", return_value=[])
+    def test_judge_scores_aggregated_from_per_query(
+        self,
+        mock_extract,
+        mock_prompt,
+        mock_create_chunker,
+        mock_create_llm,
+        mock_create_retriever,
+        mock_faiss,
+        mock_psutil,
+    ) -> None:
+        mock_psutil.Process.return_value.memory_info.return_value.rss = 100 * 1024 * 1024
+        mock_create_chunker.return_value.chunk.return_value = [_make_chunk()]
+        mock_create_retriever.return_value.retrieve.return_value = [_make_retrieval_result()]
+        mock_create_llm.return_value.generate.return_value = "answer"
+
+        # Return different scores for each query
+        judge_r1 = JudgeResult(relevance=5, accuracy=4, completeness=3, conciseness=4, citation_quality=5)
+        judge_r2 = JudgeResult(relevance=3, accuracy=4, completeness=5, conciseness=4, citation_quality=3)
+        mock_judge = MagicMock()
+        mock_judge.score.side_effect = [judge_r1, judge_r2]
+
+        config = _dense_config()
+        mock_embedder = MagicMock()
+        mock_embedder.dimensions = 384
+        mock_embedder.embed.return_value = MagicMock()
+
+        result = _run_single_config(
+            config=config,
+            embedder=mock_embedder,
+            documents=[_make_document()],
+            ground_truth=_make_ground_truth(n_queries=2),
+            judge=mock_judge,
+            cache=None,
+        )
+
+        assert result.judge_scores is not None
+        assert result.judge_scores.avg_relevance == 4.0  # (5+3)/2
+        assert result.judge_scores.avg_accuracy == 4.0   # (4+4)/2
+        assert result.judge_scores.avg_completeness == 4.0  # (3+5)/2
+        assert result.judge_scores.avg_conciseness == 4.0   # (4+4)/2
+        assert result.judge_scores.avg_citation_quality == 4.0  # (5+3)/2
+        assert result.judge_scores.overall_average == 4.0
+
 
 # ---------------------------------------------------------------------------
 # run_experiment_grid
@@ -512,7 +589,7 @@ class TestRunExperimentGrid:
     @patch("src.experiment_runner.JSONCache")
     @patch("src.experiment_runner.load_ground_truth")
     @patch("src.experiment_runner.load_configs")
-    def test_results_saved_to_json(
+    def test_summary_json_saved(
         self,
         mock_load_configs,
         mock_load_gt,
@@ -526,23 +603,61 @@ class TestRunExperimentGrid:
     ) -> None:
         mock_load_configs.return_value = [_bm25_config()]
         mock_load_gt.return_value = _make_ground_truth()
+        mock_run_single.return_value = _make_mock_result("exp-001")
 
-        mock_result = MagicMock(spec=ExperimentResult)
-        mock_result.model_dump.return_value = {"experiment_id": "abc"}
-        mock_run_single.return_value = mock_result
-
-        output_path = str(tmp_path / "results" / "results.json")
+        out_dir = str(tmp_path / "results")
         run_experiment_grid(
-            config_dir="src/configs",
-            ground_truth_path="data/gt.json",
-            output_path=output_path,
+            config_dir="experiments/configs",
+            ground_truth_path="data/ground_truth.json",
+            output_dir=out_dir,
             documents=[],
             run_judge=False,
         )
 
-        assert (tmp_path / "results" / "results.json").exists()
-        data = json.loads((tmp_path / "results" / "results.json").read_text())
+        # summary.json written
+        summary_path = tmp_path / "results" / "summary.json"
+        assert summary_path.exists()
+        data = json.loads(summary_path.read_text())
         assert isinstance(data, list)
+        assert len(data) == 1
+
+    @patch("src.experiment_runner.gc")
+    @patch("src.experiment_runner._run_single_config")
+    @patch("src.experiment_runner.create_embedder")
+    @patch("src.experiment_runner.LLMJudge")
+    @patch("src.experiment_runner.create_llm")
+    @patch("src.experiment_runner.JSONCache")
+    @patch("src.experiment_runner.load_ground_truth")
+    @patch("src.experiment_runner.load_configs")
+    def test_per_experiment_json_files_written(
+        self,
+        mock_load_configs,
+        mock_load_gt,
+        mock_json_cache,
+        mock_create_llm,
+        mock_judge_cls,
+        mock_create_embedder,
+        mock_run_single,
+        mock_gc,
+        tmp_path,
+    ) -> None:
+        mock_load_configs.return_value = [_bm25_config(), _bm25_config()]
+        mock_load_gt.return_value = _make_ground_truth()
+
+        mock_r1 = _make_mock_result("exp-001")
+        mock_r2 = _make_mock_result("exp-002")
+        mock_run_single.side_effect = [mock_r1, mock_r2]
+
+        out_dir = str(tmp_path / "results")
+        run_experiment_grid(output_dir=out_dir, run_judge=False)
+
+        assert (tmp_path / "results" / "exp-001.json").exists()
+        assert (tmp_path / "results" / "exp-002.json").exists()
+        assert (tmp_path / "results" / "summary.json").exists()
+
+        # Each per-experiment file has a single result
+        data1 = json.loads((tmp_path / "results" / "exp-001.json").read_text())
+        assert data1["experiment_id"] == "exp-001"
 
     @patch("src.experiment_runner.gc")
     @patch("src.experiment_runner._run_single_config")
@@ -569,10 +684,10 @@ class TestRunExperimentGrid:
         c2 = _dense_config(chunking_strategy="recursive")
         mock_load_configs.return_value = [c1, c2]
         mock_load_gt.return_value = _make_ground_truth()
-        mock_run_single.return_value = MagicMock(spec=ExperimentResult, **{"model_dump.return_value": {}})
+        mock_run_single.return_value = _make_mock_result()
 
-        output_path = str(tmp_path / "out.json")
-        run_experiment_grid(output_path=output_path, run_judge=False)
+        out_dir = str(tmp_path / "out")
+        run_experiment_grid(output_dir=out_dir, run_judge=False)
 
         assert mock_create_embedder.call_count == 1
         mock_create_embedder.assert_called_once_with("minilm")
@@ -602,10 +717,10 @@ class TestRunExperimentGrid:
             _dense_config(embedding_model="mpnet"),
         ]
         mock_load_gt.return_value = _make_ground_truth()
-        mock_run_single.return_value = MagicMock(spec=ExperimentResult, **{"model_dump.return_value": {}})
+        mock_run_single.return_value = _make_mock_result()
 
-        output_path = str(tmp_path / "out.json")
-        run_experiment_grid(output_path=output_path, run_judge=False)
+        out_dir = str(tmp_path / "out")
+        run_experiment_grid(output_dir=out_dir, run_judge=False)
 
         # gc.collect called once per group (minilm + mpnet = 2)
         assert mock_gc.collect.call_count == 2
@@ -637,10 +752,10 @@ class TestRunExperimentGrid:
             _bm25_config(),
         ]
         mock_load_gt.return_value = _make_ground_truth()
-        mock_run_single.return_value = MagicMock(spec=ExperimentResult, **{"model_dump.return_value": {}})
+        mock_run_single.return_value = _make_mock_result()
 
-        output_path = str(tmp_path / "out.json")
-        run_experiment_grid(output_path=output_path, run_judge=False)
+        out_dir = str(tmp_path / "out")
+        run_experiment_grid(output_dir=out_dir, run_judge=False)
 
         call_args = [c.args[0] for c in mock_create_embedder.call_args_list]
         # None group (bm25) doesn't call create_embedder
@@ -668,10 +783,10 @@ class TestRunExperimentGrid:
     ) -> None:
         mock_load_configs.return_value = [_bm25_config()]
         mock_load_gt.return_value = _make_ground_truth()
-        mock_run_single.return_value = MagicMock(spec=ExperimentResult, **{"model_dump.return_value": {}})
+        mock_run_single.return_value = _make_mock_result()
 
-        output_path = str(tmp_path / "out.json")
-        run_experiment_grid(output_path=output_path, run_judge=False)
+        out_dir = str(tmp_path / "out")
+        run_experiment_grid(output_dir=out_dir, run_judge=False)
 
         mock_judge_cls.assert_not_called()
         _, kwargs = mock_run_single.call_args
@@ -699,10 +814,10 @@ class TestRunExperimentGrid:
     ) -> None:
         mock_load_configs.return_value = [_bm25_config(), _bm25_config()]
         mock_load_gt.return_value = _make_ground_truth()
-        mock_run_single.return_value = MagicMock(spec=ExperimentResult, **{"model_dump.return_value": {}})
+        mock_run_single.return_value = _make_mock_result()
 
-        output_path = str(tmp_path / "out.json")
-        results = run_experiment_grid(output_path=output_path, run_judge=False)
+        out_dir = str(tmp_path / "out")
+        results = run_experiment_grid(output_dir=out_dir, run_judge=False)
 
         assert len(results) == 2
 
