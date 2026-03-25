@@ -19,10 +19,10 @@ I needed something human-editable (add/remove configs without code changes), val
 
 **YAML files + Pydantic validation + factory functions.**
 
-Each config lives in `src/configs/{NN}_{chunking_strategy}_{embedder}_{retriever}.yaml`. The numeric prefix controls alphabetical (and therefore execution) order without any additional ordering logic.
+Each config lives in `experiments/configs/{NN}_{chunking_strategy}_{embedder}_{retriever}.yaml`. The numeric prefix controls alphabetical (and therefore execution) order without any additional ordering logic.
 
 ```yaml
-# src/configs/11_fixed_minilm_hybrid.yaml
+# experiments/configs/11_fixed_minilm_hybrid.yaml
 chunking_strategy: fixed
 chunk_size: 512
 chunk_overlap: 50
@@ -49,7 +49,7 @@ The factory layer (`create_chunker`, `create_embedder`, `create_retriever`) maps
 
 ## Quantified Validation
 
-- 35 configs load and validate in under 10ms (`load_configs('src/configs')`).
+- 35 configs load and validate in under 10ms (`load_configs('experiments/configs')`).
 - `yaml.safe_load()` prevents arbitrary code execution, which matters since configs may eventually be user-supplied or CI-generated.
 - Cross-field validation catches 5 classes of invalid combos at load time: hybrid without `hybrid_alpha`, `hybrid_alpha` set on non-hybrid retriever, `dense`/`hybrid` without `embedding_model`, `bm25` with non-null `embedding_model`, and `sliding_window` without `window_size_tokens`/`step_size_tokens`.
 
@@ -59,4 +59,4 @@ Adding a new experiment dimension (a new reranker, say) requires a new YAML Lite
 
 The `{NN}_` prefix is a convention, not enforced by code. A misnamed file still loads; it just sorts differently. That's an acceptable trade-off: the naming convention is self-documenting and the test suite asserts count and structural invariants, catching accidental duplicates or missing files.
 
-The placeholder `data/ground_truth/ground_truth.json` contains `{"queries": []}`, which intentionally fails `GroundTruthSet` validation (Pydantic `min_length=1`). This forces human curation of ground truth before experiments can run. Without it, it's too easy to kick off a full sweep against an empty dataset and waste the API budget.
+The placeholder `data/ground_truth.json` contains `{"queries": []}`, which intentionally fails `GroundTruthSet` validation (Pydantic `min_length=1`). This forces human curation of ground truth before experiments can run. Without it, it's too easy to kick off a full sweep against an empty dataset and waste the API budget.
