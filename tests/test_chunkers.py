@@ -496,7 +496,7 @@ class TestEmbeddingSemanticChunker:
         MockST.assert_called_once_with("all-MiniLM-L6-v2")
 
     def test_model_is_deleted_after_use(self) -> None:
-        """del model + gc.collect() must be called (8GB M2 constraint)."""
+        """del model + gc.collect() must be called (clean benchmarking)."""
         sentences = [
             "The first long sentence is used for testing here",
             "The second long sentence is also used for testing",
