@@ -19,6 +19,7 @@ from src.factories import (
     create_llm,
     create_reranker,
     create_retriever,
+    load_configs,
 )
 from src.interfaces import BaseChunker, BaseEmbedder, BaseLLM, BaseReranker, BaseRetriever
 from src.schemas import Chunk, ChunkMetadata, ExperimentConfig
@@ -187,6 +188,15 @@ class TestCreateEmbedder:
             assert isinstance(create_embedder("minilm"), BaseEmbedder)
             assert isinstance(create_embedder("mpnet"), BaseEmbedder)
 
+    def test_openai_returns_openai_embedder(self) -> None:
+        from src.embedders.openai_embedder import OpenAIEmbedder
+        embedder = create_embedder("openai")
+        assert isinstance(embedder, OpenAIEmbedder)
+
+    def test_openai_returns_base_embedder(self) -> None:
+        embedder = create_embedder("openai")
+        assert isinstance(embedder, BaseEmbedder)
+
     def test_unknown_model_raises(self) -> None:
         with pytest.raises(ValueError, match="Unknown embedding model"):
             create_embedder("bert-large")
@@ -341,3 +351,68 @@ class TestCreateLlm:
         from src.generator import LiteLLMClient
         llm = create_llm()
         assert llm._cache is None
+
+
+# ---------------------------------------------------------------------------
+# load_configs
+# ---------------------------------------------------------------------------
+
+
+class TestLoadConfigs:
+    def _write_yaml(self, path, content: str) -> None:
+        path.write_text(content, encoding="utf-8")
+
+    def _minimal_yaml(self, chunking_strategy: str = "fixed", retriever_type: str = "bm25") -> str:
+        return f"chunking_strategy: {chunking_strategy}\nretriever_type: {retriever_type}\n"
+
+    def test_empty_dir_returns_empty_list(self, tmp_path) -> None:
+        result = load_configs(str(tmp_path))
+        assert result == []
+
+    def test_valid_yaml_loads_as_experiment_config(self, tmp_path) -> None:
+        self._write_yaml(tmp_path / "01_test.yaml", self._minimal_yaml())
+        result = load_configs(str(tmp_path))
+        assert len(result) == 1
+        assert isinstance(result[0], ExperimentConfig)
+
+    def test_multiple_yamls_all_loaded(self, tmp_path) -> None:
+        for i in range(3):
+            self._write_yaml(tmp_path / f"0{i + 1}_test.yaml", self._minimal_yaml())
+        result = load_configs(str(tmp_path))
+        assert len(result) == 3
+
+    def test_files_loaded_in_alphabetical_order(self, tmp_path) -> None:
+        self._write_yaml(tmp_path / "03_c.yaml", self._minimal_yaml("recursive"))
+        self._write_yaml(tmp_path / "01_a.yaml", self._minimal_yaml("fixed"))
+        self._write_yaml(tmp_path / "02_b.yaml", self._minimal_yaml("heading_semantic"))
+        result = load_configs(str(tmp_path))
+        strategies = [c.chunking_strategy for c in result]
+        assert strategies == ["fixed", "heading_semantic", "recursive"]
+
+    def test_invalid_yaml_raises_validation_error(self, tmp_path) -> None:
+        from pydantic import ValidationError
+        self._write_yaml(tmp_path / "bad.yaml", "chunking_strategy: unknown_strategy\nretriever_type: bm25\n")
+        with pytest.raises((ValidationError, ValueError)):
+            load_configs(str(tmp_path))
+
+    def test_non_yaml_files_ignored(self, tmp_path) -> None:
+        self._write_yaml(tmp_path / "01_valid.yaml", self._minimal_yaml())
+        (tmp_path / "readme.txt").write_text("ignore me", encoding="utf-8")
+        (tmp_path / "notes.json").write_text("{}", encoding="utf-8")
+        result = load_configs(str(tmp_path))
+        assert len(result) == 1
+
+    def test_embedding_model_null_for_bm25(self, tmp_path) -> None:
+        yaml_content = "chunking_strategy: fixed\nretriever_type: bm25\nembedding_model: null\n"
+        self._write_yaml(tmp_path / "01_bm25.yaml", yaml_content)
+        result = load_configs(str(tmp_path))
+        assert result[0].embedding_model is None
+
+    def test_hybrid_alpha_preserved(self, tmp_path) -> None:
+        yaml_content = (
+            "chunking_strategy: fixed\nretriever_type: hybrid\n"
+            "embedding_model: minilm\nhybrid_alpha: 0.7\n"
+        )
+        self._write_yaml(tmp_path / "01_hybrid.yaml", yaml_content)
+        result = load_configs(str(tmp_path))
+        assert abs(result[0].hybrid_alpha - 0.7) < 1e-9

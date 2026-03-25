@@ -56,11 +56,15 @@ def create_chunker(config: ExperimentConfig) -> BaseChunker:
 
 
 def create_embedder(model_name: str) -> BaseEmbedder:
-    """Return the embedder for the given model name ('minilm' or 'mpnet')."""
+    """Return the embedder for the given model name ('minilm', 'mpnet', or 'openai')."""
     if model_name == "minilm":
         return MiniLMEmbedder()
     if model_name == "mpnet":
         return MpnetEmbedder()
+    if model_name == "openai":
+        from src.embedders.openai_embedder import OpenAIEmbedder
+
+        return OpenAIEmbedder()
     raise ValueError(f"Unknown embedding model: {model_name!r}")
 
 
@@ -104,3 +108,19 @@ def create_llm(
     from src.generator import LiteLLMClient
 
     return LiteLLMClient(model=model, cache=cache)
+
+
+def load_configs(config_dir: str) -> list[ExperimentConfig]:
+    """Load and validate all YAML experiment configs from a directory.
+
+    Files are processed in alphabetical order (naming convention 01_, 02_, ...
+    controls execution order). Uses yaml.safe_load() — no arbitrary code execution.
+    """
+    import yaml
+    from pathlib import Path
+
+    configs: list[ExperimentConfig] = []
+    for yaml_file in sorted(Path(config_dir).glob("*.yaml")):
+        data = yaml.safe_load(yaml_file.read_text(encoding="utf-8"))
+        configs.append(ExperimentConfig.model_validate(data))
+    return configs
