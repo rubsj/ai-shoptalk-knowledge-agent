@@ -47,7 +47,7 @@ class EmbeddingSemanticChunker(BaseChunker):
         5. Mark a boundary after sentence[i] if similarity[i] < breakpoint_threshold.
         6. Group sentences into chunks at boundaries.
         7. Merge chunks smaller than min_chunk_size with their neighbour.
-        8. del model + gc.collect() (8GB M2 RAM constraint — RULE 4 in CLAUDE.md).
+        8. del model + gc.collect() (clean benchmarking — pooling preferred per PRD Decision 5).
 
     Java parallel: like a Lucene Analyzer that segments text using semantic
     clustering rather than character counts.
@@ -107,7 +107,7 @@ class EmbeddingSemanticChunker(BaseChunker):
         # Step 7: merge small chunks
         merged_texts = self._merge_small_chunks(grouped_texts)
 
-        # Step 8: free model memory (8GB M2 constraint)
+        # Step 8: free model memory (clean benchmarking)
         del model
         gc.collect()
 

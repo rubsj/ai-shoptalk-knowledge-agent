@@ -15,7 +15,7 @@
 | **Well-structured headings** | Tests heading-semantic chunker. Papers with clear Abstract → Methods → Results → Conclusion structure produce meaningful heading-based boundaries. |
 | **Content developer knows deeply** | Ground truth requires distinguishing grade-3 (directly answers) from grade-2 (same section, contextually relevant). This judgment requires domain expertise. |
 | **Varied internal structure** | Mix of papers with tables, equations, prose-heavy sections, and lists — exercises all chunking strategies differently. |
-| **~50-150 total pages** | Produces 500+ chunks across all strategies. Large enough for meaningful retrieval experiments, small enough for 8GB M2 memory budget. |
+| **~50-150 total pages** | Produces 500+ chunks across all strategies. Large enough for meaningful retrieval experiments, manageable size for efficient experiment iteration. |
 
 ---
 
