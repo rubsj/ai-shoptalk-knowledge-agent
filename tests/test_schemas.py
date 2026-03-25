@@ -22,10 +22,16 @@ from src.schemas import (
     EmbeddingModel,
     ExperimentConfig,
     ExperimentResult,
+    GeneratedQAPair,
+    GroundTruthChunk,
+    GroundTruthQuery,
+    GroundTruthSet,
+    JudgeResult,
     JudgeScores,
     PageInfo,
     PerformanceMetrics,
     QAResponse,
+    QueryResult,
     RerankerType,
     RetrievalMetrics,
     RetrievalResult,
@@ -97,12 +103,39 @@ def _make_judge_scores() -> JudgeScores:
     )
 
 
-def _make_performance_metrics() -> PerformanceMetrics:
+def _make_performance_metrics(embedding_source: str = "local") -> PerformanceMetrics:
     return PerformanceMetrics(
         ingestion_time_seconds=5.2,
         avg_query_latency_ms=120.0,
         index_size_bytes=1024 * 1024,
         peak_memory_mb=512.0,
+        embedding_source=embedding_source,
+        cost_estimate_usd=0.0,
+    )
+
+
+def _make_judge_result(relevance: int = 4) -> JudgeResult:
+    return JudgeResult(
+        relevance=relevance,
+        accuracy=4,
+        completeness=3,
+        conciseness=4,
+        citation_quality=3,
+    )
+
+
+def _make_retrieval_metrics_obj() -> RetrievalMetrics:
+    return RetrievalMetrics(recall_at_5=0.8, precision_at_5=0.7, mrr=0.6, ndcg_at_5=0.75)
+
+
+def _make_query_result(query_id: str = "q1") -> QueryResult:
+    return QueryResult(
+        query_id=query_id,
+        question="What is attention?",
+        answer="Attention is a mechanism [1].",
+        retrieved_chunk_ids=["chunk-1", "chunk-2"],
+        retrieval_scores=_make_retrieval_metrics_obj(),
+        latency_ms=123.4,
     )
 
 
@@ -460,6 +493,16 @@ class TestPerformanceMetrics:
         p = _make_performance_metrics()
         assert p.ingestion_time_seconds >= 0
         assert p.index_size_bytes >= 0
+        assert p.embedding_source == "local"
+        assert p.cost_estimate_usd == 0.0
+
+    def test_api_embedding_source(self):
+        p = _make_performance_metrics(embedding_source="api")
+        assert p.embedding_source == "api"
+
+    def test_none_embedding_source_for_bm25(self):
+        p = _make_performance_metrics(embedding_source="none")
+        assert p.embedding_source == "none"
 
     def test_negative_latency_raises(self):
         with pytest.raises(ValidationError, match="greater than or equal to 0"):
@@ -468,6 +511,18 @@ class TestPerformanceMetrics:
                 avg_query_latency_ms=100.0,
                 index_size_bytes=1024,
                 peak_memory_mb=256.0,
+                embedding_source="local",
+            )
+
+    def test_negative_cost_raises(self):
+        with pytest.raises(ValidationError, match="greater than or equal to 0"):
+            PerformanceMetrics(
+                ingestion_time_seconds=1.0,
+                avg_query_latency_ms=100.0,
+                index_size_bytes=1024,
+                peak_memory_mb=256.0,
+                embedding_source="api",
+                cost_estimate_usd=-0.01,
             )
 
 
@@ -498,6 +553,17 @@ class TestExperimentResult:
         assert result.judge_scores is not None
         assert result.judge_scores.overall_average == 3.7
 
+    def test_with_query_results(self):
+        result = ExperimentResult(
+            experiment_id="exp-003",
+            config=_make_experiment_config(),
+            metrics=_make_retrieval_metrics(),
+            performance=_make_performance_metrics(),
+            query_results=[_make_query_result("q1"), _make_query_result("q2")],
+        )
+        assert len(result.query_results) == 2
+        assert result.query_results[0].query_id == "q1"
+
     def test_empty_experiment_id_raises(self):
         with pytest.raises(ValidationError, match="at least 1 character"):
             ExperimentResult(
@@ -506,3 +572,198 @@ class TestExperimentResult:
                 metrics=_make_retrieval_metrics(),
                 performance=_make_performance_metrics(),
             )
+
+
+# ---------------------------------------------------------------------------
+# JudgeResult
+# ---------------------------------------------------------------------------
+
+
+class TestJudgeResult:
+    def test_happy_path(self):
+        r = _make_judge_result()
+        assert r.relevance == 4
+        assert r.citation_quality == 3
+
+    def test_score_below_1_raises(self):
+        with pytest.raises(ValidationError, match="greater than or equal to 1"):
+            JudgeResult(relevance=0, accuracy=4, completeness=4, conciseness=4, citation_quality=4)
+
+    def test_score_above_5_raises(self):
+        with pytest.raises(ValidationError, match="less than or equal to 5"):
+            JudgeResult(relevance=6, accuracy=4, completeness=4, conciseness=4, citation_quality=4)
+
+    def test_all_axes_stored(self):
+        r = JudgeResult(relevance=5, accuracy=3, completeness=4, conciseness=2, citation_quality=1)
+        assert r.relevance == 5
+        assert r.accuracy == 3
+        assert r.completeness == 4
+        assert r.conciseness == 2
+        assert r.citation_quality == 1
+
+
+# ---------------------------------------------------------------------------
+# QueryResult
+# ---------------------------------------------------------------------------
+
+
+class TestQueryResult:
+    def test_happy_path_without_judge(self):
+        qr = _make_query_result()
+        assert qr.query_id == "q1"
+        assert qr.judge_result is None
+        assert len(qr.retrieved_chunk_ids) == 2
+        assert qr.latency_ms == 123.4
+
+    def test_happy_path_with_judge(self):
+        qr = QueryResult(
+            query_id="q2",
+            question="What is BERT?",
+            answer="BERT is a language model [1].",
+            retrieved_chunk_ids=["c1"],
+            retrieval_scores=_make_retrieval_metrics_obj(),
+            judge_result=_make_judge_result(),
+            latency_ms=200.0,
+        )
+        assert qr.judge_result is not None
+        assert qr.judge_result.relevance == 4
+
+    def test_negative_latency_raises(self):
+        with pytest.raises(ValidationError, match="greater than or equal to 0"):
+            QueryResult(
+                query_id="q1",
+                question="q",
+                answer="a",
+                retrieval_scores=_make_retrieval_metrics_obj(),
+                latency_ms=-1.0,
+            )
+
+    def test_empty_query_id_raises(self):
+        with pytest.raises(ValidationError, match="at least 1 character"):
+            QueryResult(
+                query_id="",
+                question="q",
+                answer="a",
+                retrieval_scores=_make_retrieval_metrics_obj(),
+                latency_ms=10.0,
+            )
+
+    def test_retrieved_chunk_ids_default_empty(self):
+        qr = QueryResult(
+            query_id="q1",
+            question="q",
+            answer="a",
+            retrieval_scores=_make_retrieval_metrics_obj(),
+            latency_ms=50.0,
+        )
+        assert qr.retrieved_chunk_ids == []
+
+
+# ---------------------------------------------------------------------------
+# GroundTruthChunk
+# ---------------------------------------------------------------------------
+
+
+class TestGroundTruthChunk:
+    def test_happy_path(self):
+        gtc = GroundTruthChunk(chunk_id="c1", relevance_grade=3)
+        assert gtc.chunk_id == "c1"
+        assert gtc.relevance_grade == 3
+
+    @pytest.mark.parametrize("grade", [0, 1, 2, 3])
+    def test_all_valid_grades_accepted(self, grade: int):
+        gtc = GroundTruthChunk(chunk_id="c1", relevance_grade=grade)
+        assert gtc.relevance_grade == grade
+
+    def test_grade_below_0_raises(self):
+        with pytest.raises(ValidationError, match="greater than or equal to 0"):
+            GroundTruthChunk(chunk_id="c1", relevance_grade=-1)
+
+    def test_grade_above_3_raises(self):
+        with pytest.raises(ValidationError, match="less than or equal to 3"):
+            GroundTruthChunk(chunk_id="c1", relevance_grade=4)
+
+    def test_empty_chunk_id_raises(self):
+        with pytest.raises(ValidationError, match="at least 1 character"):
+            GroundTruthChunk(chunk_id="", relevance_grade=1)
+
+
+# ---------------------------------------------------------------------------
+# GroundTruthQuery
+# ---------------------------------------------------------------------------
+
+
+class TestGroundTruthQuery:
+    def test_happy_path(self):
+        gtq = GroundTruthQuery(
+            query_id="q1",
+            question="What is attention?",
+            relevant_chunks=[GroundTruthChunk(chunk_id="c1", relevance_grade=3)],
+        )
+        assert gtq.query_id == "q1"
+        assert len(gtq.relevant_chunks) == 1
+
+    def test_empty_relevant_chunks_raises(self):
+        with pytest.raises(ValidationError):
+            GroundTruthQuery(query_id="q1", question="q?", relevant_chunks=[])
+
+    def test_multiple_grades_in_one_query(self):
+        gtq = GroundTruthQuery(
+            query_id="q1",
+            question="q?",
+            relevant_chunks=[
+                GroundTruthChunk(chunk_id="c1", relevance_grade=3),
+                GroundTruthChunk(chunk_id="c2", relevance_grade=2),
+                GroundTruthChunk(chunk_id="c3", relevance_grade=1),
+            ],
+        )
+        assert len(gtq.relevant_chunks) == 3
+
+
+# ---------------------------------------------------------------------------
+# GroundTruthSet
+# ---------------------------------------------------------------------------
+
+
+class TestGroundTruthSet:
+    def test_happy_path(self):
+        gts = GroundTruthSet(
+            queries=[
+                GroundTruthQuery(
+                    query_id="q1",
+                    question="q?",
+                    relevant_chunks=[GroundTruthChunk(chunk_id="c1", relevance_grade=3)],
+                )
+            ]
+        )
+        assert len(gts.queries) == 1
+
+    def test_empty_queries_raises(self):
+        with pytest.raises(ValidationError):
+            GroundTruthSet(queries=[])
+
+
+# ---------------------------------------------------------------------------
+# GeneratedQAPair
+# ---------------------------------------------------------------------------
+
+
+class TestGeneratedQAPair:
+    def test_happy_path(self):
+        pair = GeneratedQAPair(
+            question="What is attention?",
+            relevant_chunks=[GroundTruthChunk(chunk_id="c1", relevance_grade=3)],
+        )
+        assert pair.question == "What is attention?"
+        assert pair.relevant_chunks[0].relevance_grade == 3
+
+    def test_empty_question_raises(self):
+        with pytest.raises(ValidationError, match="at least 1 character"):
+            GeneratedQAPair(
+                question="",
+                relevant_chunks=[GroundTruthChunk(chunk_id="c1", relevance_grade=3)],
+            )
+
+    def test_empty_relevant_chunks_raises(self):
+        with pytest.raises(ValidationError):
+            GeneratedQAPair(question="q?", relevant_chunks=[])

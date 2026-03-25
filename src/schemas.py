@@ -274,6 +274,16 @@ class JudgeScores(BaseModel):
     overall_average: float = Field(..., ge=1.0, le=5.0, description="Mean of the 5 axis scores")
 
 
+class JudgeResult(BaseModel):
+    """Single answer score from 5-axis LLM-as-Judge — Instructor response model."""
+
+    relevance: int = Field(..., ge=1, le=5, description="Does the answer address the question? (1-5)")
+    accuracy: int = Field(..., ge=1, le=5, description="Are all claims verifiable in the context? (1-5)")
+    completeness: int = Field(..., ge=1, le=5, description="Is the answer thorough? (1-5)")
+    conciseness: int = Field(..., ge=1, le=5, description="Is the answer appropriately brief? (1-5)")
+    citation_quality: int = Field(..., ge=1, le=5, description="Are [N] sources properly attributed? (1-5)")
+
+
 class PerformanceMetrics(BaseModel):
     """System perf metrics from an experiment run."""
 
@@ -281,6 +291,20 @@ class PerformanceMetrics(BaseModel):
     avg_query_latency_ms: float = Field(..., ge=0.0, description="Average end-to-end query latency in milliseconds")
     index_size_bytes: int = Field(..., ge=0, description="FAISS index size on disk in bytes")
     peak_memory_mb: float = Field(..., ge=0.0, description="Peak RSS memory during the run in megabytes")
+    embedding_source: str = Field(..., description="'local', 'api', or 'none' (BM25-only configs)")
+    cost_estimate_usd: float = Field(default=0.0, ge=0.0, description="Estimated API cost in USD (0.0 for local/BM25)")
+
+
+class QueryResult(BaseModel):
+    """Per-query breakdown — enables difficulty analysis and per-axis aggregation."""
+
+    query_id: str = Field(..., min_length=1, description="Matches GroundTruthQuery.query_id")
+    question: str = Field(..., min_length=1, description="The evaluation question")
+    answer: str = Field(..., min_length=1, description="LLM-generated answer for this query")
+    retrieved_chunk_ids: list[str] = Field(default_factory=list, description="IDs of top-K retrieved chunks")
+    retrieval_scores: RetrievalMetrics = Field(..., description="Per-query retrieval metrics (not averaged)")
+    judge_result: JudgeResult | None = Field(default=None, description="Per-query judge scores (None if judge skipped)")
+    latency_ms: float = Field(..., ge=0.0, description="End-to-end latency for this query in milliseconds")
 
 
 class ExperimentResult(BaseModel):
@@ -296,6 +320,44 @@ class ExperimentResult(BaseModel):
         description="LLM-as-Judge scores (None if judge not run for this config)",
     )
     performance: PerformanceMetrics = Field(..., description="System performance metrics")
-    # list[dict] for per-query QA pairs — schema varies per query, not worth
-    # over-engineering on Day 1
-    query_results: list[dict] = Field(default_factory=list, description="Per-query QA results for inspection")
+    query_results: list[QueryResult] = Field(default_factory=list, description="Per-query QA results for difficulty analysis")
+
+
+# ---------------------------------------------------------------------------
+# Ground truth models
+# ---------------------------------------------------------------------------
+
+
+class GroundTruthChunk(BaseModel):
+    """Single chunk relevance judgment within a ground truth query."""
+
+    chunk_id: str = Field(..., min_length=1, description="ID of the relevant Chunk")
+    relevance_grade: int = Field(
+        ..., ge=0, le=3,
+        description="0=irrelevant, 1=same doc, 2=same section, 3=gold (directly answers)",
+    )
+
+
+class GroundTruthQuery(BaseModel):
+    """One ground truth query with its relevant chunks and grades."""
+
+    query_id: str = Field(..., min_length=1, description="Unique query identifier")
+    question: str = Field(..., min_length=1, description="The evaluation question")
+    relevant_chunks: list[GroundTruthChunk] = Field(
+        ..., min_length=1, description="Chunks with relevance grades (grade >= 1)"
+    )
+
+
+class GroundTruthSet(BaseModel):
+    """Complete ground truth dataset for evaluation."""
+
+    queries: list[GroundTruthQuery] = Field(..., min_length=1, description="Curated evaluation queries")
+
+
+class GeneratedQAPair(BaseModel):
+    """Instructor response model for ground truth generation — one QA pair per chunk batch."""
+
+    question: str = Field(..., min_length=1, description="Question answerable by 1-3 chunks in the batch")
+    relevant_chunks: list[GroundTruthChunk] = Field(
+        ..., min_length=1, description="Chunks with grades (only grade >= 1 included)"
+    )
