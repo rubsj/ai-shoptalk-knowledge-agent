@@ -1,0 +1,10 @@
+chunking_strategy: sliding_window
+chunk_size: 512
+chunk_overlap: 50
+top_k: 5
+use_reranking: false
+window_size_tokens: 128
+step_size_tokens: 64
+embedding_model: mpnet
+retriever_type: hybrid
+hybrid_alpha: 0.7

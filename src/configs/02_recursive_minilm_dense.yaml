@@ -1,0 +1,7 @@
+chunking_strategy: recursive
+chunk_size: 512
+chunk_overlap: 50
+top_k: 5
+use_reranking: false
+embedding_model: minilm
+retriever_type: dense

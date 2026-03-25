@@ -1,0 +1,6 @@
+chunking_strategy: embedding_semantic
+chunk_size: 512
+chunk_overlap: 50
+top_k: 5
+use_reranking: false
+retriever_type: bm25
