@@ -8,9 +8,7 @@ Config params: chunk_size (default 512), chunk_overlap (default 50).
 
 from __future__ import annotations
 
-import uuid
-
-from src.chunkers._utils import find_page_number
+from src.chunkers._utils import find_page_number, make_chunk_id
 from src.interfaces import BaseChunker
 from src.schemas import Chunk, ChunkMetadata, Document
 
@@ -64,7 +62,7 @@ class FixedSizeChunker(BaseChunker):
                 page_number = find_page_number(document, start)
                 chunks.append(
                     Chunk(
-                        id=str(uuid.uuid4()),
+                        id=make_chunk_id(document.id, start, end),
                         content=chunk_text,
                         metadata=ChunkMetadata(
                             document_id=document.id,

@@ -1,11 +1,24 @@
 """Shared utilities for all chunking strategies.
 
-Extracted here so each chunker doesn't reimplement page-number lookup.
+Extracted here so each chunker doesn't reimplement page-number lookup or chunk ID generation.
 """
 
 from __future__ import annotations
 
+import hashlib
+
 from src.schemas import Document
+
+
+def make_chunk_id(document_id: str, start_char: int, end_char: int) -> str:
+    """Return a deterministic 16-char hex ID for a chunk position.
+
+    Same document + same char offsets → same ID across runs.
+    WHY: ground truth stores chunk IDs; non-deterministic IDs (uuid4) would
+    break metric computation every re-run.
+    """
+    key = f"{document_id}:{start_char}:{end_char}"
+    return hashlib.md5(key.encode()).hexdigest()[:16]
 
 
 def find_page_number(document: Document, char_offset: int) -> int:

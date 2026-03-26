@@ -11,9 +11,8 @@ Best for well-structured academic papers with clear section hierarchy.
 from __future__ import annotations
 
 import re
-import uuid
 
-from src.chunkers._utils import find_page_number
+from src.chunkers._utils import find_page_number, make_chunk_id
 from src.interfaces import BaseChunker
 from src.schemas import Chunk, ChunkMetadata, Document
 
@@ -237,7 +236,7 @@ class HeadingSemanticChunker(BaseChunker):
         """Helper to construct a Chunk with consistent metadata."""
         page_number = find_page_number(document, start)
         return Chunk(
-            id=str(uuid.uuid4()),
+            id=make_chunk_id(document.id, start, end),
             content=text,
             metadata=ChunkMetadata(
                 document_id=document.id,

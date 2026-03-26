@@ -199,12 +199,28 @@ class TestDocument:
         doc = _make_document()
         assert doc.content
         assert len(doc.pages) == 3
-        assert doc.id  # uuid4 auto-generated
+        assert doc.id  # deterministic from source
 
-    def test_id_auto_generated(self):
+    def test_id_deterministic_from_source(self):
+        # Same source → same ID (deterministic, required for ground truth stability)
         doc1 = _make_document()
         doc2 = _make_document()
-        assert doc1.id != doc2.id
+        assert doc1.id == doc2.id
+        assert len(doc1.id) == 16  # md5 hex truncated to 16 chars
+
+    def test_id_differs_for_different_sources(self):
+        pages = [_make_page_info(0, "content")]
+        doc_a = Document(
+            content="content",
+            metadata=DocumentMetadata(source="a.pdf", page_count=1),
+            pages=pages,
+        )
+        doc_b = Document(
+            content="content",
+            metadata=DocumentMetadata(source="b.pdf", page_count=1),
+            pages=pages,
+        )
+        assert doc_a.id != doc_b.id
 
     def test_empty_content_raises(self):
         pages = [_make_page_info()]
