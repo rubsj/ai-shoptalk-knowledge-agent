@@ -1,0 +1,1032 @@
+[
+  {
+    "query_id": "q01",
+    "question": "Who were the key contributors to the development of the Transformer model according to the paper 'Attention Is All You Need'?",
+    "relevant_sections": [
+      {
+        "chunk_id": "d7852b548ebfa870",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 506,
+        "page_number": 0,
+        "text_preview": "Provided proper attribution is provided, Google hereby grants permission to\nreproduce the tables and figures in this paper solely for use in journalis",
+        "suggested_grade": 2
+      },
+      {
+        "chunk_id": "5e11720738c47a09",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 549,
+        "page_number": 0,
+        "text_preview": "lar to the encoder, we employ residual connectionsaround each of the sub-layers, followed by layer normalization. We also modify the self-attention\nsu",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "b52f52f193810497",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 494,
+        "page_number": 0,
+        "text_preview": "d and implemented the first Transformer models andhas been crucially involved in every aspect of this work. Noam proposed scaled dot-product attention",
+        "suggested_grade": 3
+      }
+    ]
+  },
+  {
+    "query_id": "q02",
+    "question": "What are the main components of the Transformer model's architecture?",
+    "relevant_sections": [
+      {
+        "chunk_id": "0f3ef7ad2e2cd98a",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 552,
+        "page_number": 0,
+        "text_preview": "ish-German dataset consisting of about 4.5 millionsentence pairs. Sentences were encoded using byte-pair encoding [3], which has a shared sourcetarget",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "971431718592b851",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 518,
+        "page_number": 0,
+        "text_preview": "ig models, we averaged the last 20 checkpoints. Weused beam search with a beam size of 4 and length penalty α = 0.6 [38]. These hyperparameters\nwere c",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "5d097127f7859711",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 300,
+        "page_number": 0,
+        "text_preview": "e processed through \"Linear\" and \"Softmax\" layers. - **Arrows**: There are directional arrows indicating the flow of data through the model, from inpu",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q03",
+    "question": "What is the structure of the Transformer encoder and decoder stacks?",
+    "relevant_sections": [
+      {
+        "chunk_id": "c3eab47f45caa994",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 514,
+        "page_number": 0,
+        "text_preview": "pectively.\n3.1\nEncoder and Decoder Stacks\nEncoder:The encoder is composed of a stack of N = 6 identical layers. Each layer has two\nsub-layers. The fir",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "fb117fb9cf6c1fc5",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 505,
+        "page_number": 0,
+        "text_preview": " sequence lengths longer than the ones encounteredduring training.\n4\nWhy Self-Attention\nIn this section we compare various aspects of self-attention l",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "5e11720738c47a09",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 549,
+        "page_number": 0,
+        "text_preview": "lar to the encoder, we employ residual connectionsaround each of the sub-layers, followed by layer normalization. We also modify the self-attention\nsu",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q04",
+    "question": "How is multi-head attention implemented in transformer models?",
+    "relevant_sections": [
+      {
+        "chunk_id": "9d5c817a60e648aa",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 474,
+        "page_number": 0,
+        "text_preview": "ues of dk [3]. We suspect that for large values ofdk, the dot products grow large in magnitude, pushing the softmax function into regions where it has",
+        "suggested_grade": 2
+      },
+      {
+        "chunk_id": "58091ae497e7cc4f",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 471,
+        "page_number": 0,
+        "text_preview": "s, keys and values h times with different, learnedlinear projections to dk, dk and dv dimensions, respectively. On each of these projected versions of",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "3cfb727da0a71de3",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 551,
+        "page_number": 0,
+        "text_preview": " q · k = Pdk\ni=1 qiki, has mean 0 and variance dk.output values. These are concatenated and once again projected, resulting in the final values, as\nde",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "8d14b2b2b194142d",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 544,
+        "page_number": 0,
+        "text_preview": "slation. arXiv preprint arXiv:1508.04025, 2015.\n11[25] Mitchell P Marcus, Mary Ann Marcinkiewicz, and Beatrice Santorini. Building a large annotated\nc",
+        "suggested_grade": 3
+      }
+    ]
+  },
+  {
+    "query_id": "q05",
+    "question": "What are positional encodings and how are they used in models without recurrence and convolution?",
+    "relevant_sections": [
+      {
+        "chunk_id": "f2a319e0d6b50d70",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 485,
+        "page_number": 0,
+        "text_preview": "(logk(n))\nSelf-Attention (restricted)\nO(r · n · d)O(1)\nO(n/r)\n3.5\nPositional Encoding\nSince our model contains no recurrence and no convolution, in or",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "971431718592b851",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 518,
+        "page_number": 0,
+        "text_preview": "ig models, we averaged the last 20 checkpoints. Weused beam search with a beam size of 4 and length penalty α = 0.6 [38]. These hyperparameters\nwere c",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "b608456f2f704c07",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 550,
+        "page_number": 0,
+        "text_preview": " a geometric progression from 2π to 10000 · 2π. Wechose this function because we hypothesized it would allow the model to easily learn to attend by\nre",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q06",
+    "question": "What is the performance of the Transformer models compared to previous state-of-the-art models on the WMT 2014 translation tests?",
+    "relevant_sections": [
+      {
+        "chunk_id": "42a7733be718d03b",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 542,
+        "page_number": 0,
+        "text_preview": " memory. Neural computation,\n9(8):1735–1780, 1997.[14] Zhongqiang Huang and Mary Harper. Self-training PCFG grammars with latent annotations\nacross la",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "c15ea00c8abd9f3d",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 556,
+        "page_number": 0,
+        "text_preview": "20\nDeep-Att + PosUnk Ensemble [39]\n40.4\n8.0 · 1020GNMT + RL Ensemble [38]\n26.30\n41.16\n1.8 · 1020\n1.1 · 1021\nConvS2S Ensemble [9]\n26.36\n41.29\n7.7 · 101",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "46052ca391eff9c6",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 465,
+        "page_number": 0,
+        "text_preview": " For the base model, we use a rate of\nPdrop = 0.1.Label Smoothing\nDuring training, we employed label smoothing of value ϵls = 0.1 [36]. This\nhurts per",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q07",
+    "question": "What BLEU score did the big Transformer model achieve on the WMT 2014 English-to-French translation task and how does it compare to previous models?",
+    "relevant_sections": [
+      {
+        "chunk_id": "691b60a79740f11d",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 466,
+        "page_number": 0,
+        "text_preview": "rted models (including ensembles) by more than 2.0BLEU, establishing a new state-of-the-art BLEU score of 28.4. The configuration of this model is\nlis",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "a50157dbedd2cb1d",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 483,
+        "page_number": 0,
+        "text_preview": "task, our big model achieves a BLEU score of 41.0,outperforming all of the previously published single models, at less than 1/4 the training cost of t",
+        "suggested_grade": 3
+      }
+    ]
+  },
+  {
+    "query_id": "q08",
+    "question": "How does the Transformer model perform in English constituency parsing compared to other models?",
+    "relevant_sections": [
+      {
+        "chunk_id": "066d42e9d397c2c0",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 557,
+        "page_number": 0,
+        "text_preview": "at the attentions are very sharp for this word.\n14The\nLaw\nwill\nnever\nbe\nperfect\n,\nbut\nits\napplication\nshould\nbe\njust\n-\nthis\nis\nwhat\nwe\nare\nmissing\n,\ni",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "2718b3398e1c6d77",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 427,
+        "page_number": 0,
+        "text_preview": ".3\nHuang & Harper (2009) [14]\nsemi-supervised\n91.3McClosky et al. (2006) [26]\nsemi-supervised\n92.1\nVinyals & Kaiser el al. (2014) [37]\nsemi-supervised",
+        "suggested_grade": 2
+      },
+      {
+        "chunk_id": "b31e741a2f254140",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 469,
+        "page_number": 0,
+        "text_preview": "for both WSJ only and the semi-supervised setting.Our results in Table 4 show that despite the lack of task-specific tuning our model performs surpris",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q09",
+    "question": "What are some notable publications involving neural machine translation or language modeling?",
+    "relevant_sections": [
+      {
+        "chunk_id": "eaad1c9afb969ebd",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 524,
+        "page_number": 0,
+        "text_preview": "ve memory replace attention? In Advances in NeuralInformation Processing Systems, (NIPS), 2016.\n[17] Łukasz Kaiser and Ilya Sutskever. Neural GPUs lea",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "8d14b2b2b194142d",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 544,
+        "page_number": 0,
+        "text_preview": "slation. arXiv preprint arXiv:1508.04025, 2015.\n11[25] Mitchell P Marcus, Mary Ann Marcinkiewicz, and Beatrice Santorini. Building a large annotated\nc",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "507239868750d4ee",
+        "document_id": "1bab79fa369501ae",
+        "source": "data/pdfs/attention-is-all-you-need.pdf",
+        "start_char": 0,
+        "end_char": 559,
+        "page_number": 0,
+        "text_preview": "erts\nlayer. arXiv preprint arXiv:1701.06538, 2017.[33] Nitish Srivastava, Geoffrey E Hinton, Alex Krizhevsky, Ilya Sutskever, and Ruslan Salakhutdinov",
+        "suggested_grade": 3
+      }
+    ]
+  },
+  {
+    "query_id": "q10",
+    "question": "What is BERT and how does it differ from other language representation models?",
+    "relevant_sections": [
+      {
+        "chunk_id": "ba8ca80b5b65dc1c",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 343,
+        "page_number": 0,
+        "text_preview": "BERT: Pre-training of Deep Bidirectional Transformers for\nLanguage Understanding\nJacob Devlin\nMing-Wei Chang\nKenton Lee\nKristina Toutanova\nGoogle AI L",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "db92656babedc5da",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 495,
+        "page_number": 0,
+        "text_preview": "on\nmodel for natural language inference. In EMNLP.Jeffrey Pennington, Richard Socher, and Christopher D. Manning. 2014. Glove: Global vectors for\nword",
+        "suggested_grade": 3
+      }
+    ]
+  },
+  {
+    "query_id": "q11",
+    "question": "What is the major limitation of fine-tuning approaches in pre-trained language models like OpenAI GPT?",
+    "relevant_sections": [
+      {
+        "chunk_id": "868a62faf64e6e30",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 491,
+        "page_number": 0,
+        "text_preview": " models to learn\ngeneral language representations.We argue that current techniques restrict the\npower of the pre-trained representations, especially f",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "78cc49891e9e1caf",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 469,
+        "page_number": 0,
+        "text_preview": "t tasks. It includes four subfigures (a, b, c, d):1. **Subfigure (a)**: \n - Title: \"Sentence Pair Classification Tasks: MNLI, QQP, QNLI, STS-B, MRPC, ",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q12",
+    "question": "What are the different approaches to pre-trained language representations mentioned?",
+    "relevant_sections": [
+      {
+        "chunk_id": "965d7058986943b8",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 519,
+        "page_number": 0,
+        "text_preview": "I when\ntrained on 1M steps compared to 500k steps.2. Question: Does MLM pre-training converge\nslower than LTR pre-training, since only 15%\nof words ar",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "8178a71b124b06ce",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 557,
+        "page_number": 0,
+        "text_preview": "e\ntraining data once and then run many experimentswith cheaper models on top of this representation.\nIn this section, we compare the two approaches\nby",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "c2e643a797466430",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 482,
+        "page_number": 0,
+        "text_preview": "mbeddings (Kiros et al., 2015; Logeswaran and Lee,2018) or paragraph embeddings (Le and Mikolov,\n2014).\nTo train sentence representations, prior\nwork ",
+        "suggested_grade": 2
+      },
+      {
+        "chunk_id": "0dbb4139e20581cf",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 494,
+        "page_number": 0,
+        "text_preview": "6).\nELMo and its predecessor (Peters et al., 2017,2018a) generalize traditional word embedding research along a different dimension. They extract\ncont",
+        "suggested_grade": 1
+      }
+    ]
+  },
+  {
+    "query_id": "q13",
+    "question": "What is the difference between BERT's and OpenAI GPT's Transformer attention mechanisms?",
+    "relevant_sections": [
+      {
+        "chunk_id": "749789df37656017",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 544,
+        "page_number": 0,
+        "text_preview": "stic.\nWe use a simple approach to extend the SQuADv1.1 BERT model for this task. We treat questions that do not have an answer as having an answer spa",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "5c610c9623162d52",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 510,
+        "page_number": 0,
+        "text_preview": " BERT uses a bidirectional Transformer. OpenAI GPTuses a left-to-right Transformer. ELMo uses the concatenation of independently trained left-to-right",
+        "suggested_grade": 1
+      }
+    ]
+  },
+  {
+    "query_id": "q14",
+    "question": "How does BERT handle sentence pair differentiation during input representation?",
+    "relevant_sections": [
+      {
+        "chunk_id": "941b4d0e6c7dda5a",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 479,
+        "page_number": 0,
+        "text_preview": " single sentence or two sentences packed together.We use WordPiece embeddings (Wu et al.,\n2016) with a 30,000 token vocabulary. The first\ntoken of eve",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "8eddd4f7cb01fb2e",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 546,
+        "page_number": 0,
+        "text_preview": "cific\nmodels are formed by incorporating BERT withone additional output layer, so a minimal number of parameters need to be learned from scratch.\nAmon",
+        "suggested_grade": 3
+      }
+    ]
+  },
+  {
+    "query_id": "q15",
+    "question": "What datasets are used in BERT's pre-training corpus?",
+    "relevant_sections": [
+      {
+        "chunk_id": "69b3965efa05fcb7",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 526,
+        "page_number": 0,
+        "text_preview": "rning objectives used in Jernite et al. (2017) andLogeswaran and Lee (2018). However, in prior\nwork, only sentence embeddings are transferred to\ndown-",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "79266c82d6ce0e4e",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 531,
+        "page_number": 0,
+        "text_preview": "\nWe\nuse Adam with learning rate of 1e-4, β1 = 0.9,β2 = 0.999, L2 weight decay of 0.01, learning\nrate warmup over the first 10,000 steps, and linear\nde",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q16",
+    "question": "What improvements in GLUE tasks were achieved by BERT models compared to previous state-of-the-art systems?",
+    "relevant_sections": [
+      {
+        "chunk_id": "7329f46aef86b2c5",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 465,
+        "page_number": 0,
+        "text_preview": " are flight ##less birds [SEP]\nLabel = NotNext\nA.2Pre-training Procedure\nTo generate each training input sequence, we sample two spans of text from th",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "15404fc220f59a4e",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 547,
+        "page_number": 0,
+        "text_preview": ".\nErik F Tjong Kim Sang and Fien De Meulder.\n2003.Introduction to the conll-2003 shared task:\nLanguage-independent named entity recognition. In\nCoNLL.",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "46d048f9c55f4eab",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 516,
+        "page_number": 0,
+        "text_preview": "attention masking. For the largest and most widelyreported GLUE task, MNLI, BERT obtains a 4.6%\nabsolute accuracy improvement. On the official\nGLUE le",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q17",
+    "question": "What are the results of BERT on the SQuAD 1.1 and SQuAD 2.0 datasets?",
+    "relevant_sections": [
+      {
+        "chunk_id": "2f959dfe7fd0e877",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 536,
+        "page_number": 0,
+        "text_preview": "stem\nhas improved substantially after publication.System\nDev\nTest\nEM\nF1\nEM\nF1\nTop Leaderboard Systems (Dec 10th, 2018)\nHuman\n-\n-\n82.3 91.2\n#1 Ensemble",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "6bf0cfbcf1f062d7",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 500,
+        "page_number": 0,
+        "text_preview": "93.2\nTable 2:\nSQuAD 1.1 results. The BERT ensembleis 7x systems which use different pre-training checkpoints and fine-tuning seeds.\nSystem\nDev\nTest\nEM",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "ba2782394e5481e8",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 390,
+        "page_number": 0,
+        "text_preview": " entries that\nuse BERT as one of their components.tuning data, we only lose 0.1-0.4 F1, still outperforming all existing systems by a wide margin.12\n4",
+        "suggested_grade": 2
+      },
+      {
+        "chunk_id": "749789df37656017",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 544,
+        "page_number": 0,
+        "text_preview": "stic.\nWe use a simple approach to extend the SQuADv1.1 BERT model for this task. We treat questions that do not have an answer as having an answer spa",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q18",
+    "question": "How does the removal of the Next Sentence Prediction (NSP) task affect BERT's performance on various tasks?",
+    "relevant_sections": [
+      {
+        "chunk_id": "8eddd4f7cb01fb2e",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 546,
+        "page_number": 0,
+        "text_preview": "cific\nmodels are formed by incorporating BERT withone additional output layer, so a minimal number of parameters need to be learned from scratch.\nAmon",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "8413cc9e70ff6cc0",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 558,
+        "page_number": 0,
+        "text_preview": "includes a B-PER tag for named entity recognition.Each subfigure visually represents how BERT is adapted for different types of natural language proce",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q19",
+    "question": "What is the feature-based approach in BERT and its advantages?",
+    "relevant_sections": [
+      {
+        "chunk_id": "4e7ed18e1c27b5c2",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 534,
+        "page_number": 0,
+        "text_preview": "t\nGardner, Christopher Clark, Kenton Lee, and LukeZettlemoyer. 2018a. Deep contextualized word representations. In NAACL.\nMatthew Peters, Mark Neumann",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "699afa6e120ee539",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 468,
+        "page_number": 0,
+        "text_preview": "the\nmodel is fine-tuned directly on the downstreamtasks and uses only a very small number of randomly initialized additional parameters, the taskspeci",
+        "suggested_grade": 2
+      },
+      {
+        "chunk_id": "8178a71b124b06ce",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 557,
+        "page_number": 0,
+        "text_preview": "e\ntraining data once and then run many experimentswith cheaper models on top of this representation.\nIn this section, we compare the two approaches\nby",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q20",
+    "question": "What was the focus of the SemEval-2017 task 1?",
+    "relevant_sections": [
+      {
+        "chunk_id": "fc1659210d93578f",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 525,
+        "page_number": 0,
+        "text_preview": "\nHere we studies the differences in recent popularrepresentation learning models including ELMo,\nOpenAI GPT and BERT. The comparisons between the mode",
+        "suggested_grade": 3
+      }
+    ]
+  },
+  {
+    "query_id": "q21",
+    "question": "What are some significant advancements in word representation techniques over the years?",
+    "relevant_sections": [
+      {
+        "chunk_id": "fbb5604e75c01033",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 518,
+        "page_number": 0,
+        "text_preview": "on 4\nCloud TPUs in Pod configuration (16 TPU chipstotal).13 Training of BERTLARGE was performed\non 16 Cloud TPUs (64 TPU chips total). Each pretrainin",
+        "suggested_grade": 2
+      },
+      {
+        "chunk_id": "db92656babedc5da",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 495,
+        "page_number": 0,
+        "text_preview": "on\nmodel for natural language inference. In EMNLP.Jeffrey Pennington, Richard Socher, and Christopher D. Manning. 2014. Glove: Global vectors for\nword",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "4e7ed18e1c27b5c2",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 534,
+        "page_number": 0,
+        "text_preview": "t\nGardner, Christopher Clark, Kenton Lee, and LukeZettlemoyer. 2018a. Deep contextualized word representations. In NAACL.\nMatthew Peters, Mark Neumann",
+        "suggested_grade": 3
+      }
+    ]
+  },
+  {
+    "query_id": "q22",
+    "question": "What is the masking procedure used in BERT's pre-training tasks?",
+    "relevant_sections": [
+      {
+        "chunk_id": "6e0978228eb5510d",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 520,
+        "page_number": 0,
+        "text_preview": "and\n– Ablation for Different Masking Procedures.\nAAdditional Details for BERT\nA.1\nIllustration of the Pre-training Tasks\nWe provide examples of the pr",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "5de88c39d5763ad5",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 499,
+        "page_number": 0,
+        "text_preview": "K] token, e.g., my dog is hairy →\nmy dog is [MASK]• 10% of the time: Replace the word with a\nrandom word, e.g., my dog is hairy →my\ndog is apple\n• 10%",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "dc0de3be33ec7627",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 527,
+        "page_number": 0,
+        "text_preview": " replaced by random words, so it is forced to keepa distributional contextual representation of every input token.\nAdditionally, because random\nreplac",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q23",
+    "question": "What are the main differences in pre-training between BERT and OpenAI GPT?",
+    "relevant_sections": [
+      {
+        "chunk_id": "9f2d27224045cf3e",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 560,
+        "page_number": 0,
+        "text_preview": "pus. In fact, many of the design decisions in BERTwere intentionally made to make it as close to\nGPT as possible so that the two methods could be\nmini",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "4d930ca897d30638",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 549,
+        "page_number": 0,
+        "text_preview": "hmark is a collection of sentence pairs drawn fromnews headlines and other sources (Cer et al.,\n2017). They were annotated with a score from 1\nto 5 de",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "fc1659210d93578f",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 525,
+        "page_number": 0,
+        "text_preview": "\nHere we studies the differences in recent popularrepresentation learning models including ELMo,\nOpenAI GPT and BERT. The comparisons between the mode",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q24",
+    "question": "What tasks are included in the GLUE benchmark and how are they described?",
+    "relevant_sections": [
+      {
+        "chunk_id": "5936e9eeba2242a4",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 484,
+        "page_number": 0,
+        "text_preview": "ental Setup\nB.1\nDetailed Descriptions for the GLUEBenchmark Experiments.\nOur\nGLUE\nresults\nin\nTable1\nare\nobtained\nfrom\nhttps://gluebenchmark.com/\nleade",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "c40c67ac3adf3e05",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 540,
+        "page_number": 0,
+        "text_preview": "tion task (Williams et al., 2018). Given a pair ofsentences, the goal is to predict whether the second sentence is an entailment, contradiction, or\nne",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "8191b6f93c7a7af5",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 503,
+        "page_number": 0,
+        "text_preview": "otations of their sentiment (Socher\net al., 2013).for whether the sentences in the pair are semantically equivalent (Dolan and Brockett, 2005).\nRTE\nRe",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q25",
+    "question": "What are the effects of different masking strategies on MNLI Dev accuracy during BERT pre-training?",
+    "relevant_sections": [
+      {
+        "chunk_id": "5ace682c175fe96d",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 532,
+        "page_number": 0,
+        "text_preview": "\nmixed strategy for masking the target tokens whenpre-training with the masked language model\n(MLM) objective. The following is an ablation\nstudy to e",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "fbbf9467ef2ce471",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 538,
+        "page_number": 0,
+        "text_preview": "trained for\nk steps. The x-axis is the value of k.Note that the purpose of the masking strategies\nis to reduce the mismatch between pre-training\nand f",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "629e8d80c1afd846",
+        "document_id": "285e5cdd363a26ad",
+        "source": "data/pdfs/bert-devlin-et-al.pdf",
+        "start_char": 0,
+        "end_char": 539,
+        "page_number": 0,
+        "text_preview": "sking Rates\nDev Set Results\nMASK SAME\nRND\nMNLI\nNERFine-tune Fine-tune Feature-based\n80%\n10%\n10%\n84.2\n95.4\n94.9\n100%\n0%\n0%\n84.3\n94.9\n94.0\n80%\n0%\n20%\n84",
+        "suggested_grade": 3
+      }
+    ]
+  },
+  {
+    "query_id": "q26",
+    "question": "What are RAG models and how do they function in knowledge-intensive NLP tasks?",
+    "relevant_sections": [
+      {
+        "chunk_id": "364af2bff0686e69",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 434,
+        "page_number": 0,
+        "text_preview": "tiable access mechanism to explicit non-parametricmemory have so far been only investigated for extractive downstream tasks. We\nexplore a general-purp",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "7f58e0a68adcc2bf",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 524,
+        "page_number": 0,
+        "text_preview": ". Garnett, editors, Advances in Neural InformationProcessing Systems 32, pages 3261–3275. Curran Associates, Inc., 2019. URL https://\narxiv.org/abs/19",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "2c94a262723b443b",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 440,
+        "page_number": 0,
+        "text_preview": "2seq models and task-specific retrieve-and-extractarchitectures. For language generation tasks, we find that RAG models generate\nmore specific, divers",
+        "suggested_grade": 2
+      },
+      {
+        "chunk_id": "41cd6736587d6074",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 538,
+        "page_number": 0,
+        "text_preview": " Mitra, Tri Nguyen, Mir Rosenberg, Xia Song, AlinaStoica, Saurabh Tiwary, and Tong Wang.\nMS MARCO: A Human Generated MAchine\nReading COmprehension Dat",
+        "suggested_grade": 1
+      }
+    ]
+  },
+  {
+    "query_id": "q27",
+    "question": "What is the retrieval-augmented generation (RAG) model and its components?",
+    "relevant_sections": [
+      {
+        "chunk_id": "dfaeef45006097cc",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 558,
+        "page_number": 0,
+        "text_preview": " URL https://www.aclweb.org/anthology/Q18-1031.\n11[20] Kelvin Guu, Kenton Lee, Zora Tung, Panupong Pasupat, and Ming-Wei Chang. REALM:\nRetrieval-augme",
+        "suggested_grade": 2
+      },
+      {
+        "chunk_id": "d34dd55f47aee0dd",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 544,
+        "page_number": 0,
+        "text_preview": "odels with access to parametric and non-parametricmemory. We showed that our RAG models obtain state of the art results on open-domain QA. We\nfound th",
+        "suggested_grade": 2
+      },
+      {
+        "chunk_id": "4e79b2e2b97facdc",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 531,
+        "page_number": 0,
+        "text_preview": "lifornia, June 2016. Association for ComputationalLinguistics. doi: 10.18653/v1/N16-1014. URL https://www.aclweb.org/anthology/\nN16-1014.\n[34] Margare",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "ed2f6e3f7faef763",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 550,
+        "page_number": 0,
+        "text_preview": "orth DPR) provides latent documents conditioned onthe input, and the seq2seq model (BART [32]) then conditions on these latent documents together with",
+        "suggested_grade": 3
+      }
+    ]
+  },
+  {
+    "query_id": "q28",
+    "question": "What are the differences between the RAG-Sequence and RAG-Token models?",
+    "relevant_sections": [
+      {
+        "chunk_id": "d837666ed71c3577",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 516,
+        "page_number": 0,
+        "text_preview": "documents for the query.\nCuratedTrec preprocessingThe answers for CuratedTrec are given in the form of regular expressions, which has been suggested a",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "794835fa2fcf2222",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 503,
+        "page_number": 0,
+        "text_preview": "old passages with specific information required togenerate the reference answer , (ii) many questions are unanswerable without the gold passages, and\n",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "dc68105997e5757f",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 514,
+        "page_number": 0,
+        "text_preview": "55. URL https://www.aclweb.org/anthology/D18-1255.[42] Preksha Nema and Mitesh M. Khapra. Towards a better metric for evaluating question generation\ns",
+        "suggested_grade": 3
+      }
+    ]
+  },
+  {
+    "query_id": "q29",
+    "question": "What is the purpose of \"Fast Decoding\" in the RAG model?",
+    "relevant_sections": [
+      {
+        "chunk_id": "d34dd55f47aee0dd",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 544,
+        "page_number": 0,
+        "text_preview": "odels with access to parametric and non-parametricmemory. We showed that our RAG models obtain state of the art results on open-domain QA. We\nfound th",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "bbd86e31b607a45f",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 520,
+        "page_number": 0,
+        "text_preview": " of trainable parameters, but does consists of 21M728 dimensional vectors, consisting of 15.3B values. These can be easily be stored at 8-bit floating",
+        "suggested_grade": 2
+      }
+    ]
+  },
+  {
+    "query_id": "q30",
+    "question": "What task is used to evaluate RAG's generation abilities in a non-QA setting?",
+    "relevant_sections": [
+      {
+        "chunk_id": "9d6c1a1eba049e5c",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 533,
+        "page_number": 0,
+        "text_preview": "\" (parametric only) open-domain QA model is T5-11Bwith 11 Billion trainable parameters. The T5 model with the closest number of parameters to our\nmode",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "5e8f9bbaa71a89b1",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 482,
+        "page_number": 0,
+        "text_preview": "o the question “In 1986 Mexico scored as the firstcountry to host this international sports competition twice.” As Jeopardy questions are precise,\nfac",
+        "suggested_grade": 3
+      },
+      {
+        "chunk_id": "ac9abfbe9a916831",
+        "document_id": "ecfeeb4c039a0dce",
+        "source": "data/pdfs/rag-lewis-et-al.pdf",
+        "start_char": 0,
+        "end_char": 529,
+        "page_number": 0,
+        "text_preview": "their thoughtful and constructive feedback on thispaper, as well as HuggingFace for their help in open-sourcing code to run RAG models. The authors\nwo",
+        "suggested_grade": 2
+      }
+    ]
+  }
+]

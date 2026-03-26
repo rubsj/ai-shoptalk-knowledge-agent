@@ -1,0 +1,779 @@
+{
+  "queries": [
+    {
+      "query_id": "q01",
+      "question": "Who were the key contributors to the development of the Transformer model according to the paper 'Attention Is All You Need'?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "d7852b548ebfa870",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 506,
+          "relevance_grade": 2
+        },
+        {
+          "chunk_id": "5e11720738c47a09",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 549,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "b52f52f193810497",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 494,
+          "relevance_grade": 3
+        }
+      ]
+    },
+    {
+      "query_id": "q02",
+      "question": "What are the main components of the Transformer model's architecture?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "0f3ef7ad2e2cd98a",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 552,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "971431718592b851",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 518,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "5d097127f7859711",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 300,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q03",
+      "question": "What is the structure of the Transformer encoder and decoder stacks?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "c3eab47f45caa994",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 514,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "fb117fb9cf6c1fc5",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 505,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "5e11720738c47a09",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 549,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q04",
+      "question": "How is multi-head attention implemented in transformer models?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "9d5c817a60e648aa",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 474,
+          "relevance_grade": 2
+        },
+        {
+          "chunk_id": "58091ae497e7cc4f",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 471,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "3cfb727da0a71de3",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 551,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "8d14b2b2b194142d",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 544,
+          "relevance_grade": 3
+        }
+      ]
+    },
+    {
+      "query_id": "q05",
+      "question": "What are positional encodings and how are they used in models without recurrence and convolution?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "f2a319e0d6b50d70",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 485,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "971431718592b851",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 518,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "b608456f2f704c07",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 550,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q06",
+      "question": "What is the performance of the Transformer models compared to previous state-of-the-art models on the WMT 2014 translation tests?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "42a7733be718d03b",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 542,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "c15ea00c8abd9f3d",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 556,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "46052ca391eff9c6",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 465,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q07",
+      "question": "What BLEU score did the big Transformer model achieve on the WMT 2014 English-to-French translation task and how does it compare to previous models?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "691b60a79740f11d",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 466,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "a50157dbedd2cb1d",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 483,
+          "relevance_grade": 3
+        }
+      ]
+    },
+    {
+      "query_id": "q08",
+      "question": "How does the Transformer model perform in English constituency parsing compared to other models?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "066d42e9d397c2c0",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 557,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "2718b3398e1c6d77",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 427,
+          "relevance_grade": 2
+        },
+        {
+          "chunk_id": "b31e741a2f254140",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 469,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q09",
+      "question": "What are some notable publications involving neural machine translation or language modeling?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "eaad1c9afb969ebd",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 524,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "8d14b2b2b194142d",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 544,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "507239868750d4ee",
+          "document_id": "1bab79fa369501ae",
+          "start_char": 0,
+          "end_char": 559,
+          "relevance_grade": 3
+        }
+      ]
+    },
+    {
+      "query_id": "q10",
+      "question": "What is BERT and how does it differ from other language representation models?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "ba8ca80b5b65dc1c",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 343,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "db92656babedc5da",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 495,
+          "relevance_grade": 3
+        }
+      ]
+    },
+    {
+      "query_id": "q11",
+      "question": "What is the major limitation of fine-tuning approaches in pre-trained language models like OpenAI GPT?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "868a62faf64e6e30",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 491,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "78cc49891e9e1caf",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 469,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q12",
+      "question": "What are the different approaches to pre-trained language representations mentioned?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "965d7058986943b8",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 519,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "8178a71b124b06ce",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 557,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "c2e643a797466430",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 482,
+          "relevance_grade": 2
+        },
+        {
+          "chunk_id": "0dbb4139e20581cf",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 494,
+          "relevance_grade": 1
+        }
+      ]
+    },
+    {
+      "query_id": "q13",
+      "question": "What is the difference between BERT's and OpenAI GPT's Transformer attention mechanisms?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "749789df37656017",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 544,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "5c610c9623162d52",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 510,
+          "relevance_grade": 1
+        }
+      ]
+    },
+    {
+      "query_id": "q14",
+      "question": "How does BERT handle sentence pair differentiation during input representation?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "941b4d0e6c7dda5a",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 479,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "8eddd4f7cb01fb2e",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 546,
+          "relevance_grade": 3
+        }
+      ]
+    },
+    {
+      "query_id": "q15",
+      "question": "What datasets are used in BERT's pre-training corpus?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "69b3965efa05fcb7",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 526,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "79266c82d6ce0e4e",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 531,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q16",
+      "question": "What improvements in GLUE tasks were achieved by BERT models compared to previous state-of-the-art systems?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "7329f46aef86b2c5",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 465,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "15404fc220f59a4e",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 547,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "46d048f9c55f4eab",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 516,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q17",
+      "question": "What are the results of BERT on the SQuAD 1.1 and SQuAD 2.0 datasets?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "2f959dfe7fd0e877",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 536,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "6bf0cfbcf1f062d7",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 500,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "ba2782394e5481e8",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 390,
+          "relevance_grade": 2
+        },
+        {
+          "chunk_id": "749789df37656017",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 544,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q18",
+      "question": "How does the removal of the Next Sentence Prediction (NSP) task affect BERT's performance on various tasks?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "8eddd4f7cb01fb2e",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 546,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "8413cc9e70ff6cc0",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 558,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q19",
+      "question": "What is the feature-based approach in BERT and its advantages?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "4e7ed18e1c27b5c2",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 534,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "699afa6e120ee539",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 468,
+          "relevance_grade": 2
+        },
+        {
+          "chunk_id": "8178a71b124b06ce",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 557,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q20",
+      "question": "What was the focus of the SemEval-2017 task 1?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "fc1659210d93578f",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 525,
+          "relevance_grade": 3
+        }
+      ]
+    },
+    {
+      "query_id": "q21",
+      "question": "What are some significant advancements in word representation techniques over the years?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "fbb5604e75c01033",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 518,
+          "relevance_grade": 2
+        },
+        {
+          "chunk_id": "db92656babedc5da",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 495,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "4e7ed18e1c27b5c2",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 534,
+          "relevance_grade": 3
+        }
+      ]
+    },
+    {
+      "query_id": "q22",
+      "question": "What is the masking procedure used in BERT's pre-training tasks?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "6e0978228eb5510d",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 520,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "5de88c39d5763ad5",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 499,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "dc0de3be33ec7627",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 527,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q23",
+      "question": "What are the main differences in pre-training between BERT and OpenAI GPT?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "9f2d27224045cf3e",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 560,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "4d930ca897d30638",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 549,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "fc1659210d93578f",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 525,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q24",
+      "question": "What tasks are included in the GLUE benchmark and how are they described?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "5936e9eeba2242a4",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 484,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "c40c67ac3adf3e05",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 540,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "8191b6f93c7a7af5",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 503,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q25",
+      "question": "What are the effects of different masking strategies on MNLI Dev accuracy during BERT pre-training?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "5ace682c175fe96d",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 532,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "fbbf9467ef2ce471",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 538,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "629e8d80c1afd846",
+          "document_id": "285e5cdd363a26ad",
+          "start_char": 0,
+          "end_char": 539,
+          "relevance_grade": 3
+        }
+      ]
+    },
+    {
+      "query_id": "q26",
+      "question": "What are RAG models and how do they function in knowledge-intensive NLP tasks?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "364af2bff0686e69",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 434,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "7f58e0a68adcc2bf",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 524,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "2c94a262723b443b",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 440,
+          "relevance_grade": 2
+        },
+        {
+          "chunk_id": "41cd6736587d6074",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 538,
+          "relevance_grade": 1
+        }
+      ]
+    },
+    {
+      "query_id": "q27",
+      "question": "What is the retrieval-augmented generation (RAG) model and its components?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "dfaeef45006097cc",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 558,
+          "relevance_grade": 2
+        },
+        {
+          "chunk_id": "d34dd55f47aee0dd",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 544,
+          "relevance_grade": 2
+        },
+        {
+          "chunk_id": "4e79b2e2b97facdc",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 531,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "ed2f6e3f7faef763",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 550,
+          "relevance_grade": 3
+        }
+      ]
+    },
+    {
+      "query_id": "q28",
+      "question": "What are the differences between the RAG-Sequence and RAG-Token models?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "d837666ed71c3577",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 516,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "794835fa2fcf2222",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 503,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "dc68105997e5757f",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 514,
+          "relevance_grade": 3
+        }
+      ]
+    },
+    {
+      "query_id": "q29",
+      "question": "What is the purpose of \"Fast Decoding\" in the RAG model?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "d34dd55f47aee0dd",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 544,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "bbd86e31b607a45f",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 520,
+          "relevance_grade": 2
+        }
+      ]
+    },
+    {
+      "query_id": "q30",
+      "question": "What task is used to evaluate RAG's generation abilities in a non-QA setting?",
+      "relevant_chunks": [
+        {
+          "chunk_id": "9d6c1a1eba049e5c",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 533,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "5e8f9bbaa71a89b1",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 482,
+          "relevance_grade": 3
+        },
+        {
+          "chunk_id": "ac9abfbe9a916831",
+          "document_id": "ecfeeb4c039a0dce",
+          "start_char": 0,
+          "end_char": 529,
+          "relevance_grade": 2
+        }
+      ]
+    }
+  ]
+}
