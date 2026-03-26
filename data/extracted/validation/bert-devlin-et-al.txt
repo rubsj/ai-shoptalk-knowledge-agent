@@ -150,33 +150,43 @@ OpenAI GPT (Radford et al., 2018) achieved previously state-of-the-art results o
 et al., 2018a).
 Left-to-right language model-
 
-E[CLS]
-E1
- E[SEP]
-...
-EN
-E1’
-...
-EM’
+SQuAD
+NER
+MNLI
+NSP
+Mask LM
+Mask LM
+Start/End Span
+[Visual Content — Page 3]
+The page contains one visual element:
+
+1. **Figure 1**: This figure illustrates the overall pre-training and fine-tuning procedures for BERT. 
+
+ - **Left Side (Pre-training)**: It shows the BERT model with components labeled as "NSP" (Next Sentence Prediction) and "Mask LM" (Masked Language Model). There are arrows indicating the flow of data, with "Unlabeled Sentence A and B Pair" leading into the BERT model.
+ 
+ - **Right Side (Fine-Tuning)**: It depicts the fine-tuning process with specific tasks such as "MNLI/NER" and "SQuAD". The BERT model is again shown, with inputs labeled as "Question" and "Paragraph", leading to "Question Answer Pair" and "Start/End Span".
+
+ - **Additional Details**: The figure includes annotations explaining that the same architecture is used in both pre-training and fine-tuning, and it notes the special tokens like "[CLS]" and "[SEP]" used in the model.
+
+Overall, the figure visually summarizes the BERT architecture and its application in different stages of training and task-specific fine-tuning.
+C
 C
 T1
-T[SEP]
-...
 TN
 T1’
 ...
 TM’
-[CLS]
-Tok 1
- [SEP]
+T1
+TN
+T1’
 ...
-Tok N
-Tok 1
+TM’
+T[SEP]
 ...
-TokM
-Question
-Paragraph
-Start/End Span
+T[SEP]
+...
+BERT
+BERT
 BERT
 E[CLS]
 E1
@@ -186,14 +196,22 @@ EN
 E1’
 ...
 EM’
-C
-T1
-T[SEP]
+E[CLS]
+E1
+ E[SEP]
 ...
-TN
-T1’
+EN
+E1’
 ...
-TM’
+EM’
+[CLS]
+Tok 1
+ [SEP]
+...
+Tok N
+Tok 1
+...
+TokM
 [CLS]
 Tok 1
  [SEP]
@@ -204,22 +222,26 @@ Tok 1
 TokM
 Masked Sentence A
 Masked Sentence B
+Question
+Paragraph
+Question Answer Pair
+Unlabeled Sentence A and B Pair 
 Pre-training
 Fine-Tuning
-NSP
-Mask LM
-Mask LM
-Unlabeled Sentence A and B Pair 
-SQuAD
-Question Answer Pair
-NER
-MNLI
 Figure 1: Overall pre-training and fine-tuning procedures for BERT. Apart from output layers, the same architectures are used in both pre-training and fine-tuning. The same pre-trained model parameters are used to initialize
 models for different down-stream tasks. During fine-tuning, all parameters are fine-tuned. [CLS] is a special
 symbol added in front of every input example, and [SEP] is a special separator token (e.g. separating questions/answers).
 ing and auto-encoder objectives have been used
 for pre-training such models (Howard and Ruder,
 2018; Radford et al., 2018; Dai and Le, 2015).
+mal difference between the pre-trained architecture and the final downstream architecture.
+Model Architecture
+BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al. (2017) and released in
+the tensor2tensor library.1 Because the use
+of Transformers has become common and our implementation is almost identical to the original,
+we will omit an exhaustive background description of the model architecture and refer readers to
+Vaswani et al. (2017) as well as excellent guides
+such as “The Annotated Transformer.”2
 2.3
 Transfer Learning from Supervised Data
 There has also been work showing effective transfer from supervised tasks with large datasets, such
@@ -228,6 +250,9 @@ as natural language inference (Conneau et al.,
 2017). Computer vision research has also demonstrated the importance of transfer learning from
 large pre-trained models, where an effective recipe
 is to fine-tune models pre-trained with ImageNet (Deng et al., 2009; Yosinski et al., 2014).
+In this work, we denote the number of layers
+(i.e., Transformer blocks) as L, the hidden size as
+H, and the number of self-attention heads as A.3
 3
 BERT
 We introduce BERT and its detailed implementation in this section. There are two steps in our
@@ -239,18 +264,7 @@ the pre-trained parameters, and all of the parameters are fine-tuned using label
 downstream tasks. Each downstream task has separate fine-tuned models, even though they are initialized with the same pre-trained parameters. The
 question-answering example in Figure 1 will serve
 as a running example for this section.
-A distinctive feature of BERT is its unified architecture across different tasks. There is minimal difference between the pre-trained architecture and the final downstream architecture.
-Model Architecture
-BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al. (2017) and released in
-the tensor2tensor library.1 Because the use
-of Transformers has become common and our implementation is almost identical to the original,
-we will omit an exhaustive background description of the model architecture and refer readers to
-Vaswani et al. (2017) as well as excellent guides
-such as “The Annotated Transformer.”2
-In this work, we denote the number of layers
-(i.e., Transformer blocks) as L, the hidden size as
-H, and the number of self-attention heads as A.3
-We primarily report results on two model sizes:
+A distinctive feature of BERT is its unified architecture across different tasks. There is miniWe primarily report results on two model sizes:
 BERTBASE (L=12, H=768, A=12, Total Parameters=110M) and BERTLARGE (L=24, H=1024,
 A=16, Total Parameters=340M).
 BERTBASE was chosen to have the same model
@@ -263,26 +277,6 @@ token can only attend to context to its left.4
 3In all cases we set the feed-forward/filter size to be 4H,
 i.e., 3072 for the H = 768 and 4096 for the H = 1024.
 4We note that in the literature the bidirectional Trans-
-
-[Visual Content — Page 3]
-The page contains one visual element:
-
-1. **Figure 1**: This figure illustrates the overall pre-training and fine-tuning procedures for BERT. 
-
-   - **Pre-training Section**: 
-     - It shows the BERT model with inputs labeled as "Unlabeled Sentence A and B Pair."
-     - There are arrows indicating two tasks: "NSP" (Next Sentence Prediction) and "Mask LM" (Masked Language Model).
-     - The input tokens are represented as \( C, T_1, T_2, \ldots, T_n \) with \( E_1, E_2, \ldots, E_n \) denoting their embeddings.
-
-   - **Fine-Tuning Section**: 
-     - The same BERT model is shown with inputs labeled for specific tasks like "MNLI/NER" and "SQuAD."
-     - It includes inputs labeled as "Question" and "Paragraph," with arrows indicating the flow of data.
-     - The output tokens are represented similarly as \( C, T_1, T_2, \ldots, T_n \) with corresponding embeddings \( E_1, E_2, \ldots, E_n \).
-
-   - **Special Tokens**: 
-     - The figure notes that \( [CLS] \) is a special symbol added in front of every input example, and \( [SEP] \) is a special separator token used to separate questions and answers.
-
-Overall, the figure visually summarizes the architecture and processes involved in BERT's training and application for various tasks.
 
 Input/Output Representations
 To make BERT
@@ -363,17 +357,6 @@ task is very beneficial to both QA and NLI. 6
 5The final model achieves 97%-98% accuracy on NSP.
 6The vector C is not a meaningful sentence representation
 without fine-tuning, since it was trained with NSP.
-
-[Visual Content — Page 4]
-The page contains two visual elements referenced as "Figure 1" and "Figure 2."
-
-1. **Figure 1**: 
-   - This figure likely illustrates the architecture or process of the BERT model, particularly how input sequences are structured and how tokens are processed. It may show the separation of sentences using special tokens like [CLS] and [SEP], as well as the embedding process for tokens. The specific details of the figure are not visible in the text provided.
-
-2. **Figure 2**: 
-   - This figure is mentioned as a visualization of the construction of the input representation for a given token, which involves summing the corresponding token, segment, and position embeddings. The exact content of this figure is not described in the text provided.
-
-Both figures are integral to understanding the concepts discussed in the text, but their specific visual details are not available in the provided excerpt.
 
 [CLS]
 he
@@ -483,19 +466,6 @@ i.e., log(softmax(CW T )).
 around 30 minutes on a single Cloud TPU to achieve a Dev
 F1 score of 91.0%.
 8See (10) in https://gluebenchmark.com/faq.
-
-[Visual Content — Page 5]
-The page contains one visual element:
-
-1. **Figure 2**: This figure illustrates the BERT input representation. It shows how the input embeddings are constructed by summing three types of embeddings: token embeddings, segment embeddings, and position embeddings. 
-
-   - **Input Section**: The figure starts with an input sequence that includes special tokens like `[CLS]` and `[SEP]`, followed by a sample sentence ("my dog is cute") and additional tokens.
-   - **Token Embeddings**: Each word in the input sequence is associated with a token embedding (e.g., \(E_{my}, E_{dog}, E_{is}, E_{cute}, \) etc.).
-   - **Segment Embeddings**: The segment embeddings are represented as \(A\) for the first segment and \(B\) for the second segment, indicating which part of the input each token belongs to.
-   - **Position Embeddings**: The position embeddings are labeled as \(E_0, E_1, E_2, \) etc., corresponding to the position of each token in the sequence.
-   - **Summation**: The figure visually represents the summation of these embeddings to form the final input representation.
-
-Overall, the figure provides a clear breakdown of how BERT processes input data through different types of embeddings.
 
 System
 MNLI-(m/mm)
@@ -639,31 +609,6 @@ leaderboard system by +1.5 F1 in ensembling and
 +1.3 F1 as a single system. In fact, our single
 BERT model outperforms the top ensemble system in terms of F1 score. Without TriviaQA fine11QANet is described in Yu et al. (2018), but the system
 has improved substantially after publication.
-
-[Visual Content — Page 6]
-The page contains two visual elements:
-
-1. **Table 1**: 
-   - This table presents the GLUE test results, showing various systems and their performance across different tasks.
-   - The columns include:
-     - **System**: Names of the models evaluated.
-     - **MNLI-(m/nm)**: Scores for the MNLI task, with two variations (m and nm).
-     - **QQP**: Scores for the QQP task.
-     - **QNLI**: Scores for the QNLI task.
-     - **SST-2**: Scores for the SST-2 task.
-     - **CoLA**: Scores for the CoLA task.
-     - **STS-B**: Scores for the STS-B task.
-     - **MRPC**: Scores for the MRPC task.
-     - **RTE**: Scores for the RTE task.
-     - **Average**: Average score across all tasks.
-   - The table includes specific numerical values for each system across the tasks, with the average score noted at the end.
-
-2. **Table 2**: 
-   - This table shows the top leaderboard entries as well as results from top published systems.
-   - It likely includes columns for system names, scores, and possibly other metrics related to performance on the SQuAD dataset.
-   - The specific details of the columns and data values are not visible in the provided text.
-
-These tables summarize the performance metrics of various models on different natural language processing tasks, providing a comparative analysis of their effectiveness.
 
 System
 Dev
@@ -809,26 +754,6 @@ In this section, we perform ablation experiments
 over a number of facets of BERT in order to better
 understand their relative importance. Additional
 
-[Visual Content — Page 7]
-The page contains several visual elements, including tables. Here’s a detailed description of each:
-
-1. **Table 2: SQuAD 1.1 Results**
-   - **Columns**: The table has columns labeled "System," "Dev," "Test," "EM," "F1," "EM," and "F1."
-   - **Rows**: It lists various systems, including "Human," "BERT_BASE," "BERT_LARGE," and their ensemble versions.
-   - **Data Values**: The table shows various scores for each system, with values for "EM" (Exact Match) and "F1" (F1 Score) for both development (Dev) and test (Test) sets.
-
-2. **Table 3: SQuAD 2.0 Results**
-   - **Columns**: Similar to Table 2, it includes "System," "EM," "F1," "EM," and "F1."
-   - **Rows**: It lists systems like "Human," "unet (Ensemble)," and "SLQA+ (Single)."
-   - **Data Values**: The table presents scores for each system, indicating their performance on the SQuAD 2.0 task.
-
-3. **Table 4: SWAG Dev and Test Accuracies**
-   - **Columns**: The columns are labeled "System," "Dev," and "Test."
-   - **Rows**: It includes systems like "ESIM+GloVe," "ESIM+ELMo," "OpenAI GPT," "BERT_BASE," and "BERT_LARGE."
-   - **Data Values**: The table shows accuracy scores for each system on the SWAG dataset, with notes on human performance.
-
-These tables summarize the performance metrics of various models on different datasets, providing a comparative analysis of their effectiveness.
-
 Dev Set
 Tasks
 MNLI-m QNLI MRPC SST-2 SQuAD
@@ -938,21 +863,6 @@ However, we believe that
 this is the first work to demonstrate convincingly that scaling to extreme model sizes also
 leads to large improvements on very small scale
 tasks, provided that the model has been sufficiently pre-trained. Peters et al. (2018b) presented
-
-[Visual Content — Page 8]
-The page contains the following visual element:
-
-1. **Table 5**: This table presents results over various pre-training tasks using the BERT architecture. 
-
-   - **Column Headers**: The columns are labeled with different tasks: "MNLI-m", "QNLI", "MRPC", "SST-2", and "SQuAD", with corresponding metrics such as "Acc" (Accuracy) and "F1" (F1 Score).
-   - **Rows**: The table includes several models:
-     - "BERT^BASE" with values for each task.
-     - "No NSP" with values for each task.
-     - "LTR & No NSP" with values for each task.
-     - "LTR + BiLSTM" with values for each task.
-   - **Data Values**: Each cell contains numerical values representing the performance metrics for the respective models on the tasks listed.
-
-The table highlights the performance differences between the various configurations of the BERT model, indicating how the absence of the next sentence prediction task and the addition of a BiLSTM affect the results.
 
 mixed results on the downstream task impact of
 increasing the pre-trained bi-LM size from two
@@ -1589,6 +1499,50 @@ answer, and the negative examples are (question,
 sentence) from the same paragraph which do not
 contain the answer.
 
+Class 
+Label
+Class 
+Label
+[Visual Content — Page 15]
+The page contains a figure labeled "Figure 4," which illustrates the fine-tuning of BERT on different tasks. It includes four subfigures (a, b, c, d):
+
+1. **Subfigure (a)**: 
+ - Title: "Sentence Pair Classification Tasks: MNLI, QQP, QNLI, STS-B, MRPC, RTE, SWAG"
+ - It shows a BERT model processing two sentences (Sentence 1 and Sentence 2) with a class label at the top. 
+ - The input tokens are represented as \( T_1, T_2, \ldots, T_n \) and include special tokens like [CLS] and [SEP].
+ - There are arrows indicating connections between the tokens and the class label.
+
+2. **Subfigure (b)**: 
+ - Title: "Single Sentence Classification Tasks: SST-2, CoLA"
+ - This subfigure depicts a single sentence being processed by BERT.
+ - It also has a class label at the top and shows input tokens labeled as "Tok 1, Tok 2, ..., Tok N" with a [CLS] token.
+
+3. **Subfigure (c)**: 
+ - Title: "Question Answering Tasks: SQuAD v1.1"
+ - It illustrates a question being processed alongside a paragraph.
+ - The start and end span of the answer are indicated with arrows, and the BERT model processes the question and paragraph.
+
+4. **Subfigure (d)**: 
+ - Title: "Single Sentence Tagging Tasks: CoNLL-2003 NER"
+ - This shows a single sentence being processed with tokens labeled as "Tok 1, Tok 2, ..., Tok N" and includes a B-PER tag for named entity recognition.
+
+Each subfigure visually represents how BERT is adapted for different types of natural language processing tasks, with specific labels and token arrangements.
+...
+ TN
+C
+T1
+ T2
+T[SEP]
+...
+T1’
+...
+C
+T1
+TN
+TM’
+BERT
+BERT
+...
 E[CLS]
 E1
  E[SEP]
@@ -1597,88 +1551,69 @@ EN
 E1’
 ...
 EM’
-C
-T1
-T[SEP]
+E[CLS]
+E1
+ E2
+ EN
+Tok 1
+ Tok 2
+ Tok N
 ...
-TN
-T1’
-...
-TM’
+[CLS]
+Tok 1
+[CLS]
 [CLS]
 Tok 
 1
  [SEP]
 ...
 Tok 
-N
 Tok 
 1
 ...
 Tok
+N
 M
-Question
-Paragraph
-BERT
-E[CLS]
-E1
- E2
- EN
-C
-T1
- T2
- TN
+Sentence 1
+Sentence 2
 Single Sentence 
 ...
-...
-BERT
-Tok 1
- Tok 2
- Tok N
-...
-[CLS]
-E[CLS]
-E1
- E2
- EN
-C
-T1
- T2
- TN
-Single Sentence 
+Start/End Span
 B-PER
 O
 O
 ...
+ TN
+C
+T1
+ T2
+T[SEP]
 ...
+T1’
+...
+C
+T1
+TN
+TM’
+BERT
+BERT
 E[CLS]
 E1
  E[SEP]
-Class 
-Label
 ...
 EN
 E1’
 ...
 EM’
-C
-T1
-T[SEP]
 ...
-TN
-T1’
-...
-TM’
-Start/End Span
-Class 
-Label
-BERT
+E[CLS]
+E1
+ E2
+ EN
 Tok 1
  Tok 2
  Tok N
 ...
-[CLS]
-Tok 1
 [CLS]
 [CLS]
 Tok 
@@ -1686,41 +1621,31 @@ Tok
  [SEP]
 ...
 Tok 
-N
 Tok 
 1
 ...
 Tok
+N
 M
-Sentence 1
-...
-Sentence 2
+Question
+Paragraph
+Single Sentence 
 Figure 4: Illustrations of Fine-tuning BERT on Different Tasks.
 SST-2
 The Stanford Sentiment Treebank is a
 binary single-sentence classification task consisting of sentences extracted from movie reviews
 with human annotations of their sentiment (Socher
 et al., 2013).
+for whether the sentences in the pair are semantically equivalent (Dolan and Brockett, 2005).
+RTE
+Recognizing Textual Entailment is a binary entailment task similar to MNLI, but with
+much less training data (Bentivogli et al., 2009).14
 CoLA
 The Corpus of Linguistic Acceptability is
 a binary single-sentence classification task, where
 the goal is to predict whether an English sentence
 is linguistically “acceptable” or not (Warstadt
 et al., 2018).
-STS-B
-The Semantic Textual Similarity Benchmark is a collection of sentence pairs drawn from
-news headlines and other sources (Cer et al.,
-2017). They were annotated with a score from 1
-to 5 denoting how similar the two sentences are in
-terms of semantic meaning.
-MRPC
-Microsoft Research Paraphrase Corpus
-consists of sentence pairs automatically extracted
-from online news sources, with human annotations
-for whether the sentences in the pair are semantically equivalent (Dolan and Brockett, 2005).
-RTE
-Recognizing Textual Entailment is a binary entailment task similar to MNLI, but with
-much less training data (Bentivogli et al., 2009).14
 WNLI
 Winograd NLI is a small natural language inference dataset (Levesque et al., 2011).
 The GLUE webpage notes that there are issues
@@ -1728,10 +1653,20 @@ with the construction of this dataset, 15 and every
 trained system that’s been submitted to GLUE has
 performed worse than the 65.1 baseline accuracy
 of predicting the majority class. We therefore exclude this set to be fair to OpenAI GPT. For our
-GLUE submission, we always predicted the ma14Note that we only report single-task fine-tuning results
+GLUE submission, we always predicted the maSTS-B
+The Semantic Textual Similarity Benchmark is a collection of sentence pairs drawn from
+news headlines and other sources (Cer et al.,
+2017). They were annotated with a score from 1
+to 5 denoting how similar the two sentences are in
+terms of semantic meaning.
+14Note that we only report single-task fine-tuning results
 in this paper. A multitask fine-tuning approach could potentially push the performance even further. For example, we
 did observe substantial improvements on RTE from multitask training with MNLI.
 15https://gluebenchmark.com/faq
+MRPC
+Microsoft Research Paraphrase Corpus
+consists of sentence pairs automatically extracted
+from online news sources, with human annotations
 
 jority class.
 C

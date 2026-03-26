@@ -225,27 +225,6 @@ Training Details
 We train SBERT on the combination of the SNLI
 (Bowman et al., 2015) and the Multi-Genre NLI
 
-[Visual Content — Page 3]
-The page contains two visual elements:
-
-1. **Figure 1**: 
-   - **Description**: This figure illustrates the SBERT architecture with a classification objective function, specifically for fine-tuning on the SNLI dataset. It shows two BERT networks that share tied weights, indicating a siamese network structure.
-   - **Components**:
-     - A "Softmax classifier" at the top.
-     - Two inputs labeled as \( u \) and \( v \), which represent embeddings for Sentence A and Sentence B, respectively.
-     - An arrow pointing downwards from the classifier to the inputs, indicating the relationship.
-     - Below the inputs, there are two "pooling" labels, one for each sentence, leading to the BERT networks.
-     - The BERT networks are labeled as "BERT" for both Sentence A and Sentence B.
-
-2. **Figure 2**: 
-   - **Description**: This figure depicts the SBERT architecture used for inference, particularly for computing similarity scores. It is also applicable for the regression objective function.
-   - **Components**:
-     - A cosine similarity function labeled as "cosine-sim(u, v)" with a range from -1 to 1.
-     - Inputs \( u \) and \( v \) for Sentence A and Sentence B, respectively, leading to the cosine similarity function.
-     - Similar to Figure 1, there are "pooling" labels for both sentences leading to their respective BERT networks.
-
-Both figures visually represent the architecture and processes involved in the SBERT model, highlighting the relationships between the components.
-
 Model
 STS12
 STS13
@@ -635,31 +614,6 @@ by about 2 percentage points compared to InferSent as well as the Universal Sent
 Even though transfer learning is not the purpose of
 SBERT, it outperforms other state-of-the-art sentence embeddings methods on this task.
 
-[Visual Content — Page 6]
-The page contains two tables:
-
-### Table 3: Average Pearson correlation and average Spearman’s rank correlation
-1. **Columns**: 
-   - **Model**: Lists different models used for evaluation.
-   - **r**: Average Pearson correlation values.
-   - **ρ**: Average Spearman’s rank correlation values.
-   
-2. **Data**: 
-   - Unsupervised methods include models like tf-idf, GloVe embeddings, and InferSent-GloVe with corresponding r and ρ values.
-   - The "10-fold Cross-Validation" section includes results from SVR and various SBERT models (SBERT-AFS-base, SBERT-AFS-large).
-   - The "Cross-Topic Evaluation" section shows results for SBERT models with their respective r and ρ values.
-
-### Table 4: Evaluation on the Wikipedia section triplets dataset
-1. **Columns**: 
-   - **Model**: Lists different models and methods evaluated.
-   - **Accuracy**: Shows the accuracy percentage for each model.
-
-2. **Data**: 
-   - Models include mean-vectors, skip-thoughts-CS, and various SBERT models (SBERT-WikiSec-base, SBERT-WikiSec-large).
-   - Each model has an associated accuracy value, indicating performance on the dataset.
-
-Both tables provide quantitative results comparing different models in terms of correlation and accuracy, highlighting the performance of SBERT models in various tasks.
-
 Model
 MR
 CR
@@ -832,19 +786,6 @@ scores with MEAN pooling strategy.
 When trained with the classification objective
 function on NLI data, the pooling strategy has a
 rather minor impact. The impact of the concatenation mode is much larger. InferSent (Conneau
-
-[Visual Content — Page 7]
-The page contains two tables:
-
-1. **Table 5**: This table evaluates different sentence embeddings from SBERT using the SentEval toolkit across various sentence classification tasks. It includes the following details:
-   - **Column Headers**: The first column lists the models, and subsequent columns represent different tasks: MR, CR, SUBJ, MPQA, SST, TREC, MRPC, and an average score.
-   - **Data Values**: Each row contains scores for the respective models on the tasks. For example, the "Avg. GloVe embeddings" row shows scores like 77.25 for MR and 91.17 for SUBJ, with an average score of 81.52.
-
-2. **Table 6**: This table presents results for SBERT trained on NLI data with different pooling strategies (MEAN, MAX, CLS) and their performance on the NLI and STSb datasets.
-   - **Column Headers**: The first column lists the pooling strategies, and the next columns show scores for NLI and STSb.
-   - **Data Values**: For example, the MEAN strategy shows a score of 80.78 for NLI and 87.44 for STSb, while the CONCATENATION methods list various configurations with their respective scores.
-
-Both tables provide a comparative analysis of the performance of different models and strategies in sentence classification tasks.
 
 et al., 2017) and Universal Sentence Encoder (Cer
 et al., 2018) both use (u, v, |u −v|, u ∗v) as input

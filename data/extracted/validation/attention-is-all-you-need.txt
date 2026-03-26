@@ -104,6 +104,27 @@ sequence (y1, ..., ym) of symbols one element at a time. At each step the model 
 [10], consuming the previously generated symbols as additional input when generating the next.
 2
 
+[Visual Content — Page 3]
+The page contains one visual element:
+
+1. **Figure 1: The Transformer - model architecture**
+ - **Description**: This figure illustrates the architecture of the Transformer model, divided into two main sections: the encoder (left) and the decoder (right).
+ - **Components**:
+ - **Inputs**: At the bottom, there are "Inputs" leading to "Input Embedding" and "Positional Encoding".
+ - **Encoder Stack**: The encoder consists of a stack of \( N \) identical layers, each containing:
+ - A "Multi-Head Attention" block.
+ - A "Feed Forward" block.
+ - Each block is followed by "Add & Norm" layers.
+ - **Decoder Stack**: The decoder also has a stack of \( N \) identical layers, with:
+ - A "Masked Multi-Head Attention" block.
+ - A "Multi-Head Attention" block that takes the output from the encoder.
+ - A "Feed Forward" block.
+ - Each block is similarly followed by "Add & Norm" layers.
+ - **Output**: At the top, the outputs lead to "Output Probabilities", which are processed through "Linear" and "Softmax" layers.
+ - **Arrows**: There are directional arrows indicating the flow of data through the model, from inputs to outputs.
+ - **Labels**: The figure includes labels for each component, such as "Positional Encoding", "Input Embedding", and "Output Embedding".
+
+Overall, the figure provides a clear visual representation of the Transformer architecture, highlighting the structure and flow of information within the model.
 Figure 1: The Transformer - model architecture.
 The Transformer follows this overall architecture using stacked self-attention and point-wise, fully
 connected layers for both the encoder and decoder, shown in the left and right halves of Figure 1,
@@ -129,27 +150,31 @@ predictions for position i can depend only on the known outputs at positions les
 Attention
 An attention function can be described as mapping a query and a set of key-value pairs to an output,
 where the query, keys, values, and output are all vectors. The output is computed as a weighted sum
-3
-
-[Visual Content — Page 3]
-The page contains one visual element:
-
-1. **Figure 1: The Transformer - model architecture**
-   - **Description**: This figure illustrates the architecture of the Transformer model, divided into two main sections: the encoder (left) and the decoder (right).
-   - **Components**:
-     - **Inputs**: At the bottom, there are "Inputs" leading to "Input Embedding" and "Positional Encoding."
-     - **Encoder Stack**: The encoder consists of a stack of \( N = 6 \) identical layers. Each layer has two sub-layers: 
-       - A "Multi-Head Attention" mechanism.
-       - A "Feed Forward" network, both followed by "Add & Norm" operations.
-     - **Decoder Stack**: The decoder also has \( N = 6 \) identical layers, with an additional sub-layer for "Masked Multi-Head Attention" that processes the output of the encoder.
-     - **Outputs**: At the top, the outputs lead to "Output Probabilities," which are computed through a "Linear" layer followed by a "Softmax" function.
-   - **Arrows**: There are arrows indicating the flow of data through the model, from inputs to outputs.
-   - **Labels**: The figure includes labels for each component, such as "Positional Encoding," "Input Embedding," "Output Embedding," and various attention mechanisms.
-
-Overall, the figure provides a clear visual representation of the Transformer architecture, highlighting the structure and flow of information through the encoder and decoder.
 
 Scaled Dot-Product Attention
 Multi-Head Attention
+[Visual Content — Page 4]
+The page contains one visual element, which is **Figure 2**. 
+
+### Figure 2: 
+- **Title**: "Scaled Dot-Product Attention" (left) and "Multi-Head Attention" (right).
+- **Left Side (Scaled Dot-Product Attention)**:
+ - **Components**:
+ - **MatMul**: Indicates matrix multiplication.
+ - **SoftMax**: A function that converts scores into probabilities.
+ - **Mask (opt.)**: Suggests an optional masking operation.
+ - **Scale**: Refers to scaling the dot products.
+ - **Inputs**: Q (queries), K (keys), V (values) are shown as inputs to the MatMul operation.
+ 
+- **Right Side (Multi-Head Attention)**:
+ - **Components**:
+ - **Linear**: Indicates linear transformations applied to the inputs.
+ - **Concat**: Suggests concatenation of multiple attention outputs.
+ - **Scaled Dot-Product Attention**: This block is highlighted as a key component of the Multi-Head Attention mechanism.
+ - **h**: Represents the number of attention heads.
+ - **Inputs**: V, K, Q are shown as inputs to the linear transformations.
+
+Overall, the figure visually represents the processes involved in both the Scaled Dot-Product Attention and the Multi-Head Attention mechanisms, illustrating how they are structured and how they interact with each other.
 Figure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several
 attention layers running in parallel.
 of the values, where the weight assigned to each value is computed by a compatibility function of the
@@ -189,32 +214,6 @@ queries, keys and values we then perform the attention function in parallel, yie
 4To illustrate why the dot products get large, assume that the components of q and k are independent random
 variables with mean 0 and variance 1. Then their dot product, q · k = Pdk
 i=1 qiki, has mean 0 and variance dk.
-4
-
-[Visual Content — Page 4]
-The page contains one visual element, which is **Figure 2**. 
-
-### Figure 2: 
-- **Title**: Scaled Dot-Product Attention (left) and Multi-Head Attention (right).
-- **Left Side (Scaled Dot-Product Attention)**:
-  - **Components**:
-    - **MathMul**: Indicates a matrix multiplication operation.
-    - **SoftMax**: Represents the softmax function applied to the results.
-    - **Mask (optional)**: Suggests an optional masking step.
-    - **Scale**: Indicates a scaling operation.
-    - **Inputs**: Q (queries), K (keys), V (values) are shown as inputs to the MathMul operation.
-  
-- **Right Side (Multi-Head Attention)**:
-  - **Components**:
-    - **Linear**: Indicates linear transformations applied to the inputs.
-    - **Concat**: Represents the concatenation of multiple attention outputs.
-    - **Scaled Dot-Product Attention**: This block is highlighted as the core component of the multi-head attention mechanism.
-    - **Inputs**: V, K, Q are shown as inputs to the linear transformations.
-
-### Layout:
-- The left and right sections are visually separated, with arrows indicating the flow of data through the various operations. The left side focuses on a single attention mechanism, while the right side illustrates how multiple attention layers operate in parallel. 
-
-Overall, the figure provides a clear visual representation of the processes involved in both scaled dot-product attention and multi-head attention.
 
 output values. These are concatenated and once again projected, resulting in the final values, as
 depicted in Figure 2.
@@ -335,16 +334,6 @@ As noted in Table 1, a self-attention layer connects all positions with a consta
 executed operations, whereas a recurrent layer requires O(n) sequential operations. In terms of
 computational complexity, self-attention layers are faster than recurrent layers when the sequence
 6
-
-[Visual Content — Page 6]
-1. **Table 1**: 
-   - **Title**: Maximum path lengths, per-layer complexity, and minimum number of sequential operations for different layer types.
-   - **Columns**:
-     - **Layer Type**: Lists different types of layers (Self-Attention, Recurrent, Convolutional, Self-Attention (restricted)).
-     - **Complexity per Layer**: Shows the computational complexity for each layer type, with values such as \(O(n^2 \cdot d)\) for Self-Attention and \(O(n \cdot d^2)\) for Recurrent layers.
-     - **Sequential Operations**: Indicates the number of sequential operations required, with values like \(O(1)\) for Self-Attention and \(O(n)\) for Recurrent layers.
-     - **Maximum Path Length**: Lists the maximum path lengths for each layer type, with \(O(1)\) for Self-Attention and \(O(n/r)\) for Self-Attention (restricted).
-   - **Data Values**: The table contains specific computational complexity notations and operational counts for each layer type, providing a comparative overview of their efficiencies.
 
 length n is smaller than the representation dimensionality d, which is most often the case with
 sentence representations used by state-of-the-art models in machine translations, such as word-piece
@@ -484,24 +473,6 @@ To evaluate the importance of different components of the Transformer, we varied
 in different ways, measuring the change in performance on English-to-German translation on the
 5We used values of 2.8, 3.7, 6.0 and 9.5 TFLOPS for K80, K40, M40 and P100, respectively.
 8
-
-[Visual Content — Page 8]
-The page contains one visual element:
-
-1. **Table 2**: This table presents the BLEU scores achieved by the Transformer model compared to previous state-of-the-art models on the English-to-German and English-to-French newstest2014 tests, along with their training costs measured in FLOPs.
-
-   - **Columns**:
-     - **Model**: Lists the different models evaluated.
-     - **BLEU**: Shows the BLEU scores for each model across three language pairs (EN-DE, EN-FR).
-     - **Training Cost (FLOPs)**: Indicates the training cost in floating point operations for each model.
-
-   - **Data**:
-     - For the **ByteNet** model, the BLEU scores are 23.75 (EN-DE) and 39.2 (EN-FR) with a training cost of 1.0 × 10²⁰.
-     - For the **Deep-Att + PosUnk Ensemble**, the BLEU scores are 26.30 (EN-DE) and 40.4 (EN-FR) with a training cost of 8.0 × 10²⁰.
-     - The **Transformer (base model)** has BLEU scores of 27.3 (EN-DE) and 38.1 (EN-FR) with a training cost of 3.3 × 10¹⁸.
-     - The **Transformer (big)** model achieves BLEU scores of 28.4 (EN-DE) and 41.8 (EN-FR) with a training cost of 2.3 × 10¹⁹.
-
-   - **Notes**: The table also references other models and their respective scores and costs, providing a comparative analysis of performance and efficiency.
 
 Table 3: Variations on the Transformer architecture. Unlisted values are identical to those of the base
 model. All metrics are on the English-to-German translation development set, newstest2013. Listed
@@ -653,44 +624,6 @@ We performed only a small number of experiments to select the dropout, both atte
 remained unchanged from the English-to-German base translation model. During inference, we
 9
 
-[Visual Content — Page 9]
-The page contains a table labeled "Table 3: Variations on the Transformer architecture." Here are the details of the visual elements:
-
-1. **Table Structure**:
-   - The table has multiple columns and rows, detailing variations in the Transformer architecture.
-   - The columns include:
-     - **N**: Number of layers
-     - **dmodel**: Model dimension
-     - **dff**: Feedforward dimension
-     - **h**: Number of attention heads
-     - **dk**: Dimension of keys
-     - **dv**: Dimension of values
-     - **Pdrop**: Dropout rate
-     - **εls**: Label smoothing
-     - **train steps**: Number of training steps
-     - **PPL (dev)**: Perplexity on the development set
-     - **BLEU (dev)**: BLEU score on the development set
-     - **params**: Number of parameters in millions
-
-2. **Rows**:
-   - The first row (base) lists the standard configuration with specific values for each column.
-   - Subsequent rows (A, B, C, D, E) show variations in the architecture:
-     - Row (A) varies the number of attention heads and dimensions.
-     - Row (B) shows different configurations for the number of layers.
-     - Row (C) presents variations in model dimensions.
-     - Row (D) explores different dropout rates.
-     - Row (E) discusses positional embedding methods.
-
-3. **Data Values**:
-   - Each cell contains numerical values corresponding to the parameters and metrics for each configuration.
-   - For example, the base configuration has a PPL (dev) of 5.29 and a BLEU (dev) of 28.4.
-
-4. **Notes**:
-   - The table mentions that unlisted values are identical to those of the base model.
-   - It specifies that all metrics are based on the English-to-German translation development set, newstest2013.
-
-Overall, the table provides a comprehensive comparison of different architectural variations and their performance metrics.
-
 Table 4: The Transformer generalizes well to English constituency parsing (Results are on Section 23
 of WSJ)
 Parser
@@ -765,30 +698,6 @@ machine translation architectures. CoRR, abs/1703.03906, 2017.
 [4] Jianpeng Cheng, Li Dong, and Mirella Lapata. Long short-term memory-networks for machine
 reading. arXiv preprint arXiv:1601.06733, 2016.
 10
-
-[Visual Content — Page 10]
-The page contains one visual element:
-
-1. **Table 4**: 
-   - **Title**: "The Transformer generalizes well to English constituency parsing (Results are on Section 23 of WSJ)"
-   - **Columns**: 
-     - **Parser**: Lists different models and their configurations.
-     - **Training**: Indicates the type of training used (e.g., "WSJ only, discriminative", "semi-supervised", "multi-task", "generative").
-     - **WSJ 23 F1**: Shows the F1 scores achieved by each parser on the WSJ dataset.
-   - **Data Values**: 
-     - Vinyals & Kaiser (2014): 88.3
-     - Petrov et al. (2006): 90.4
-     - Zhu et al. (2013): 90.4
-     - Dyer et al. (2016): 91.7
-     - Transformer (4 layers): 91.3
-     - Huang & Harper (2009): 91.3
-     - McClosky et al. (2006): 92.1
-     - Vinyals & Kaiser (2014): 92.1
-     - Transformer (4 layers, semi-supervised): 92.7
-     - Luong et al. (2015): 93.0
-     - Dyer et al. (2016): 93.3
-
-The table summarizes the performance of various parsers, highlighting the effectiveness of the Transformer model in comparison to others.
 
 [5] Kyunghyun Cho, Bart van Merrienboer, Caglar Gulcehre, Fethi Bougares, Holger Schwenk,
 and Yoshua Bengio. Learning phrase representations using rnn encoder-decoder for statistical
@@ -950,23 +859,6 @@ the verb ‘making’, completing the phrase ‘making...more difficult’. Atte
 the word ‘making’. Different colors represent different heads. Best viewed in color.
 13
 
-[Visual Content — Page 13]
-The visual element on this page is labeled as "Figure 3." 
-
-1. **Figure 3**: This figure illustrates the attention mechanism in a neural network, specifically focusing on long-distance dependencies in the encoder self-attention of layer 5 out of 6.
-
-2. **Description**: 
-   - The figure displays a series of words arranged vertically, which represent the input tokens processed by the model. 
-   - The word "making" is highlighted, indicating its significance in the context of the phrase "making...more difficult."
-   - There are colored lines connecting various words to "making," showing how different attention heads focus on different words in relation to "making."
-   - The colors of the lines represent different attention heads, suggesting that multiple aspects of the input are being considered simultaneously.
-
-3. **Axis Labels and Legends**: 
-   - The figure does not have traditional axis labels, but it includes a legend indicating that different colors correspond to different attention heads.
-   - The words are presented in a vertical list, with some words highlighted or connected by lines to emphasize their relationships.
-
-Overall, the figure visually represents how the attention mechanism identifies and emphasizes certain words in a sentence, particularly in the context of understanding dependencies in language.
-
 The
 Law
 will
@@ -1080,21 +972,6 @@ Full attentions for head 5. Bottom: Isolated attentions from just the word ‘it
 and 6. Note that the attentions are very sharp for this word.
 14
 
-[Visual Content — Page 14]
-The visual element on this page is labeled as "Figure 4." It consists of two sections that illustrate attention heads from a neural network model, specifically in layer 5 of 6, related to anaphora resolution.
-
-1. **Top Section**: 
-   - This part shows a matrix of attention weights, where words from a sentence are listed along the vertical and horizontal axes. 
-   - The words include "The," "Law," "will," "never," "be," "perfect," "but," "its," "application," "should," "be," "just," "this," "is," "what," "we," "are," "missing," "in," "my," "opinion," "<EOS>," and "<pad>."
-   - Lines connecting the words are colored in shades of purple, indicating the strength of attention between them. The connections appear to be more pronounced for certain words, suggesting stronger attention relationships.
-
-2. **Bottom Section**: 
-   - This part isolates the attention weights specifically for the word "its" from attention heads 5 and 6.
-   - The word "its" is highlighted, and the connections to other words are shown, indicating where the model focuses its attention when processing this particular word.
-   - The note at the bottom states that the attentions are "very sharp" for this word, implying a strong focus on specific connections.
-
-Overall, the figure visually represents how attention mechanisms in the model operate, particularly in the context of understanding references in language.
-
 The
 Law
 will
@@ -1207,23 +1084,3 @@ Figure 5: Many of the attention heads exhibit behaviour that seems related to th
 sentence. We give two such examples above, from two different heads from the encoder self-attention
 at layer 5 of 6. The heads clearly learned to perform different tasks.
 15
-
-[Visual Content — Page 15]
-The visual element on this page is **Figure 5**. 
-
-### Description:
-- **Type**: The figure consists of two sets of attention heads visualized as a network of connections between words in a sentence.
-- **Top Section**: 
-  - The connections are represented by green lines.
-  - Words from the sentence are displayed vertically, including "The," "Law," "will," "never," "be," "perfect," "but," "its," "application," "should," "be," "just," "this," "is," "what," "we," "are," "missing," "in," "my," "opinion," "<EOS>," and "<pad>".
-  - The lines indicate the attention relationships between these words, with varying thickness to represent the strength of the connections.
-
-- **Bottom Section**: 
-  - The connections are represented by red lines.
-  - The same words are displayed vertically as in the top section.
-  - Similar to the top section, the lines indicate attention relationships, but the connections differ, suggesting that the two heads are focusing on different aspects of the sentence.
-
-### Additional Information:
-- The caption below the figure explains that the attention heads exhibit behavior related to the structure of the sentence and that the two examples illustrate different tasks learned by the heads at layer 5 of 6. 
-
-Overall, the figure visually represents how different attention heads in a neural network model focus on various parts of a sentence, highlighting their distinct roles in processing language.

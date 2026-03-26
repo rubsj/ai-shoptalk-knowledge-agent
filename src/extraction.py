@@ -10,7 +10,9 @@ Per-page cleaning (in order):
 
 Optional: describe_images=True renders each page as PNG and sends to a vision
 LLM (GPT-4o-mini) to describe figures, tables, and diagrams. Descriptions are
-appended to the page text so downstream chunking/retrieval can surface them.
+interleaved at the correct vertical position using PyMuPDF's block-level
+bounding boxes, so figure descriptions appear where the figure sits on the page
+rather than at the end.
 """
 
 from __future__ import annotations
@@ -186,6 +188,86 @@ def _describe_page_images(
     return content
 
 
+def _extract_text_from_dict_block(block: dict) -> str:
+    """Extract plain text from a dict-mode text block (type=0).
+
+    Dict-mode blocks contain lines → spans → text. Joining preserves
+    the reading order that PyMuPDF determined from the PDF layout.
+    """
+    lines = []
+    for line in block.get("lines", []):
+        spans_text = "".join(span.get("text", "") for span in line.get("spans", []))
+        if spans_text.strip():
+            lines.append(spans_text)
+    return "\n".join(lines)
+
+
+def _extract_page_content(
+    page: object,
+    page_num: int,
+    total_pages: int,
+    describe_images: bool,
+    vision_model: str,
+) -> str:
+    """Extract one page's text, interleaving image descriptions at correct positions.
+
+    When describe_images=False (or page has no images): uses standard get_text().
+    When describe_images=True and page has image blocks:
+        1. get_text("dict") returns text AND image blocks with bounding boxes.
+           (get_text("blocks") misses image blocks for many PDFs — dict mode is
+           reliable for detecting embedded XObject images.)
+        2. Sort all blocks by y-coordinate (vertical position on page).
+        3. Render page as PNG, send to vision LLM for figure descriptions.
+        4. Insert description at the y-position of the first image block,
+           so it appears where the figure sits — not at end of page.
+    """
+    if not describe_images:
+        raw_text = page.get_text()  # type: ignore[union-attr]
+        return clean_text(remove_headers_footers(raw_text, page_num, total_pages))
+
+    # Dict mode returns {"blocks": [...]} where each block has "type" (0=text, 1=image)
+    # and "bbox" (x0, y0, x1, y1). This reliably detects embedded images that
+    # get_text("blocks") misses.
+    page_dict = page.get_text("dict")  # type: ignore[union-attr]
+    blocks = page_dict.get("blocks", [])
+    blocks.sort(key=lambda b: (b["bbox"][1], b["bbox"][0]))  # sort by y0, then x0
+
+    has_images = any(b["type"] == 1 for b in blocks)
+
+    if not has_images:
+        # No image blocks — standard text extraction
+        raw_text = page.get_text()  # type: ignore[union-attr]
+        return clean_text(remove_headers_footers(raw_text, page_num, total_pages))
+
+    # Page has image blocks — get description from vision LLM
+    image_description = ""
+    try:
+        pixmap = page.get_pixmap(dpi=150)  # type: ignore[union-attr]
+        png_bytes = pixmap.tobytes("png")
+        image_description = _describe_page_images(png_bytes, page_num, vision_model)
+        if image_description:
+            logger.debug("Page %d: got image description (%d chars)", page_num, len(image_description))
+    except Exception:
+        logger.exception("Page %d: failed to describe images, skipping", page_num)
+
+    # Build page content from blocks in vertical order
+    parts: list[str] = []
+    description_inserted = False
+
+    for block in blocks:
+        if block["type"] == 0:  # text block
+            text = _extract_text_from_dict_block(block)
+            if text.strip():
+                parts.append(text)
+        elif block["type"] == 1 and image_description and not description_inserted:
+            # Insert description at the vertical position of the first image block
+            parts.append(f"[Visual Content — Page {page_num + 1}]\n{image_description}")
+            description_inserted = True
+
+    raw_text = "\n".join(parts)
+    return clean_text(remove_headers_footers(raw_text, page_num, total_pages))
+
+
 def extract_pdf(
     pdf_path: str | Path,
     describe_images: bool = False,
@@ -196,8 +278,8 @@ def extract_pdf(
     Args:
         pdf_path: Path to the PDF file.
         describe_images: If True, render each page as PNG and send to a vision
-            LLM to describe figures/tables/diagrams. Descriptions are appended
-            to the page text.
+            LLM to describe figures/tables/diagrams. Descriptions are interleaved
+            at the correct vertical position on the page.
         vision_model: LiteLLM model name for vision calls (default: gpt-4o-mini).
 
     Raises FileNotFoundError if path is missing, ValueError if no text found.
@@ -215,21 +297,7 @@ def extract_pdf(
     pages: list[PageInfo] = []
     for page_num in range(total_pages):
         page = doc[page_num]
-        raw_text = page.get_text()  # "" for image-only pages
-        cleaned = clean_text(remove_headers_footers(raw_text, page_num, total_pages))
-
-        # Optionally describe visual elements via vision LLM
-        if describe_images:
-            try:
-                pixmap = page.get_pixmap(dpi=150)  # type: ignore[attr-defined]
-                png_bytes = pixmap.tobytes("png")
-                description = _describe_page_images(png_bytes, page_num, vision_model)
-                if description:
-                    cleaned = cleaned + f"\n\n[Visual Content — Page {page_num + 1}]\n{description}"
-                    logger.debug("Page %d: added image description (%d chars)", page_num, len(description))
-            except Exception:
-                logger.exception("Page %d: failed to describe images, skipping", page_num)
-
+        cleaned = _extract_page_content(page, page_num, total_pages, describe_images, vision_model)
         pages.append(
             PageInfo(
                 page_number=page_num,
