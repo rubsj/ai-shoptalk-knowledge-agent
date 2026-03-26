@@ -7,16 +7,26 @@ Pipeline:
 Per-page cleaning (in order):
     1. remove_headers_footers()  — drop running headers/page numbers
     2. clean_text()              — fix ligatures, rejoin hyphenated words, collapse whitespace
+
+Optional: describe_images=True renders each page as PNG and sends to a vision
+LLM (GPT-4o-mini) to describe figures, tables, and diagrams. Descriptions are
+appended to the page text so downstream chunking/retrieval can surface them.
 """
 
 from __future__ import annotations
 
+import base64
+import json
+import logging
 import re
 from pathlib import Path
 
 import fitz  # PyMuPDF — `pip install pymupdf` installs as `fitz`
+import litellm
 
 from src.schemas import Document, DocumentMetadata, PageInfo
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Pre-compiled regexes — compiled once at module load, not per-call.
@@ -124,8 +134,71 @@ def remove_headers_footers(text: str, page_number: int, total_pages: int) -> str
     return "\n".join(foot_keep)
 
 
-def extract_pdf(pdf_path: str | Path) -> Document:
+_VISION_SYSTEM_PROMPT = """\
+You are analyzing a page from an academic paper. Describe any figures, tables, \
+charts, diagrams, or other visual elements on this page.
+
+For each visual element:
+1. Identify it (e.g., "Figure 3", "Table 2")
+2. Describe what it shows in detail
+3. Include any axis labels, legends, column headers, or data values visible
+
+If this page contains only text and mathematical equations with no figures, \
+tables, or diagrams, respond with exactly: NO_VISUAL_ELEMENTS"""
+
+_NO_VISUALS_MARKER = "NO_VISUAL_ELEMENTS"
+
+
+def _describe_page_images(
+    page_png_bytes: bytes,
+    page_number: int,
+    vision_model: str = "gpt-4o-mini",
+) -> str:
+    """Send a rendered page image to a vision LLM and get figure descriptions.
+
+    Returns description text, or empty string if no visual elements found.
+    """
+    b64_image = base64.b64encode(page_png_bytes).decode("utf-8")
+
+    response = litellm.completion(
+        model=vision_model,
+        messages=[
+            {"role": "system", "content": _VISION_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/png;base64,{b64_image}"},
+                    },
+                    {
+                        "type": "text",
+                        "text": f"This is page {page_number + 1}. Describe any visual elements.",
+                    },
+                ],
+            },
+        ],
+        temperature=0.0,
+    )
+    content: str = response.choices[0].message.content
+    if _NO_VISUALS_MARKER in content:
+        return ""
+    return content
+
+
+def extract_pdf(
+    pdf_path: str | Path,
+    describe_images: bool = False,
+    vision_model: str = "gpt-4o-mini",
+) -> Document:
     """Extract text and metadata from a single PDF.
+
+    Args:
+        pdf_path: Path to the PDF file.
+        describe_images: If True, render each page as PNG and send to a vision
+            LLM to describe figures/tables/diagrams. Descriptions are appended
+            to the page text.
+        vision_model: LiteLLM model name for vision calls (default: gpt-4o-mini).
 
     Raises FileNotFoundError if path is missing, ValueError if no text found.
     """
@@ -144,6 +217,19 @@ def extract_pdf(pdf_path: str | Path) -> Document:
         page = doc[page_num]
         raw_text = page.get_text()  # "" for image-only pages
         cleaned = clean_text(remove_headers_footers(raw_text, page_num, total_pages))
+
+        # Optionally describe visual elements via vision LLM
+        if describe_images:
+            try:
+                pixmap = page.get_pixmap(dpi=150)  # type: ignore[attr-defined]
+                png_bytes = pixmap.tobytes("png")
+                description = _describe_page_images(png_bytes, page_num, vision_model)
+                if description:
+                    cleaned = cleaned + f"\n\n[Visual Content — Page {page_num + 1}]\n{description}"
+                    logger.debug("Page %d: added image description (%d chars)", page_num, len(description))
+            except Exception:
+                logger.exception("Page %d: failed to describe images, skipping", page_num)
+
         pages.append(
             PageInfo(
                 page_number=page_num,
@@ -168,20 +254,76 @@ def extract_pdf(pdf_path: str | Path) -> Document:
     return Document(content=full_content, metadata=metadata, pages=pages)
 
 
-def extract_all_pdfs(pdf_dir: str | Path) -> list[Document]:
-    """Extract all PDFs in a directory. Skips files that fail (logs warning)."""
-    import logging
+# ---------------------------------------------------------------------------
+# Disk cache — extract once, reuse everywhere
+# ---------------------------------------------------------------------------
 
-    logger = logging.getLogger(__name__)
+
+def save_document(document: Document, output_path: str | Path) -> Path:
+    """Save a Document as JSON to disk. Returns the written path."""
+    out = Path(output_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(
+        json.dumps(document.model_dump(mode="json"), indent=2, default=str),
+        encoding="utf-8",
+    )
+    return out
+
+
+def load_document(path: str | Path) -> Document | None:
+    """Load a Document from a JSON file. Returns None if file does not exist."""
+    p = Path(path)
+    if not p.exists():
+        return None
+    data = json.loads(p.read_text(encoding="utf-8"))
+    return Document.model_validate(data)
+
+
+def extract_all_pdfs(
+    pdf_dir: str | Path,
+    describe_images: bool = False,
+    cache_dir: str | Path = "data/extracted",
+    force: bool = False,
+) -> list[Document]:
+    """Extract all PDFs in a directory, using disk cache when available.
+
+    Cache behaviour:
+        - If cache_dir/{stem}.json exists and force=False → load from cache.
+        - Otherwise → extract (optionally with image descriptions) → save to cache.
+        - Also saves a human-readable .txt alongside the .json.
+
+    Args:
+        pdf_dir: Directory containing PDF files.
+        describe_images: If True, describe figures/tables via vision LLM on cache miss.
+        cache_dir: Directory for cached extraction results.
+        force: If True, re-extract even if cache exists.
+    """
     pdf_dir = Path(pdf_dir)
+    cache_path = Path(cache_dir)
+    cache_path.mkdir(parents=True, exist_ok=True)
     documents: list[Document] = []
 
     for pdf_path in sorted(pdf_dir.glob("*.pdf")):
+        stem = pdf_path.stem
+        json_cache = cache_path / f"{stem}.json"
+
+        # Try loading from cache
+        if not force and json_cache.exists():
+            cached_doc = load_document(json_cache)
+            if cached_doc is not None:
+                logger.info("Loaded from cache: %s", json_cache.name)
+                documents.append(cached_doc)
+                continue
+
+        # Cache miss — extract
         try:
-            doc = extract_pdf(pdf_path)
+            doc = extract_pdf(pdf_path, describe_images=describe_images)
+            # Save JSON (canonical) and .txt (human-readable)
+            save_document(doc, json_cache)
+            (cache_path / f"{stem}.txt").write_text(doc.content, encoding="utf-8")
+            logger.info("Extracted and cached %s: %d pages", pdf_path.name, doc.metadata.page_count)
             documents.append(doc)
-            logger.info(f"Extracted {pdf_path.name}: {doc.metadata.page_count} pages")
         except (FileNotFoundError, ValueError) as e:
-            logger.warning(f"Skipping {pdf_path.name}: {e}")
+            logger.warning("Skipping %s: %s", pdf_path.name, e)
 
     return documents

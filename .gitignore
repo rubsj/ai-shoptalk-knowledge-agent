@@ -1,10 +1,6 @@
-# Source PDFs — download locally, do not commit
-data/pdfs/*.pdf
-
 # Generated artifacts
 data/indices/
 data/cache/
-data/extracted/
 results/
 
 # Secrets

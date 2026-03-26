@@ -19,40 +19,112 @@ Day 3 is complete (d1d76a5, 484 tests, 95%+ coverage). All infrastructure is bui
 
 ---
 
-## Step 0b: PDF Extraction Quality Check — DEVELOPER GATE
+## Critical Blocker: Ground Truth Cross-Chunker Matching (FIX 1)
 
-Before generating ground truth, extract all 4 PDFs and write raw text to disk for manual inspection.
-
-**Create `scripts/inspect_extraction.py`:**
-1. For each PDF in `data/pdfs/`, call `extract_pdf(path)` → `Document`
-2. Write `doc.content` to `data/debug/extracted_{stem}.txt` (create `data/debug/` if missing)
-3. Print summary table: filename, page_count, total_chars, total_words
-4. Print first 500 chars of page 1 and first 500 chars of the last page for each PDF
-
-**Run the script, then STOP and print this message:**
-
+**Problem:** Ground truth is generated using RecursiveChunker(512, 50) and stores `chunk_id` references. But the experiment grid runs ALL 5 chunkers — each produces DIFFERENT chunks at DIFFERENT char offsets → DIFFERENT deterministic IDs. The metrics code in `_run_single_config` (lines 124-135) does exact ID comparison:
+```python
+relevant_ids = {c.chunk_id for c in gt_query.relevant_chunks if c.relevance_grade >= 1}
+# ... then ...
+recall_at_k(retrieved_ids, relevant_ids, k=5)
 ```
-=== PDF EXTRACTION QUALITY CHECK ===
-Raw extracted text saved to data/debug/extracted_*.txt
+For any config NOT using RecursiveChunker(512, 50), `retrieved_ids ∩ relevant_ids = ∅` and all retrieval metrics silently = 0.0. This makes recursive chunker appear to dominate — not because it's better, but because it's the only strategy whose IDs match ground truth.
 
-Developer: open each file and check for:
-1. COLUMN INTERLEAVING — sentences cut off mid-word then resume with
-   unrelated text (two-column PDF merging). Look at paragraph boundaries.
-2. HEADER/FOOTER CONTAMINATION — does paper title or "Page N" repeat
-   every ~3000 chars? If yes, clean_pdf_text() needs a strip pattern.
-3. LIGATURE ARTIFACTS — search for ﬁ, ﬂ, ﬃ characters. Should be
-   normalized to fi, fl, ffi. If present, clean_pdf_text() is incomplete.
-4. TABLE GARBAGE — columns of numbers with broken whitespace. Tables
-   won't chunk well; acceptable but note if it dominates content.
-5. REFERENCE SECTION NOISE — bibliography at end of each paper.
-   Acceptable, but check it doesn't exceed ~20% of total text per doc.
-6. ENCODING ISSUES — \x sequences, replacement chars (�), or mojibake.
+**Chosen approach: Option B — Document-section matching via char offset overlap.**
 
-Expected: these are single-column arXiv papers, extraction should be
-clean. If issues found, fix clean_pdf_text() before proceeding.
+Why Option B:
+- `ChunkMetadata` already stores `document_id`, `start_char`, `end_char` — no new extraction needed
+- Deterministic and fast (numeric range comparison, not text similarity)
+- Works across all chunking strategies without re-mapping
+- Avoids the complexity of Option C (re-chunk per strategy) and the fuzziness of Option A (text overlap)
 
-Reply 'continue' when inspection is complete.
-```
+**Implementation:**
+
+1. **Extend `GroundTruthChunk` schema** (`src/schemas.py`):
+   ```python
+   class GroundTruthChunk(BaseModel):
+       chunk_id: str  # kept for backward compat / logging
+       document_id: str  # NEW — which document
+       start_char: int   # NEW — section start in document.content
+       end_char: int      # NEW — section end in document.content
+       relevance_grade: int  # 0-3
+   ```
+
+2. **Add `compute_overlap_relevance()` to `src/evaluation/metrics.py`**:
+   ```python
+   def compute_overlap_relevance(
+       retrieved_chunks: list[Chunk],
+       gt_chunks: list[GroundTruthChunk],
+       min_overlap_ratio: float = 0.3,
+   ) -> tuple[set[str], dict[str, int]]:
+       """Map retrieved chunk IDs to ground truth by char offset overlap.
+
+       A retrieved chunk 'hits' a ground truth section if:
+         overlap_chars / min(len(retrieved), len(gt_section)) >= min_overlap_ratio
+
+       Returns:
+           relevant_ids: set of retrieved chunk IDs that overlap with any GT section (grade >= 1)
+           graded_relevance: dict mapping retrieved chunk ID → highest matching GT grade
+       """
+   ```
+
+3. **Update `_run_single_config` in `src/experiment_runner.py`** (lines 124-135):
+   Replace direct ID comparison with `compute_overlap_relevance()` call. Pass `retrieved_chunks` (which carry `metadata.start_char/end_char`) instead of just IDs.
+
+4. **Update ground truth generation script** to record `document_id`, `start_char`, `end_char` for each referenced chunk (available from `chunk.metadata`).
+
+5. **Update ground truth curation instructions** — developer assigns grades to document sections, not chunk IDs.
+
+**Validation:** After implementing, run a smoke test: chunk one document with FixedChunker AND RecursiveChunker, compute metrics for a known query against both — both should produce non-zero metrics if chunks overlap with ground truth sections.
+
+**Files:** `src/schemas.py`, `src/evaluation/metrics.py`, `src/experiment_runner.py`, `scripts/generate_ground_truth.py`, tests
+
+---
+
+## Path & Signature Verification (FIX 2-5)
+
+All paths and signatures verified against actual repo — plan is already correct:
+- **FIX 2 (config dir):** Confirmed `experiments/configs/` (not `src/configs/`). Day 3 handover was wrong.
+- **FIX 3 (ground truth path):** Confirmed `data/ground_truth.json` (not `data/ground_truth/`). Day 3 handover was wrong.
+- **FIX 4 (results output):** Confirmed `results/experiments/summary.json`. Runner defaults match plan.
+- **FIX 5 (generate signature):** Confirmed `generate_ground_truth_candidates(chunks, n=30, model="gpt-4o")` — takes `model` string, not `llm` object. Day 3 handover was wrong.
+
+No changes needed — paths and signatures in this plan are correct.
+
+---
+
+## Step 0b: PDF Extraction with Vision LLM Image Descriptions — DEVELOPER GATE
+
+Before generating ground truth, extract all 4 PDFs with image/figure descriptions and save to disk for manual inspection.
+
+**Enhanced extraction pipeline (`src/extraction.py`):**
+1. `extract_pdf(path, describe_images=True)` extracts text per page as before, PLUS:
+   - Renders each page as PNG via `page.get_pixmap(dpi=150)`
+   - Sends to GPT-4o-mini vision via litellm with a prompt to describe figures, tables, diagrams
+   - Appends descriptions to page text as `[Visual Content — Page N]\n{description}`
+   - Pages with no visual elements (model responds `NO_VISUAL_ELEMENTS`) get no appended text
+   - Errors on individual pages are caught and skipped (logged, not fatal)
+2. `save_document(doc, path)` / `load_document(path)` — JSON serialization for disk caching
+3. `extract_all_pdfs(pdf_dir, describe_images=True, cache_dir="data/extracted")` — cache layer:
+   - If `data/extracted/{stem}.json` exists → load from cache (zero API cost)
+   - Otherwise → extract with vision → save JSON + .txt to cache → return
+   - `--force` flag bypasses cache for re-extraction
+
+**Files committed to repo:**
+- `data/pdfs/*.pdf` — source PDFs (un-gitignored, committed for reproducibility)
+- `data/extracted/{stem}.json` — canonical cached Documents (with image descriptions)
+- `data/extracted/{stem}.txt` — human-readable text (for manual inspection)
+
+**Inspection script (`scripts/inspect_extraction.py`):**
+- Prints per-document stats: page count, char count, empty/short page warnings
+- Usage: `python scripts/inspect_extraction.py --describe-images` (first run)
+- Subsequent runs load from cache automatically
+
+**Cost:** ~$0.01 for 4 papers (61 pages × GPT-4o-mini vision)
+
+**Developer: review `data/extracted/*.txt` files for:**
+1. Image descriptions are reasonable (check pages with known figures)
+2. No garbled text or encoding issues
+3. Total char count increased from ~216K (text-only) to ~240K (with descriptions)
 
 **Wait for developer confirmation before proceeding to Step 1.**
 
@@ -65,7 +137,28 @@ Reply 'continue' when inspection is complete.
 2. Chunk with RecursiveChunker(512, 50) — good general-purpose baseline
 3. `generate_ground_truth_candidates(chunks, n=30, model="gpt-4o")` → 30 QA pairs
 4. Write candidates to `data/ground_truth_candidates.json`. Format each candidate as:
-   `{query_id, question, source_chunk_ids, suggested_answer, source_pdf}`.
+   ```json
+   {
+     "query_id": "q01",
+     "question": "...",
+     "source_pdf": "attention.pdf",
+     "suggested_answer": "...",
+     "relevant_sections": [
+       {
+         "chunk_id": "abc123",
+         "document_id": "doc_hash",
+         "start_char": 4500,
+         "end_char": 5012,
+         "text_preview": "first 100 chars of the chunk...",
+         "suggested_grade": 3
+       }
+     ]
+   }
+   ```
+   Include `text_preview` (first 100 chars) so the developer can identify sections
+   without cross-referencing the full extracted text. Include `document_id`,
+   `start_char`, `end_char` because the cross-chunker matching (FIX 1) requires
+   these fields in the final ground_truth.json.
 
 5. **STOP — Developer curates ground truth manually.** Do NOT auto-accept LLM output.
    Print this message and wait:
@@ -82,8 +175,12 @@ Reply 'continue' when inspection is complete.
    d) VERIFY remaining queries span all 4 papers (minimum 2 per paper)
    e) VERIFY difficulty mix: ~5 easy (1 gold chunk), ~5 medium (2 chunks),
       ~5 hard (synthesis across sections)
-   f) For each kept query, assign relevance grades to referenced chunks:
+   f) For each kept query, review the relevant_sections and assign relevance grades:
       3 = directly answers | 2 = same section | 1 = same document | 0 = irrelevant
+      These grades apply to DOCUMENT SECTIONS (char offset ranges), not chunk IDs.
+      The text_preview field shows what each section contains.
+      You may adjust start_char/end_char boundaries if the LLM picked too narrow
+      or too wide a span. You may also add additional relevant sections the LLM missed.
    g) Target: 15 queries minimum
 
    Save curated result as data/ground_truth.json matching GroundTruthSet schema.
@@ -96,7 +193,9 @@ Reply 'continue' when inspection is complete.
 
 6. Wait for developer confirmation that `load_ground_truth()` succeeds before proceeding to Step 2.
 
-**Key:** Chunk IDs must be deterministic FIRST (Step 0), so the IDs in ground_truth.json match future experiment runs using the same chunking config.
+**Key:** Deterministic chunk IDs (Step 0) are still needed so that reproducibility checks
+produce consistent results within the SAME config. Cross-chunker matching (FIX 1) handles
+the case where DIFFERENT chunkers produce different IDs for overlapping content.
 
 ---
 
@@ -113,6 +212,10 @@ Reply 'continue' when inspection is complete.
 - `41_recursive_minilm_hybrid_a05.yaml` — hybrid_alpha: 0.5
 - `42_recursive_minilm_hybrid_a09.yaml` — hybrid_alpha: 0.9
 - (alpha=0.7 already exists as config 12)
+
+**Note:** Alpha sweep uses recursive + minilm as a fixed baseline. If after the grid run a
+different chunker+embedder combo performs best, consider re-running the alpha sweep with that
+combo. Document this assumption in the comparison report methodology section.
 
 **Fix experiment runner:** `_run_single_config` does NOT apply reranking even when `config.use_reranking=True`. After retrieval (line ~112), add:
 ```python
@@ -143,6 +246,11 @@ Run `run_experiment_grid()` across all ~42 configs with:
 - `--no-judge` (skip LLM judge)
 - `--reproducibility-check` (re-run best config twice)
 
+**Cost tracking:** Verify that `_run_single_config` populates `performance.cost_estimate_usd`.
+For OpenAI embedder configs, estimate based on token count × pricing ($0.02/1M tokens for
+text-embedding-3-small). For local embedders, cost = 0. For LLM generation, estimate based on
+gpt-4o-mini pricing. If cost tracking is missing, add it before running the full grid.
+
 **Time Estimation Checkpoint:**
 After the first 4 configs complete, log wall-clock time and print:
 `"4 configs completed in {X}m. Estimated total for {N} configs: ~{Y}m."`
@@ -168,11 +276,13 @@ Replace stub with 10 chart functions + `generate_all_charts()` orchestrator. All
 | 8 | Judge 5-axis radar | `plot_judge_radar` | — |
 | 9 | Latency vs quality scatter | `plot_latency_vs_quality` | — |
 | 10 | Per-query difficulty | `plot_query_difficulty` | — |
+| 11 | Local vs API embedding | `plot_local_vs_api` | Q5 — **DEFERRED to Day 5 (Ollama)** |
 
 **Helpers needed:**
 - `_config_label(config) -> str` — short label like `recursive_minilm_dense`
 - `_results_to_dataframe(results) -> pd.DataFrame` — flatten for seaborn/matplotlib
 - Use `matplotlib` + `seaborn`, style: `seaborn-v0_8-whitegrid`, figsize (12,8), dpi 150
+- `generate_all_charts()` produces 10 charts on Day 4. Chart 11 is added in Day 5 when Ollama experiment data exists.
 
 ---
 
@@ -186,8 +296,10 @@ Markdown report with sections:
 - **Q2** — dense vs BM25 vs hybrid table
 - **Q3** — reranking before/after delta table
 - **Q4** — embedding model comparison with latency + cost columns
-- **Best Configuration** — full YAML dump + traceability table
+- **Best Configuration** — full YAML dump of the winning config
 - **Methodology**
+- **Iteration Log Table** — rendered from `results/iteration_log.json`, showing each single-parameter change with before/after metrics and delta (PRD 7g)
+- **Final Config Traceability** — table mapping every component choice in the best config to the specific experiment pair that justified it (PRD 7g)
 - **Judge Target Check** — does best config achieve avg > 4.0 across all 5 axes? (PRD 2b target). If not, flag which axes fell short and by how much.
 - **Self-Evaluation Answers** — draft answers to PRD Section 8c questions 1-5, each referencing specific experiment IDs. (Q6 is Day 5 — Ollama.)
 
@@ -232,11 +344,27 @@ Triggered by `--reproducibility-check` flag in CLI.
 
 ## Step 8: Judge Calibration (`scripts/judge_calibration.py`)
 
-1. Pick 5 diverse query-answer pairs from grid results
-2. Print each with context chunks for manual scoring
-3. Developer enters 5-axis scores (1-5) interactively
-4. Compare human vs LLM judge, compute per-axis delta
-5. Save to `results/judge_calibration.json`
+1. Pick 5 diverse query-answer pairs from grid results (different configs, different papers)
+2. Write them to `results/judge_calibration_input.json` with: query, answer, context chunks, LLM judge scores
+3. **STOP and print:**
+
+   ```
+   === JUDGE CALIBRATION — DEVELOPER REQUIRED ===
+   5 query-answer pairs saved to results/judge_calibration_input.json
+
+   For each pair, read the answer + context chunks and score on 5 axes (1-5):
+   - Relevance: 1=off-topic → 5=directly answers
+   - Accuracy: 1=major errors → 5=every claim verifiable
+   - Completeness: 1=fragment → 5=comprehensive
+   - Conciseness: 1=verbose → 5=focused
+   - Citation Quality: 1=no citations → 5=every claim cited
+
+   Add your scores as "human_scores" to each entry in the JSON file.
+   Reply 'continue' when done.
+   ```
+
+4. After developer continues, load the file, compare human vs LLM per-axis, compute deltas
+5. Save final output to `results/judge_calibration.json`
 
 ---
 
@@ -249,36 +377,44 @@ Triggered by `--reproducibility-check` flag in CLI.
 | `tests/test_iteration_log.py` | Single-param diff detection, delta math, empty input |
 | `tests/test_reproducibility.py` | Pass/fail thresholds, best config selection (mock _run_single_config) |
 | `tests/test_chunkers.py` (additions) | Deterministic IDs: same input → same output |
+| `tests/test_integration.py` | Full pipeline: PDF → chunk → embed → index → retrieve → generate → cited answer. Uses 1 test PDF, 1 config, 1 query. Verifies QAResponse has non-empty answer, valid citations, latency < 30s. |
 
 ---
 
 ## Execution Order
 1. Deterministic chunk IDs (blocker for everything)
-2. PDF extraction quality check — WAIT for developer approval
-3. Ground truth generation script — WAIT for developer curation
-4. Reranking fix in experiment_runner + new YAML configs
-5. `scripts/evaluate.py` CLI entry point
-6. Run full grid (42+ configs) — check time estimate after first 4
-7. `src/visualization.py` — all 10 charts
-8. `src/reporting.py` — comparison report + judge target check + self-eval answers
-9. `src/iteration_log.py` — iteration log
-10. Reproducibility check
-11. Judge calibration
-12. Tests for all new code (maintain 95%+)
-13. Update CLAUDE.md, commit `docs/plans/day4-plan.md`
+2. Verify + fix paths: config dir, ground truth path, results output path (FIX 2-4)
+3. Resolve ground truth cross-chunker matching strategy (FIX 1 — CRITICAL)
+4. PDF extraction quality check — WAIT for developer approval
+5. Ground truth generation script (correct function signature per FIX 5) — WAIT for developer curation
+6. Reranking fix in experiment_runner + new YAML configs (correct path)
+7. Verify cost tracking exists in _run_single_config (FIX 11)
+8. `scripts/evaluate.py` CLI entry point
+9. Run full grid (42+ configs) — check time estimate after first 4
+10. `src/visualization.py` — 10 charts (chart 11 deferred to Day 5)
+11. `src/reporting.py` — comparison report + judge target check + self-eval answers
+12. `src/iteration_log.py` — iteration log
+13. Reproducibility check
+14. Judge calibration — WAIT for developer scoring (FIX 7)
+15. Tests for all new code including integration test (FIX 6), maintain 95%+
+16. Update CLAUDE.md, commit docs/plans/day4-plan.md
 
 ---
 
 ## Verification
-- [ ] `load_ground_truth("data/ground_truth.json")` succeeds (15 queries, valid chunk IDs)
-- [ ] `run_experiment_grid()` completes for all configs, `results/experiments/summary.json` exists
-- [ ] 10+ PNGs in `results/charts/`
+- [ ] All file paths verified against actual repo (configs, ground truth, results output)
+- [ ] Ground truth cross-chunker matching strategy implemented and tested
+- [ ] PDF extraction quality inspected and approved before ground truth generation
+- [ ] `load_ground_truth()` succeeds (15+ queries, valid chunk IDs, spans all 4 papers, difficulty mix)
+- [ ] `run_experiment_grid()` completes for all configs, results JSON exists at correct path
+- [ ] Non-recursive chunker configs produce non-zero retrieval metrics (FIX 1 validation)
+- [ ] 10 PNGs in `results/charts/` (chart 11 deferred to Day 5)
 - [ ] `results/comparison_report.md` answers Q1-Q4 with data tables
+- [ ] Best config judge scores checked against > 4.0 avg target (PRD 2b)
 - [ ] `results/iteration_log.json` traces config decisions
 - [ ] Reproducibility check passes (<5% variance)
-- [ ] `results/judge_calibration.json` compares 5 answers
+- [ ] `results/judge_calibration.json` compares human vs LLM on 5 answers
+- [ ] Every ExperimentResult includes performance fields: ingestion_time_seconds, avg_query_latency_ms, index_size_bytes, peak_memory_mb, embedding_source, cost_estimate_usd (OpenAI configs > $0, BM25 = $0)
+- [ ] Integration test passes: PDF → chunk → embed → retrieve → generate → cited answer
+- [ ] `data/debug/` added to .gitignore
 - [ ] `pytest` passes, coverage ≥95%
-- [ ] Every ExperimentResult JSON includes performance fields: ingestion_time_seconds, avg_query_latency_ms, index_size_bytes, peak_memory_mb, embedding_source
-- [ ] Best config judge scores checked against > 4.0 avg target (PRD 2b)
-- [ ] Ground truth queries span all 4 papers with difficulty mix (easy/medium/hard)
-- [ ] PDF extraction quality inspected and approved before ground truth generation

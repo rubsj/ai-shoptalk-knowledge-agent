@@ -5,10 +5,14 @@ Extracts all PDFs in data/pdfs/ and prints a quality report:
   - Per-page: char count and flag for suspiciously short pages (<100 chars)
   - First 500 chars of each document (visual sanity check)
 
+Uses disk cache: if data/extracted/{stem}.json exists, loads from cache.
+First run with --describe-images sends pages to GPT-4o-mini vision for
+figure/table descriptions (costs ~$0.01 for 4 papers). Subsequent runs are free.
+
 Usage:
     python scripts/inspect_extraction.py
-    python scripts/inspect_extraction.py --pdf-dir data/pdfs --preview-chars 300
-    python scripts/inspect_extraction.py --save-dir data/extracted
+    python scripts/inspect_extraction.py --describe-images    # first run: vision LLM
+    python scripts/inspect_extraction.py --force              # re-extract, bypass cache
 
 Developer should verify:
   - All 4 PDFs extracted with no failures
@@ -110,9 +114,19 @@ def main() -> int:
         help="Number of chars to preview per document (default: 500)",
     )
     parser.add_argument(
-        "--save-dir",
+        "--cache-dir",
         default="data/extracted",
-        help="Directory to save extracted text files (default: data/extracted)",
+        help="Directory for cached extraction results (default: data/extracted)",
+    )
+    parser.add_argument(
+        "--describe-images",
+        action="store_true",
+        help="Send pages to vision LLM to describe figures/tables (costs ~$0.01)",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Re-extract even if cached results exist",
     )
     args = parser.parse_args()
 
@@ -124,24 +138,22 @@ def main() -> int:
     print(_SEPARATOR)
     print("  PDF EXTRACTION QUALITY REPORT")
     print(f"  Directory: {pdf_dir.resolve()}")
+    if args.describe_images:
+        print("  Mode: with vision LLM image descriptions")
     print(_SEPARATOR)
 
-    print("\nExtracting PDFs...", end=" ", flush=True)
+    print("\nExtracting PDFs (cached if available)...", end=" ", flush=True)
     try:
-        documents = extract_all_pdfs(pdf_dir)
+        documents = extract_all_pdfs(
+            pdf_dir,
+            describe_images=args.describe_images,
+            cache_dir=args.cache_dir,
+            force=args.force,
+        )
     except Exception as exc:
         print(f"\nERROR during extraction: {exc}", file=sys.stderr)
         return 1
     print(f"done ({len(documents)} documents)")
-
-    # Save extracted text to disk so developer can physically inspect
-    save_dir = Path(args.save_dir)
-    save_dir.mkdir(parents=True, exist_ok=True)
-    for doc in documents:
-        stem = Path(doc.metadata.source).stem
-        out_file = save_dir / f"{stem}.txt"
-        out_file.write_text(doc.content, encoding="utf-8")
-    print(f"Saved extracted text to {save_dir.resolve()}/")
 
     all_warnings: list[str] = []
     for doc in documents:
@@ -157,6 +169,7 @@ def main() -> int:
     total_chars = sum(len(d.content) for d in documents)
     print(f"  Total pages        : {total_pages}")
     print(f"  Total chars        : {total_chars:,}")
+    print(f"  Cache directory    : {Path(args.cache_dir).resolve()}")
 
     if all_warnings:
         print(f"\n  ⚠  {len(all_warnings)} warning(s) — review before generating ground truth:")
