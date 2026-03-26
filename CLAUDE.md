@@ -64,10 +64,10 @@
 | matplotlib/seaborn charts | P1–P4 | 11+ experiment comparison charts |
 | Click CLI | P2 | 3 commands: ingest, serve, evaluate |
 | Rich progress bars | P2 | Batch processing progress |
-| ADR template | P1–P4 | 6 ADRs (distributed across Days 1-5) |
+| ADR template | P1–P4 | 7 ADRs (distributed across Days 1-5) |
 
 ### New for P5 (Learn These)
-- **PyMuPDF** (`import fitz`) — PDF text extraction. `fitz.open()` = Java's `PDDocument.load()`.
+- **PyMuPDF** (`import fitz`) — PDF text extraction + page rendering. `fitz.open()` = Java's `PDDocument.load()`. `page.get_text("dict")` returns text AND image blocks with bounding boxes. Vision LLM (GPT-4o-mini) describes figures/tables, interleaved at correct position (ADR-006).
 - **rank-bm25** — `BM25Okapi(tokenized_corpus)`. Corpus = list of token lists, NOT embeddings.
 - **LiteLLM** — `from litellm import completion`. Wraps OpenAI/Anthropic/Cohere behind one API. Like Java's adapter pattern.
 - **NDCG** — Implement from scratch. `DCG@K = Σ(rel_i / log₂(i+1))`. `NDCG = DCG / ideal_DCG`.
@@ -213,7 +213,7 @@ OPTIONAL MONITORING: import psutil; psutil.virtual_memory().percent
 | Day 2 | Retrieval Pipeline: Embedders, FAISS, retrievers, rerankers, generator | PRD Day 2 | Resume here (Mar 19). Same scope as original Day 2. |
 | Day 3 | Evaluation Framework: Metrics, ground truth, judge, configs, runner | PRD Day 3 | Same scope. Add Ollama config YAMLs to experiment grid. |
 | Day 4 | Experiment Execution: Full grid, charts, comparison report (Q1-Q4) | PRD Day 4 | Expanded time (Sunday deep work). More configs with Ollama added. |
-| Day 5 | **NEW:** Local Model Experiments + Concept Deep-Dive | — | OllamaEmbedder implementation, local vs API comparison (Q5), ADR-006. |
+| Day 5 | **NEW:** Local Model Experiments + Concept Deep-Dive | — | OllamaEmbedder implementation, local vs API comparison (Q5), ADR-007. |
 | Day 6 | Streamlit UI + CLI Polish | PRD Day 5 (split) | UI and CLI only. Documentation moved to Day 7. |
 | Day 7 | Documentation Sprint: README, Loom, Concept Library, Journal | PRD Day 5 (split) | Dedicated documentation day for gold-standard depth. |
 
@@ -434,7 +434,7 @@ At the end of every session, Sonnet must:
 ### Day 1 — Foundation: Extraction + Chunking + Schemas ✅ COMPLETE
 - [x] All Pydantic schemas (matching requirements data models + PRD additions)
 - [x] All 6 ABCs (BaseChunker, BaseEmbedder, BaseVectorStore, BaseRetriever, BaseReranker, BaseLLM)
-- [x] PDF extraction with PyMuPDF + text cleaning
+- [x] PDF extraction with PyMuPDF + text cleaning + vision LLM image descriptions (ADR-006)
 - [x] 5 chunking strategies (Fixed, Recursive, Sliding Window, Heading-Semantic, Embedding-Semantic)
 - [x] Tests for schemas + all chunkers (≥95% coverage)
 - [x] **ADR-001: FAISS over ChromaDB** written and committed
@@ -490,7 +490,7 @@ At the end of every session, Sonnet must:
 - [ ] Run Ollama nomic configs (best 3 chunkers × 2 retrieval methods = 6 configs)
 - [ ] Local vs API embedding comparison chart (Q5)
 - [ ] Latency benchmarking: local embedding time vs OpenAI API time
-- [ ] **ADR-006: Local vs API embeddings** written and committed
+- [ ] **ADR-007: Local vs API embeddings** written and committed
 - [ ] Concept Library entries: "Cross-encoder Reranking", "Hybrid Search"
 - [ ] Learning Journal: deep-dive reflection on experimentation insights
 - [ ] **Checkpoint:** Q5 answered with data. Local embedding story documented.
@@ -535,7 +535,10 @@ This is why Pydantic validates at load time. Common: missing hybrid_alpha when m
 Iterate: increase chunk overlap, try reranking, try larger embedder. The debugging story is valuable in interviews regardless. Document what you tried.
 
 ### "PyMuPDF two-column PDF text interleaved"
-Use `page.get_text("blocks")` for coordinate-based extraction, sort by column position. Or: choose single-column technical docs.
+Use `page.get_text("dict")` for coordinate-based extraction with bounding boxes, sort by column position. NOTE: `get_text("blocks")` silently omits image blocks — always use `get_text("dict")` when you need image positions. Or: choose single-column technical docs.
+
+### "Figures/tables missing from extracted content"
+PyMuPDF's `get_text()` only extracts text. Use `describe_images=True` in `extract_pdf()` to render pages as PNG and send to GPT-4o-mini vision for figure descriptions. Results are cached to `data/extracted/{stem}.json` — subsequent calls are free. See ADR-006.
 
 ### "LiteLLM import error or routing issue"
 LiteLLM model strings: `"gpt-4o-mini"` (not `"openai/gpt-4o-mini"` unless explicitly routing). Check `litellm.model_list` for supported models. Fallback: raw OpenAI SDK behind BaseLLM if LiteLLM is problematic.

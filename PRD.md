@@ -18,7 +18,7 @@
 | Version | Date | Changes |
 |---------|------|---------|
 | v3 | Feb 2026 | All design decisions finalized, ADRs distributed, test coverage 95%+ |
-| v4 | Mar 18, 2026 | Hardware upgrade M2 8GB → M5 Max 128GB. Timeline expanded from 5 to 7 sessions. Added local embedding model experiments (Ollama nomic-embed-text). Added ADR-006 for local vs API embeddings. Removed all 8GB RAM constraints. Experiment runner pooling simplified (no longer a hard requirement — sufficient RAM for concurrent models, but pooling still preferred for clean benchmarking). |
+| v4 | Mar 18, 2026 | Hardware upgrade M2 8GB → M5 Max 128GB. Timeline expanded from 5 to 7 sessions. Added local embedding model experiments (Ollama nomic-embed-text). Added ADR-007 for local vs API embeddings. Removed all 8GB RAM constraints. Experiment runner pooling simplified (no longer a hard requirement — sufficient RAM for concurrent models, but pooling still preferred for clean benchmarking). |
 | v5 | Mar 23, 2026 | Aligned with updated bootcamp requirements (v2). Added iteration log format as formal deliverable (Section 7g). Added reproducibility verification to Day 4 exit criteria (Section 2g). No architecture, tech stack, or timeline changes — these are traceability and rigor additions only. |
 
 ---
@@ -412,7 +412,7 @@ Every experiment must save results as JSON matching this structure:
 - **Expected chunks:** 500-800 across all chunking strategies
 - **Selection criteria:** Single-column layout, well-structured headings, content developer can grade accurately on 4-level NDCG scale
 - **Download on Day 0:** Pre-download to `data/pdfs/`, see `data/pdfs/README.md` for URLs and verification script
-- **Git policy:** PDFs are .gitignored — only the README is committed
+- **Git policy:** PDFs and extracted content are committed for reproducibility (see ADR-006)
 ---
 
 ## 7. Required Deliverables
@@ -449,7 +449,7 @@ The experiment report **must** explicitly answer these questions with data:
 | Q2 | Did hybrid retrieval beat dense-only? | Side-by-side comparison with α analysis |
 | Q3 | Was reranking worth the latency cost? | Before/after metrics + latency delta |
 | Q4 | Which embedding model gave best quality/speed trade-off? | Scatter plot (quality vs latency) + recommendation |
-| **Q5** | **(v4)** How did local embeddings (Ollama) compare to API embeddings? | Quality delta, latency comparison, cost analysis. This is ADR-006 material. |
+| **Q5** | **(v4)** How did local embeddings (Ollama) compare to API embeddings? | Quality delta, latency comparison, cost analysis. This is ADR-007 material. |
 
 ### 7d. CLI Tools
 
@@ -485,7 +485,8 @@ The experiment report **must** explicitly answer these questions with data:
 | D14 | ADR-003: Hybrid retrieval with min-max score fusion | Why naive combination fails. α optimization | Day 2 |
 | D15 | ADR-004: LiteLLM over raw OpenAI SDK | Multi-provider pattern. Adapter architecture | Day 2 |
 | D16 | ADR-005: YAML + Pydantic for experiment configs | Human-editable with validation. Production ML pattern | Day 3 |
-| **D18** | **ADR-006: Local vs API embeddings** | **(v4)** Data-driven comparison: nomic-embed-text (local) vs OpenAI (API). Latency, quality, cost. | **Day 5** |
+| D17 | ADR-006: PDF extraction with vision LLM image descriptions | Vision LLM describes figures/tables, positional interleaving via dict-mode bboxes, disk cache | Day 4 |
+| **D18** | **ADR-007: Local vs API embeddings** | **(v4)** Data-driven comparison: nomic-embed-text (local) vs OpenAI (API). Latency, quality, cost. | **Day 5** |
 
 ### 7g. Iteration Logs (v5)
 
@@ -621,7 +622,8 @@ The project is not complete until you can answer:
 | ADR-003 | Hybrid retrieval with min-max score fusion | Why naive combination fails. α optimization. Ensemble principle. | **Day 2** (when hybrid retriever is built) |
 | ADR-004 | LiteLLM over raw OpenAI SDK | Multi-provider pattern. Adapter architecture. Spec alignment. | **Day 2** (when LiteLLM generator is built) |
 | ADR-005 | YAML + Pydantic for experiment configs | Human-editable with validation. Production ML pattern. | **Day 3** (when experiment configs are defined) |
-| **ADR-006** | **Local vs API embeddings (nomic-embed-text vs OpenAI)** | **(v4)** Data-driven comparison. Latency, quality, cost tradeoff on real data. Hardware-enabled architectural decision. | **Day 5** (after local embedding experiments run) |
+| ADR-006 | PDF extraction with vision LLM image descriptions | Vision LLM (GPT-4o-mini) describes figures/tables. Positional interleaving via `get_text("dict")` bounding boxes. Disk cache pattern. PDFs committed to repo. | **Day 4** (when extraction pipeline was enhanced for ground truth quality) |
+| **ADR-007** | **Local vs API embeddings (nomic-embed-text vs OpenAI)** | **(v4)** Data-driven comparison. Latency, quality, cost tradeoff on real data. Hardware-enabled architectural decision. | **Day 5** (after local embedding experiments run) |
 
 ---
 
@@ -631,7 +633,7 @@ The project is not complete until you can answer:
 |------|--------|------------|
 | ~~M2 RAM pressure (8GB)~~ | ~~OOM during embedding/indexing~~ | **Resolved (v4):** M5 Max 128GB eliminates RAM constraints. Pooling retained for clean benchmarking, not survival. |
 | Ollama not running during experiments | OllamaEmbedder fails | Health check in `__init__`. Skip Ollama configs gracefully with warning if Ollama unavailable. Don't block core grid. |
-| PyMuPDF extracts garbage from complex PDFs | Useless chunks | Choose well-structured technical docs. Inspect raw extraction. Add cleaning for headers/footers/ligatures. |
+| PyMuPDF extracts garbage from complex PDFs | Useless chunks | Choose well-structured technical docs. Inspect raw extraction. Add cleaning for headers/footers/ligatures. Vision LLM describes figures that PyMuPDF can't extract as text (see ADR-006). |
 | Embedding-semantic chunker too slow | Blocks Day 1 | Implement heading-semantic first (no embeddings). Embedding-semantic as Day 1 stretch. |
 | OpenAI rate limits during 30+ configs | Stalls experiment run | Cache everything. Local models first. OpenAI last. |
 | Cohere free tier limits | Not enough rerank calls | Limit reranking to top-5 configs. Local cross-encoder as fallback. |
@@ -651,7 +653,7 @@ The project is not complete until you can answer:
 | Day 2 (~4h) | **Retrieval Pipeline:** Embedders (MiniLM, mpnet), FAISS, 3 retrievers, 2 rerankers, LiteLLM generator with citations | Original Day 2 (core retrieval) | ADR-003, ADR-004 | End-to-end query produces cited answer. Smoke test passes. ≥95% coverage on all new components. |
 | Day 3 (~4h) | **Evaluation Framework:** Retrieval metrics from scratch, ground truth generation + curation, 5-axis judge, YAML configs, experiment runner | Original Day 3 | ADR-005 | Evaluation framework complete. 35+ configs defined. Ready for big run. |
 | Day 4 (~6-8h) | **Experiment Execution:** Full grid run, 11+ charts, comparison report (Q1-Q4), α sweep, reranking comparison, iteration log, reproducibility verification | Original Day 4 (expanded) | — | All core experiments complete. Best configs identified with evidence. Iteration log traces every config decision. Reproducibility check passes (<5% variance). |
-| Day 5 (~4h) | **Local Model Experiments + Concept Deep-Dive:** OllamaEmbedder implementation, nomic-embed-text configs, local vs API comparison (Q5), RAGAS-style evaluation deep dive | **NEW (v4)** | ADR-006 | Local embedding experiments complete. Q5 answered with data. |
+| Day 5 (~4h) | **Local Model Experiments + Concept Deep-Dive:** OllamaEmbedder implementation, nomic-embed-text configs, local vs API comparison (Q5), RAGAS-style evaluation deep dive | **NEW (v4)** | ADR-007 | Local embedding experiments complete. Q5 answered with data. |
 | Day 6 (~4h) | **Streamlit UI + CLI Polish:** Build Streamlit demo, Click CLI (ingest/serve/evaluate), end-to-end verification | Original Day 5 (split) | — | All UI and CLI deliverables functional. |
 | Day 7 (~4h) | **Documentation Sprint:** README (gold standard), Loom recording, Concept Library entries, Learning Journal, self-evaluation questions answered | Original Day 5 (split) + new documentation depth | — | All deliverables complete. P5 DONE. |
 
@@ -673,4 +675,4 @@ The project is not complete until you can answer:
 
 7. **"Why LiteLLM?"** → Multi-provider abstraction. Same interface whether I'm calling OpenAI, Anthropic, or Cohere. Production systems need provider flexibility — LiteLLM gives that behind BaseLLM.
 
-8. **(v4) "Have you worked with local inference?"** → Yes. I benchmarked nomic-embed-text running locally on Apple Silicon against OpenAI's API embeddings. Local embeddings were [X]% [faster/slower] with [Y]% quality delta on my retrieval metrics. For development iteration, local was [better/comparable]. For production, [recommendation]. The data drove the architectural decision — documented in ADR-006.
+8. **(v4) "Have you worked with local inference?"** → Yes. I benchmarked nomic-embed-text running locally on Apple Silicon against OpenAI's API embeddings. Local embeddings were [X]% [faster/slower] with [Y]% quality delta on my retrieval metrics. For development iteration, local was [better/comparable]. For production, [recommendation]. The data drove the architectural decision — documented in ADR-007.
