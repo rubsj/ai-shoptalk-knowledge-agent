@@ -112,14 +112,19 @@ class EmbeddingSemanticChunker(BaseChunker):
 
         # Build Chunk objects with provenance metadata
         chunks: list[Chunk] = []
+        search_start = 0
         for i, text in enumerate(merged_texts):
             if not text.strip():
                 continue
-            # Find char offset in original content
-            start = content.find(text[:50])  # use first 50 chars as search key
+            # Find char offset in original content using advancing search position
+            # WHY: advancing search_start prevents matching an earlier duplicate
+            start = content.find(text[:50], search_start)
             if start == -1:
-                start = 0
+                start = content.find(text[:50])
+            if start == -1:
+                start = search_start
             end = start + len(text)
+            search_start = start + 1
             page_number = find_page_number(document, start)
             chunks.append(
                 self._make_chunk(document, text, start, end, i)
