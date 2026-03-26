@@ -290,7 +290,7 @@ def extract_all_pdfs(
     Cache behaviour:
         - If cache_dir/{stem}.json exists and force=False → load from cache.
         - Otherwise → extract (optionally with image descriptions) → save to cache.
-        - Also saves a human-readable .txt alongside the .json.
+        - Also saves a human-readable .txt to cache_dir/validation/ for inspection.
 
     Args:
         pdf_dir: Directory containing PDF files.
@@ -318,9 +318,11 @@ def extract_all_pdfs(
         # Cache miss — extract
         try:
             doc = extract_pdf(pdf_path, describe_images=describe_images)
-            # Save JSON (canonical) and .txt (human-readable)
+            # Save JSON (canonical) and .txt (human-readable validation copy)
             save_document(doc, json_cache)
-            (cache_path / f"{stem}.txt").write_text(doc.content, encoding="utf-8")
+            validation_dir = cache_path / "validation"
+            validation_dir.mkdir(parents=True, exist_ok=True)
+            (validation_dir / f"{stem}.txt").write_text(doc.content, encoding="utf-8")
             logger.info("Extracted and cached %s: %d pages", pdf_path.name, doc.metadata.page_count)
             documents.append(doc)
         except (FileNotFoundError, ValueError) as e:
