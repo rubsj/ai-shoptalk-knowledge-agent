@@ -8,6 +8,7 @@ Extracts all PDFs in data/pdfs/ and prints a quality report:
 Usage:
     python scripts/inspect_extraction.py
     python scripts/inspect_extraction.py --pdf-dir data/pdfs --preview-chars 300
+    python scripts/inspect_extraction.py --save-dir data/extracted
 
 Developer should verify:
   - All 4 PDFs extracted with no failures
@@ -108,6 +109,11 @@ def main() -> int:
         default=500,
         help="Number of chars to preview per document (default: 500)",
     )
+    parser.add_argument(
+        "--save-dir",
+        default="data/extracted",
+        help="Directory to save extracted text files (default: data/extracted)",
+    )
     args = parser.parse_args()
 
     pdf_dir = Path(args.pdf_dir)
@@ -127,6 +133,15 @@ def main() -> int:
         print(f"\nERROR during extraction: {exc}", file=sys.stderr)
         return 1
     print(f"done ({len(documents)} documents)")
+
+    # Save extracted text to disk so developer can physically inspect
+    save_dir = Path(args.save_dir)
+    save_dir.mkdir(parents=True, exist_ok=True)
+    for doc in documents:
+        stem = Path(doc.metadata.source).stem
+        out_file = save_dir / f"{stem}.txt"
+        out_file.write_text(doc.content, encoding="utf-8")
+    print(f"Saved extracted text to {save_dir.resolve()}/")
 
     all_warnings: list[str] = []
     for doc in documents:
