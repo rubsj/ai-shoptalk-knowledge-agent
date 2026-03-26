@@ -703,6 +703,28 @@ class TestGroundTruthChunk:
         with pytest.raises(ValidationError, match="at least 1 character"):
             GroundTruthChunk(chunk_id="", relevance_grade=1)
 
+    def test_offset_fields_default_to_none(self):
+        gtc = GroundTruthChunk(chunk_id="c1", relevance_grade=1)
+        assert gtc.document_id == ""
+        assert gtc.start_char is None
+        assert gtc.end_char is None
+
+    def test_offset_fields_accepted_when_provided(self):
+        gtc = GroundTruthChunk(
+            chunk_id="c1",
+            document_id="doc-abc",
+            start_char=0,
+            end_char=512,
+            relevance_grade=3,
+        )
+        assert gtc.document_id == "doc-abc"
+        assert gtc.start_char == 0
+        assert gtc.end_char == 512
+
+    def test_negative_start_char_raises(self):
+        with pytest.raises(ValidationError, match="greater than or equal to 0"):
+            GroundTruthChunk(chunk_id="c1", relevance_grade=1, start_char=-1, end_char=100)
+
 
 # ---------------------------------------------------------------------------
 # GroundTruthQuery

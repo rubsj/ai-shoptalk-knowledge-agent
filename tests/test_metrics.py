@@ -202,3 +202,123 @@ class TestNDCGAtK:
         # Chunk "x" has grade 0 → iDCG based on grade-0 is 0 → NDCG = 0
         result = ndcg_at_k(["x"], {"x": 0}, k=1)
         assert result == 0.0
+
+
+# ---------------------------------------------------------------------------
+# compute_overlap_relevance
+# ---------------------------------------------------------------------------
+
+
+from src.evaluation.metrics import compute_overlap_relevance
+from src.schemas import Chunk, ChunkMetadata, GroundTruthChunk
+
+
+def _make_chunk(chunk_id: str, doc_id: str, start: int, end: int) -> Chunk:
+    """Helper: minimal Chunk with specified char offsets."""
+    return Chunk(
+        id=chunk_id,
+        content="x" * (end - start),
+        metadata=ChunkMetadata(
+            document_id=doc_id,
+            source="doc.pdf",
+            page_number=0,
+            start_char=start,
+            end_char=end,
+            chunk_index=0,
+        ),
+    )
+
+
+def _gt(chunk_id: str, doc_id: str, start: int, end: int, grade: int) -> GroundTruthChunk:
+    """Helper: GroundTruthChunk with all offset fields set."""
+    return GroundTruthChunk(
+        chunk_id=chunk_id,
+        document_id=doc_id,
+        start_char=start,
+        end_char=end,
+        relevance_grade=grade,
+    )
+
+
+class TestComputeOverlapRelevance:
+    def test_exact_overlap_returns_gt_grade(self):
+        chunk = _make_chunk("r1", "doc1", 0, 100)
+        gt = _gt("g1", "doc1", 0, 100, 3)
+        rel_ids, graded = compute_overlap_relevance([chunk], [gt])
+        assert "r1" in rel_ids
+        assert graded["r1"] == 3
+
+    def test_partial_overlap_above_threshold_matches(self):
+        # retrieved [0, 100], GT [50, 150] → overlap=50, min_len=100 → ratio=0.5 ≥ 0.3
+        chunk = _make_chunk("r1", "doc1", 0, 100)
+        gt = _gt("g1", "doc1", 50, 150, 2)
+        rel_ids, graded = compute_overlap_relevance([chunk], [gt])
+        assert "r1" in rel_ids
+        assert graded["r1"] == 2
+
+    def test_partial_overlap_below_threshold_no_match(self):
+        # retrieved [0, 100], GT [80, 200] → overlap=20, min_len=100 → ratio=0.2 < 0.3
+        chunk = _make_chunk("r1", "doc1", 0, 100)
+        gt = _gt("g1", "doc1", 80, 200, 3)
+        rel_ids, graded = compute_overlap_relevance([chunk], [gt])
+        assert "r1" not in rel_ids
+        assert graded == {}
+
+    def test_no_overlap_no_match(self):
+        chunk = _make_chunk("r1", "doc1", 0, 100)
+        gt = _gt("g1", "doc1", 200, 300, 3)
+        rel_ids, graded = compute_overlap_relevance([chunk], [gt])
+        assert rel_ids == set()
+        assert graded == {}
+
+    def test_different_document_not_matched(self):
+        chunk = _make_chunk("r1", "doc1", 0, 100)
+        gt = _gt("g1", "doc2", 0, 100, 3)
+        rel_ids, graded = compute_overlap_relevance([chunk], [gt])
+        assert rel_ids == set()
+
+    def test_grade_0_excluded_from_relevant_ids(self):
+        chunk = _make_chunk("r1", "doc1", 0, 100)
+        gt = _gt("g1", "doc1", 0, 100, 0)
+        rel_ids, graded = compute_overlap_relevance([chunk], [gt])
+        assert rel_ids == set()
+
+    def test_multiple_gt_takes_max_grade(self):
+        chunk = _make_chunk("r1", "doc1", 0, 200)
+        gt1 = _gt("g1", "doc1", 0, 100, 1)
+        gt2 = _gt("g2", "doc1", 100, 200, 3)
+        rel_ids, graded = compute_overlap_relevance([chunk], [gt1, gt2])
+        assert graded["r1"] == 3
+
+    def test_fallback_to_exact_id_when_offsets_missing(self):
+        chunk = _make_chunk("chunk-abc", "doc1", 0, 100)
+        gt = GroundTruthChunk(chunk_id="chunk-abc", relevance_grade=2)  # no offset fields
+        rel_ids, graded = compute_overlap_relevance([chunk], [gt])
+        assert "chunk-abc" in rel_ids
+        assert graded["chunk-abc"] == 2
+
+    def test_fallback_id_mismatch_no_match(self):
+        chunk = _make_chunk("chunk-xyz", "doc1", 0, 100)
+        gt = GroundTruthChunk(chunk_id="chunk-abc", relevance_grade=3)
+        rel_ids, graded = compute_overlap_relevance([chunk], [gt])
+        assert rel_ids == set()
+
+    def test_empty_retrieved_returns_empty(self):
+        gt = _gt("g1", "doc1", 0, 100, 3)
+        rel_ids, graded = compute_overlap_relevance([], [gt])
+        assert rel_ids == set()
+        assert graded == {}
+
+    def test_empty_gt_returns_empty(self):
+        chunk = _make_chunk("r1", "doc1", 0, 100)
+        rel_ids, graded = compute_overlap_relevance([chunk], [])
+        assert rel_ids == set()
+        assert graded == {}
+
+    def test_multiple_retrieved_chunks_scored_independently(self):
+        chunk_a = _make_chunk("ra", "doc1", 0, 100)
+        chunk_b = _make_chunk("rb", "doc1", 500, 600)
+        gt = _gt("g1", "doc1", 0, 100, 3)
+        rel_ids, graded = compute_overlap_relevance([chunk_a, chunk_b], [gt])
+        assert "ra" in rel_ids
+        assert "rb" not in rel_ids

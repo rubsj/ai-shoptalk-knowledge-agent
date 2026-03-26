@@ -341,7 +341,12 @@ class ExperimentResult(BaseModel):
 class GroundTruthChunk(BaseModel):
     """Single chunk relevance judgment within a ground truth query."""
 
-    chunk_id: str = Field(..., min_length=1, description="ID of the relevant Chunk")
+    chunk_id: str = Field(..., min_length=1, description="ID of the relevant Chunk (kept for logging/backward compat)")
+    # Char-offset fields enable cross-chunker matching: when a different chunker is used
+    # during evaluation, IDs won't match but the same text spans overlap in char space.
+    document_id: str = Field(default="", description="ID of the source Document (set during GT generation)")
+    start_char: int | None = Field(default=None, ge=0, description="Start char offset in Document.content")
+    end_char: int | None = Field(default=None, ge=0, description="End char offset in Document.content")
     relevance_grade: int = Field(
         ..., ge=0, le=3,
         description="0=irrelevant, 1=same doc, 2=same section, 3=gold (directly answers)",

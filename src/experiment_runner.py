@@ -25,7 +25,7 @@ from pathlib import Path
 import psutil
 
 from src.cache import JSONCache
-from src.evaluation import LLMJudge, mrr, ndcg_at_k, precision_at_k, recall_at_k
+from src.evaluation import LLMJudge, compute_overlap_relevance, mrr, ndcg_at_k, precision_at_k, recall_at_k
 from src.evaluation.ground_truth import load_ground_truth
 from src.factories import create_chunker, create_embedder, create_llm, create_retriever, load_configs
 from src.generator import build_qa_prompt, extract_citations
@@ -120,13 +120,13 @@ def _run_single_config(
         latency_ms = (time.monotonic() - query_start) * 1000
         total_latency_ms += latency_ms
 
-        # Compute per-query retrieval metrics
-        relevant_ids = {
-            c.chunk_id for c in gt_query.relevant_chunks if c.relevance_grade >= 1
-        }
-        graded_relevance = {
-            c.chunk_id: c.relevance_grade for c in gt_query.relevant_chunks
-        }
+        # Compute per-query retrieval metrics via char offset overlap matching.
+        # WHY: ground truth was generated with RecursiveChunker; other chunkers produce
+        # different char offsets → different deterministic IDs → exact ID match = 0.0.
+        # compute_overlap_relevance falls back to exact ID matching for legacy GT entries.
+        relevant_ids, graded_relevance = compute_overlap_relevance(
+            retrieved_chunks, gt_query.relevant_chunks
+        )
 
         q_metrics = RetrievalMetrics(
             recall_at_5=recall_at_k(retrieved_ids, relevant_ids, k=5),
