@@ -281,6 +281,9 @@ def run_experiment_grid(
     out_path.mkdir(parents=True, exist_ok=True)
 
     all_results: list[ExperimentResult] = []
+    grid_start = time.monotonic()
+    total_configs = sum(len(g) for g in groups.values())
+
     for embedder_name in _EMBEDDER_ORDER:
         if embedder_name not in groups:
             continue
@@ -314,6 +317,21 @@ def run_experiment_grid(
             # Save per-experiment JSON incrementally
             result_file = out_path / f"{result.experiment_id}.json"
             result_file.write_text(json.dumps(result.model_dump(mode="json"), indent=2, default=str))
+
+            # Time estimation checkpoint after first 4 configs
+            if len(all_results) == 4:
+                elapsed_m = (time.monotonic() - grid_start) / 60
+                est_total_m = elapsed_m * total_configs / 4
+                logger.info(
+                    "4 configs completed in %.1fm. Estimated total for %d configs: ~%.0fm.",
+                    elapsed_m, total_configs, est_total_m,
+                )
+                if est_total_m > 180:
+                    logger.warning(
+                        "Grid will take ~%.0fm. Consider running with --no-judge first "
+                        "(retrieval metrics only), then re-running judge on top-5 configs only.",
+                        est_total_m,
+                    )
 
         del embedder
         gc.collect()
