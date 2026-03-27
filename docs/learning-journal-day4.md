@@ -61,4 +61,39 @@ Used `page.get_text("dict")` to get both text blocks and image blocks with bound
 
 ---
 
+## Entry 6: The Ground Truth Offset Bug — A Silent Evaluation Killer
+
+**What broke:** Every chunk produced by `RecursiveChunker` had `start_char=0`. The `end_char` was just the chunk length, not an absolute position in the document. This meant `compute_overlap_relevance()` — the cross-chunker matching function I'd just built — was comparing all chunks against the same region (the first N characters of each document). Ground truth matching was effectively random.
+
+**Root cause:** `RecursiveChunker.chunk()` used `document.content.find(text)` to locate each chunk's position. This works for raw chunks (they're verbatim substrings of the document). But `_merge_with_overlap()` prepends the last 50 characters of the previous chunk to each subsequent chunk. The merged text — "overlap prefix + new content" — doesn't exist as a contiguous substring in the original document. `find()` returns -1, and the fallback was `start = 0`.
+
+```python
+# The bug: overlap-merged text is NOT a substring of document.content
+start = document.content.find(text)  # returns -1 for chunks 1..N
+if start == -1:
+    start = 0  # ← every chunk gets start_char=0
+```
+
+**Why it wasn't caught earlier:** The chunker tests verified that chunks were produced and had valid metadata types, but no test asserted `document.content[start_char:end_char] == chunk.content`. The deterministic ID tests (Step 1) verified that the same input produces the same IDs — but `make_chunk_id(doc_id, 0, chunk_length)` is deterministic too, just wrong. All 493 tests passed with the bug present.
+
+**The fix:** Track raw chunk positions *before* overlap merge. Raw chunks are genuine substrings, so `find()` works on them. Then compute merged positions:
+- Chunk 0: `start = raw_positions[0]`
+- Chunk i (i > 0): `start = raw_positions[i] - chunk_overlap`
+
+Also hardened `EmbeddingSemanticChunker` with an advancing `search_start` parameter to prevent matching earlier duplicates when using `find()`.
+
+**The deeper problem:** This is a variant of the "metric that silently returns zero" pattern from Entry 2. The evaluation pipeline has multiple layers where a subtle data bug produces valid-looking but meaningless results:
+1. Chunk IDs that are deterministic but encode wrong positions
+2. Ground truth references that point to position 0 instead of the real location
+3. Overlap matching that compares all chunks against the document's first paragraph
+4. Metrics that are mathematically correct but computed on garbage inputs
+
+Each layer passes its own unit tests. The bug only manifests when you trace a specific chunk ID through the full pipeline and verify it against the source document — an integration-level assertion.
+
+**Lesson:** For any system where component A produces IDs/offsets that component B consumes for comparison, add a round-trip assertion: `source[offset_start:offset_end] == extracted_content`. This is the equivalent of a foreign key constraint in a database — it verifies referential integrity between the data producer and consumer. Without it, you're building on quicksand.
+
+The other 4 chunkers (Fixed, SlidingWindow, HeadingSemanticChunker, EmbeddingSemanticChunker) all had correct offsets because they track positions during their splitting loop, not via `find()` after the fact. The RecursiveChunker was the only one that tried to reconstruct positions after a destructive transformation (overlap merge).
+
+---
+
 *Entries will be added as Day 4 work continues through ground truth generation, experiment grid execution, visualization, and analysis.*
