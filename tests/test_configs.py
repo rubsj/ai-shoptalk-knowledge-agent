@@ -17,8 +17,8 @@ class TestConfigCount:
     def test_at_least_35_configs(self) -> None:
         assert len(_all_configs()) >= 35
 
-    def test_exactly_42_configs(self) -> None:
-        assert len(_all_configs()) == 42
+    def test_exactly_46_configs(self) -> None:
+        assert len(_all_configs()) == 46
 
 
 class TestConfigValidity:
@@ -53,8 +53,8 @@ class TestBM25Configs:
 class TestHybridConfigs:
     def test_hybrid_configs_have_alpha_set(self) -> None:
         hybrid_configs = [c for c in _all_configs() if c.retriever_type == "hybrid"]
-        # 15 base + 3 alpha sweep + 2 reranking = 20
-        assert len(hybrid_configs) == 20
+        # 15 base + 3 alpha sweep + 2 cross_encoder rerank + 2 cohere rerank = 22
+        assert len(hybrid_configs) == 22
         for config in hybrid_configs:
             assert config.hybrid_alpha is not None
 
@@ -110,9 +110,9 @@ class TestCommonDefaults:
 
     def test_reranking_configs_have_reranker_type(self) -> None:
         rerank_configs = [c for c in _all_configs() if c.use_reranking]
-        assert len(rerank_configs) == 4
-        for config in rerank_configs:
-            assert config.reranker_type == "cross_encoder"
+        assert len(rerank_configs) == 8
+        types = {c.reranker_type for c in rerank_configs}
+        assert types == {"cross_encoder", "cohere"}
 
     def test_non_reranking_configs_have_no_reranker(self) -> None:
         non_rerank = [c for c in _all_configs() if not c.use_reranking]
