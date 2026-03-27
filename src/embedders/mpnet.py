@@ -24,9 +24,11 @@ class MpnetEmbedder(BaseEmbedder):
     _MODEL_NAME = "all-mpnet-base-v2"
     _DIMENSIONS = 768
 
-    def __init__(self) -> None:
+    def __init__(self, device: str | None = None) -> None:
         # WHY: eager load — same rationale as MiniLMEmbedder (128GB, no pressure)
-        self._model = SentenceTransformer(self._MODEL_NAME)
+        # WHY device param: MPS (Apple Silicon GPU) crashes on large batches in some
+        # sandbox environments. Pass device="cpu" as fallback.
+        self._model = SentenceTransformer(self._MODEL_NAME, device=device)
 
     def embed(self, texts: list[str]) -> np.ndarray:
         """Batch embed texts. Returns shape (len(texts), 768), L2-normalised."""

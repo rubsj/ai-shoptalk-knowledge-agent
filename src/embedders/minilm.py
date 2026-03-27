@@ -27,10 +27,10 @@ class MiniLMEmbedder(BaseEmbedder):
     _MODEL_NAME = "all-MiniLM-L6-v2"
     _DIMENSIONS = 384
 
-    def __init__(self) -> None:
+    def __init__(self, device: str | None = None) -> None:
         # WHY: eager load — 128GB M5 Max has no RAM pressure, lazy loading
         # just adds complexity for zero benefit here
-        self._model = SentenceTransformer(self._MODEL_NAME)
+        self._model = SentenceTransformer(self._MODEL_NAME, device=device)
 
     def embed(self, texts: list[str]) -> np.ndarray:
         """Batch embed texts. Returns shape (len(texts), 384), L2-normalised."""

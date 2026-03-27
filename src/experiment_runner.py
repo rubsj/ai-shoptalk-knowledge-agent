@@ -293,8 +293,11 @@ def run_experiment_grid(
         if mem_pct > 85:
             logger.warning("Memory usage %.1f%% — above 85%% threshold before loading embedder", mem_pct)
 
+        # WHY device="cpu": MPS (Apple Silicon GPU) crashes on large batch encoding
+        # in some environments. CPU is ~10x slower but reliable. On 128GB M5 Max,
+        # CPU encoding of 515 chunks takes ~14s — acceptable for experiment grid.
         embedder: BaseEmbedder | None = (
-            create_embedder(embedder_name) if embedder_name is not None else None
+            create_embedder(embedder_name, device="cpu") if embedder_name is not None else None
         )
 
         for config in group_configs:

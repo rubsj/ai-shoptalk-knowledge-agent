@@ -73,7 +73,7 @@ def _make_document() -> Document:
     )
 
 
-def _fake_encode(texts, convert_to_numpy=True):
+def _fake_encode(texts, convert_to_numpy=True, **_kwargs):
     """Return deterministic unit vectors — one per text."""
     n = len(texts)
     rng = np.random.default_rng(seed=42)

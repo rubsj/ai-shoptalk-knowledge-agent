@@ -693,7 +693,7 @@ class TestRunExperimentGrid:
         run_experiment_grid(output_dir=out_dir, run_judge=False)
 
         assert mock_create_embedder.call_count == 1
-        mock_create_embedder.assert_called_once_with("minilm")
+        mock_create_embedder.assert_called_once_with("minilm", device="cpu")
 
     @patch("src.experiment_runner.gc")
     @patch("src.experiment_runner._run_single_config")
