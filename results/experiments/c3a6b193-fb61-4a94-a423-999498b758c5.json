@@ -1,0 +1,395 @@
+{
+  "experiment_id": "c3a6b193-fb61-4a94-a423-999498b758c5",
+  "config": {
+    "chunking_strategy": "embedding_semantic",
+    "chunk_size": 512,
+    "chunk_overlap": 50,
+    "embedding_model": null,
+    "retriever_type": "bm25",
+    "hybrid_alpha": null,
+    "use_reranking": false,
+    "reranker_type": null,
+    "top_k": 5,
+    "window_size_tokens": null,
+    "step_size_tokens": null,
+    "breakpoint_threshold": 0.85,
+    "min_chunk_size": 100
+  },
+  "metrics": {
+    "recall_at_5": 0.8333333333333334,
+    "precision_at_5": 0.24444444444444446,
+    "mrr": 0.6472222222222223,
+    "ndcg_at_5": 0.655918738504899
+  },
+  "judge_scores": null,
+  "performance": {
+    "ingestion_time_seconds": 5.7427304169978015,
+    "avg_query_latency_ms": 2340.20134477598,
+    "index_size_bytes": 0,
+    "peak_memory_mb": 1632.46875,
+    "embedding_source": "none",
+    "cost_estimate_usd": 0.00621
+  },
+  "query_results": [
+    {
+      "query_id": "q02",
+      "question": "What are the main components of the Transformer model's architecture?",
+      "answer": "The main components of the Transformer model's architecture are the encoder and the decoder, as illustrated in the provided figure [1].",
+      "retrieved_chunk_ids": [
+        "6253fc1907681abc",
+        "420fd17ee77fe0fb",
+        "85ae253ebb0499cb",
+        "c7d704962751f3ff",
+        "82515a9f31921609"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.2,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      },
+      "judge_result": null,
+      "latency_ms": 982.3389580124058
+    },
+    {
+      "query_id": "q04",
+      "question": "How is multi-head attention implemented in the Transformer model?",
+      "answer": "Multi-head attention in the Transformer model is implemented in three different ways. One of the key applications is in the \"encoder-decoder attention\" layers, where the queries originate from the previous decoder layer, while the memory keys and values come from the output of the encoder. This setup allows each position in the decoder to attend to all positions in the input sequence, facilitating effective information flow between the encoder and decoder components of the model [4].",
+      "retrieved_chunk_ids": [
+        "6a3564e77f87ac44",
+        "c608e3690df07a45",
+        "e9da5b9d3fd08507",
+        "c31739537a998abb",
+        "bb285e56f20aa169"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.2,
+        "mrr": 0.25,
+        "ndcg_at_5": 0.43067655807339306
+      },
+      "judge_result": null,
+      "latency_ms": 1911.9222080043983
+    },
+    {
+      "query_id": "q05",
+      "question": "What is the advantage of using self-attention over recurrent layers in terms of computational complexity and path length?",
+      "answer": "The advantage of using self-attention over recurrent layers in terms of computational complexity is that self-attention has a complexity of \\(O(n^2 \\cdot d)\\), while recurrent layers have a complexity of \\(O(n \\cdot d^2)\\). This makes self-attention faster when the sequence length \\(n\\) is smaller than the representation dimensionality \\(d\\), which is often the case in sentence representations used in state-of-the-art models for machine translation [1]. \n\nIn terms of path length, self-attention has a maximum path length of \\(O(1)\\), compared to recurrent layers which have a maximum path length of \\(O(n)\\). This indicates that self-attention can process sequences more efficiently without the need for sequential dependencies, allowing for parallelization and faster computation [3].",
+      "retrieved_chunk_ids": [
+        "154090be9c666fd6",
+        "6f4dbc9c86b1e910",
+        "94a4d40d66393a7f",
+        "fa6e85f27aee5519",
+        "3e6ea22849b64ec2"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.6,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.8854598815714875
+      },
+      "judge_result": null,
+      "latency_ms": 4098.045541992178
+    },
+    {
+      "query_id": "q07",
+      "question": "What BLEU score did the big model achieve on the WMT 2014 English-to-French translation task, and how does it compare to previous models?",
+      "answer": "The big model achieved a BLEU score of 41.8 on the WMT 2014 English-to-French translation task, establishing a new single-model state-of-the-art score. This score outperformed all previously published single models and was achieved at a significantly lower training cost compared to the best models from the literature [2].",
+      "retrieved_chunk_ids": [
+        "df921c1e2d12e3fd",
+        "f3dc107871856afd",
+        "d23e3db8f1f955fe",
+        "220ba423334d986e",
+        "bac7294d871ed99a"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.4,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.8772153153380493
+      },
+      "judge_result": null,
+      "latency_ms": 1774.743749992922
+    },
+    {
+      "query_id": "q08",
+      "question": "What are the WSJ F1 scores for different constituency parsers as reported in Table 4?",
+      "answer": "The WSJ F1 scores for different constituency parsers as reported in Table 4 are not explicitly provided in the context. The context mentions a parser by Vinyals & Kaiser et al. but does not include specific F1 scores for that parser or any others. Therefore, the F1 scores for different constituency parsers cannot be determined from the provided information.",
+      "retrieved_chunk_ids": [
+        "9d828ddb72ce6e6d",
+        "45f5c3b6b5d71fba",
+        "118478b52378f7c6",
+        "13d4acb9465a66b1",
+        "deb13b2ddad97da7"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.2,
+        "mrr": 0.5,
+        "ndcg_at_5": 0.6309297535714574
+      },
+      "judge_result": null,
+      "latency_ms": 1515.6120829924475
+    },
+    {
+      "query_id": "q10",
+      "question": "What is BERT and how is it different from recent language representation models?",
+      "answer": "BERT (Bidirectional Encoder Representations from Transformers) is a language representation model designed to pretrain deep bidirectional representations from unlabeled text. It does this by jointly conditioning on both left and right context in all layers, which distinguishes it from recent language representation models like GPT, which are typically unidirectional and do not consider context from both sides simultaneously [1]. Additionally, BERT is trained on a larger dataset that includes both the BooksCorpus and Wikipedia, whereas models like GPT are trained on a more limited dataset [5].",
+      "retrieved_chunk_ids": [
+        "ce6a4bd09aa87477",
+        "c076917c8df764fc",
+        "d2487afcfd57b5fe",
+        "01024d2b501f9ed5",
+        "c9e976ace04625bf"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.2,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      },
+      "judge_result": null,
+      "latency_ms": 3296.9703749986365
+    },
+    {
+      "query_id": "q13",
+      "question": "What are the special tokens used in the BERT architecture and their purpose?",
+      "answer": "The special tokens used in the BERT architecture are \"[CLS]\" and \"[SEP]\". The \"[CLS]\" token is typically used to represent the entire input sequence for classification tasks, while the \"[SEP]\" token is used to separate different segments of the input, such as two sentences in a pair [1][2].",
+      "retrieved_chunk_ids": [
+        "bd1139082b85d73b",
+        "de1cd018e18c2ed3",
+        "245d344acd724583",
+        "99727d243cdc8202",
+        "319e995da9c4d4d7"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.2,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      },
+      "judge_result": null,
+      "latency_ms": 1372.891625011107
+    },
+    {
+      "query_id": "q17",
+      "question": "What are the SQuAD 2.0 results for the BERT model?",
+      "answer": "The SQuAD 2.0 task extends the SQuAD 1.1 problem definition by allowing for the possibility that no short answer exists in the provided paragraph. The context mentions that a simple approach is used to extend the SQuAD v1.1 BERT model for this task, but it does not provide specific results or performance metrics for the BERT model on SQuAD 2.0 [1].",
+      "retrieved_chunk_ids": [
+        "f29c453d01e030d2",
+        "fa7ee40d2e99e6f7",
+        "156dc941971ea479",
+        "cf718e95bd694acf",
+        "22829c087feed6ab"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.2,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      },
+      "judge_result": null,
+      "latency_ms": 2109.866457991302
+    },
+    {
+      "query_id": "q18",
+      "question": "What is the impact of removing the Next Sentence Prediction (NSP) task on model performance in BERT?",
+      "answer": "Removing the Next Sentence Prediction (NSP) task significantly hurts model performance on tasks such as QNLI, MNLI, and SQuAD 1.1, as indicated by the results shown in Table 5 of the context provided [5].",
+      "retrieved_chunk_ids": [
+        "93d934f135ef0c85",
+        "03d871c838dbf4d4",
+        "948088d672745cdf",
+        "104fc92deeab49d1",
+        "ac0f66d7138e1779"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.2,
+        "mrr": 0.2,
+        "ndcg_at_5": 0.38685280723454163
+      },
+      "judge_result": null,
+      "latency_ms": 1633.0981249921024
+    },
+    {
+      "query_id": "q22",
+      "question": "What is the masking procedure used in BERT's pre-training tasks?",
+      "answer": "The masking procedure used in BERT's pre-training tasks involves a mixed strategy for masking target tokens. Specifically, during the random masking procedure, 80% of the time, the chosen word is replaced with the [MASK] token, 10% of the time it is replaced with a random word, and 10% of the time the word remains unchanged. This approach is designed to bias the representation towards the actual observed word while also reducing the mismatch between pre-training and fine-tuning, as the [MASK] symbol does not appear during the fine-tuning stage [1][3][4].",
+      "retrieved_chunk_ids": [
+        "ce11658d941beb9d",
+        "736f39dc5eaa67cc",
+        "e0a5de8e4f254820",
+        "047b0eeace3c85e6",
+        "bd1139082b85d73b"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.2,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      },
+      "judge_result": null,
+      "latency_ms": 2452.1829999866895
+    },
+    {
+      "query_id": "q25",
+      "question": "What are the results of the ablation study on different masking strategies in MLM pre-training for BERT?",
+      "answer": "The results of the ablation study on different masking strategies in MLM pre-training for BERT are not explicitly detailed in the provided context. However, it is mentioned that the purpose of the masking strategies is to reduce the mismatch between pre-training and fine-tuning, and that BERT employs a mixed strategy with specific probabilities (80%, 10%, 10%) for the different masking strategies used during pre-training [1][3][5]. The context does not provide specific numerical results or comparisons from the ablation study itself.",
+      "retrieved_chunk_ids": [
+        "e0a5de8e4f254820",
+        "3c9d21469738c0a8",
+        "047b0eeace3c85e6",
+        "0c481ecc9833a488",
+        "4bde6445e432082a"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.2,
+        "mrr": 0.2,
+        "ndcg_at_5": 0.38685280723454163
+      },
+      "judge_result": null,
+      "latency_ms": 2717.655582993757
+    },
+    {
+      "query_id": "q26",
+      "question": "What are RAG models in the context of retrieval-augmented generation?",
+      "answer": "RAG models, or Retrieval-Augmented Generation models, are hybrid generation models that have access to both parametric and non-parametric memory. They utilize a mechanism that allows them to generate responses based on a combination of previously generated tokens, the original input, and retrieved passages. This approach enables RAG models to achieve state-of-the-art results in open-domain question answering (QA) tasks [4].",
+      "retrieved_chunk_ids": [
+        "be51d5a2c1a65fa2",
+        "22829c087feed6ab",
+        "906d4453544053a4",
+        "88a17776c210f545",
+        "e3ca0aae2345f960"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 0.0,
+        "precision_at_5": 0.0,
+        "mrr": 0.0,
+        "ndcg_at_5": 0.0
+      },
+      "judge_result": null,
+      "latency_ms": 1694.283707998693
+    },
+    {
+      "query_id": "q28",
+      "question": "What models are introduced in the RAG framework for generating sequences?",
+      "answer": "The context does not explicitly mention specific models introduced in the RAG framework for generating sequences. However, it does reference REALM and ORQA as models that combine masked language models with a differentiable retriever, which have shown promising results [4].",
+      "retrieved_chunk_ids": [
+        "8bc51ae1312ba015",
+        "906d4453544053a4",
+        "22829c087feed6ab",
+        "51c14beb676de1f1",
+        "552b141044a6e396"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 0.0,
+        "precision_at_5": 0.0,
+        "mrr": 0.0,
+        "ndcg_at_5": 0.0
+      },
+      "judge_result": null,
+      "latency_ms": 1536.297167011071
+    },
+    {
+      "query_id": "q29",
+      "question": "How does the RAG model decode during test time for RAG-Token and RAG-Sequence?",
+      "answer": "During test time, the RAG model decodes differently for RAG-Token and RAG-Sequence. For RAG-Sequence, retrieving more documents consistently improves the Open-domain QA results, indicating a monotonic performance increase with more retrieved documents. In contrast, RAG-Token's performance peaks when retrieving 10 documents, suggesting that beyond this number, additional documents do not contribute to better results [1].",
+      "retrieved_chunk_ids": [
+        "d62e9e493d201c90",
+        "394c018f78bd95c8",
+        "c53978efc9647a81",
+        "4ed20a8bf5d35328",
+        "c4f8bdcf6c037734"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 0.0,
+        "precision_at_5": 0.0,
+        "mrr": 0.0,
+        "ndcg_at_5": 0.0
+      },
+      "judge_result": null,
+      "latency_ms": 3480.3777920024004
+    },
+    {
+      "query_id": "q30",
+      "question": "What is the task of generating Jeopardy questions and how is it evaluated?",
+      "answer": "The task of generating Jeopardy questions involves creating precise, factual statements that correspond to specific answer entities, making it a challenging knowledge-intensive generation task. This task is evaluated using the splits from SearchQA, which includes 100K training examples, 14K development examples, and 27K test examples. For evaluation, a BART model is trained for comparison, and the performance is assessed using the SQuAD-tuned Q-BLEU-1 metric [3].",
+      "retrieved_chunk_ids": [
+        "c724ddb41c51795c",
+        "281fdef16edc5d9f",
+        "f9707e0136322967",
+        "942e264ea0047b2f",
+        "c9e976ace04625bf"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.4,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.9197207891481876
+      },
+      "judge_result": null,
+      "latency_ms": 2725.931708002463
+    },
+    {
+      "query_id": "q31",
+      "question": "How does Sentence-BERT modify the BERT architecture to produce sentence embeddings, and what pooling strategies are used?",
+      "answer": "Sentence-BERT (SBERT) modifies the BERT architecture by employing siamese and triplet network structures to derive semantically meaningful sentence embeddings. This allows for the comparison of these embeddings using cosine similarity [4]. The pooling strategies used in SBERT involve pooling the outputs of the BERT networks to create fixed-size sentence embeddings, which can then be compared [1]. Additionally, the architecture can utilize different objective functions, such as classification or regression, to further refine the embeddings [1][2].",
+      "retrieved_chunk_ids": [
+        "319e995da9c4d4d7",
+        "c92a86de29a8b33e",
+        "420bbe0f0319e71a",
+        "92c1e2213cd83fab",
+        "99727d243cdc8202"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.2,
+        "mrr": 0.5,
+        "ndcg_at_5": 0.6309297535714575
+      },
+      "judge_result": null,
+      "latency_ms": 2496.9238330086228
+    },
+    {
+      "query_id": "q32",
+      "question": "What is the computational advantage of SBERT over using BERT directly for finding the most similar sentence pair in a large collection?",
+      "answer": "The computational advantage of SBERT over using BERT directly for finding the most similar sentence pair in a large collection is significant. With BERT, the process takes about 65 hours to compute the most similar pair among 10,000 sentences due to the need for approximately 50 million inference computations. In contrast, SBERT reduces this time to about 5 seconds by first computing 10,000 sentence embeddings and then performing cosine similarity calculations, which take only about 0.01 seconds [1][2][3]. This results in a drastic reduction in computational time while maintaining the accuracy of BERT [2].",
+      "retrieved_chunk_ids": [
+        "050bc928cc5df8b9",
+        "b7f7047328600f92",
+        "25c33a4fab4f8c9e",
+        "46ede0443d9555b0",
+        "c78155d71fb9d7ca"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.6,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.8854598815714875
+      },
+      "judge_result": null,
+      "latency_ms": 2866.0475829965435
+    },
+    {
+      "query_id": "q33",
+      "question": "What objective functions does SBERT use during training, and how does the classification objective differ from the regression objective?",
+      "answer": "SBERT uses two main objective functions during training: the classification objective function and the regression objective function. \n\nThe classification objective function is trained on the SNLI and Multi-NLI datasets, where the performance is measured using cross-entropy loss [2]. In contrast, the regression objective function is trained on the STS benchmark dataset, where the cosine similarity between sentence embeddings is computed, and the performance is measured using mean-squared-error loss [4][5]. \n\nThus, the key difference lies in the type of datasets used and the loss functions applied: the classification objective focuses on categorical outcomes with cross-entropy loss, while the regression objective focuses on continuous outcomes with mean-squared-error loss.",
+      "retrieved_chunk_ids": [
+        "319e995da9c4d4d7",
+        "28b2d13203d9577e",
+        "936cb165aca0d610",
+        "5f1a574dc356b0da",
+        "c45e0eed8c66089a"
+      ],
+      "retrieval_scores": {
+        "recall_at_5": 1.0,
+        "precision_at_5": 0.4,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.7724397457735779
+      },
+      "judge_result": null,
+      "latency_ms": 3458.4347079799045
+    }
+  ]
+}

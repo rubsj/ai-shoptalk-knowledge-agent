@@ -1,0 +1,3080 @@
+[
+  {
+    "iteration_id": 1,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from mpnet to openai improved NDCG@5 by +0.2408",
+    "experiment_id_before": "57309fbb-c845-4295-81dc-78b2921ca19d",
+    "experiment_id_after": "d702830f-f283-4d09-89e0-cd80866baaa1",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6175925925925926,
+      "ndcg_at_5": 0.655153079574384
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.9074074074074073,
+      "ndcg_at_5": 0.8959642364323179
+    },
+    "delta": {
+      "recall_at_5": 0.166667,
+      "precision_at_5": 0.055556,
+      "mrr": 0.289815,
+      "ndcg_at_5": 0.240811
+    }
+  },
+  {
+    "iteration_id": 2,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from minilm to openai improved NDCG@5 by +0.2234",
+    "experiment_id_before": "8e8af283-a2d9-4275-a7c1-baf22b4ed2a7",
+    "experiment_id_after": "d702830f-f283-4d09-89e0-cd80866baaa1",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6574074074074074,
+      "ndcg_at_5": 0.6725423665448055
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.9074074074074073,
+      "ndcg_at_5": 0.8959642364323179
+    },
+    "delta": {
+      "recall_at_5": 0.166667,
+      "precision_at_5": 0.055556,
+      "mrr": 0.25,
+      "ndcg_at_5": 0.223422
+    }
+  },
+  {
+    "iteration_id": 3,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from embedding_semantic to sliding_window improved NDCG@5 by +0.2151",
+    "experiment_id_before": "b6596d30-e1db-4e20-8edd-632d03cbaeb4",
+    "experiment_id_after": "64994274-a732-48de-9408-d6e4948e1f9d",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.5648148148148148,
+      "ndcg_at_5": 0.6074368305439186
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8225774418198043
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.122222,
+      "mrr": 0.231481,
+      "ndcg_at_5": 0.215141
+    }
+  },
+  {
+    "iteration_id": 4,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from mpnet to openai improved NDCG@5 by +0.1776",
+    "experiment_id_before": "61653079-6101-4fc4-9dec-579f0316e2ae",
+    "experiment_id_after": "31b3e7fa-046b-40cf-9c18-990b373d41e0",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6388888888888888,
+      "ndcg_at_5": 0.6386925774597404
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.837962962962963,
+      "ndcg_at_5": 0.8162755142427307
+    },
+    "delta": {
+      "recall_at_5": 0.166667,
+      "precision_at_5": 0.055556,
+      "mrr": 0.199074,
+      "ndcg_at_5": 0.177583
+    }
+  },
+  {
+    "iteration_id": 5,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from mpnet to openai improved NDCG@5 by +0.1763",
+    "experiment_id_before": "b6596d30-e1db-4e20-8edd-632d03cbaeb4",
+    "experiment_id_after": "8f192307-ca0b-478c-a2e5-c83b124d8205",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.5648148148148148,
+      "ndcg_at_5": 0.6074368305439186
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7685185185185186,
+      "ndcg_at_5": 0.7837653440939787
+    },
+    "delta": {
+      "recall_at_5": 0.222222,
+      "precision_at_5": 0.122222,
+      "mrr": 0.203704,
+      "ndcg_at_5": 0.176329
+    }
+  },
+  {
+    "iteration_id": 6,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from minilm to openai improved NDCG@5 by +0.1748",
+    "experiment_id_before": "2590ec85-f0bc-4619-a23b-be56b1317792",
+    "experiment_id_after": "31b3e7fa-046b-40cf-9c18-990b373d41e0",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6414604414396018
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.837962962962963,
+      "ndcg_at_5": 0.8162755142427307
+    },
+    "delta": {
+      "recall_at_5": 0.166667,
+      "precision_at_5": 0.055556,
+      "mrr": 0.222222,
+      "ndcg_at_5": 0.174815
+    }
+  },
+  {
+    "iteration_id": 7,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from mpnet to openai improved NDCG@5 by +0.1735",
+    "experiment_id_before": "59ee2e0e-921b-4222-b233-deee0e5547cd",
+    "experiment_id_after": "52ac462a-4942-4b38-a120-9dfbcbe8ef65",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.5944444444444444,
+      "ndcg_at_5": 0.618922577802087
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.47777777777777775,
+      "mrr": 0.7824074074074074,
+      "ndcg_at_5": 0.7924372061408875
+    },
+    "delta": {
+      "recall_at_5": 0.222222,
+      "precision_at_5": 0.133333,
+      "mrr": 0.187963,
+      "ndcg_at_5": 0.173515
+    }
+  },
+  {
+    "iteration_id": 8,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from embedding_semantic to heading_semantic improved NDCG@5 by +0.1607",
+    "experiment_id_before": "b6596d30-e1db-4e20-8edd-632d03cbaeb4",
+    "experiment_id_after": "4e3fe4e6-eeca-4818-892b-5698897f726e",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.5648148148148148,
+      "ndcg_at_5": 0.6074368305439186
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.7453703703703703,
+      "ndcg_at_5": 0.7681723197175967
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": -0.011111,
+      "mrr": 0.180556,
+      "ndcg_at_5": 0.160735
+    }
+  },
+  {
+    "iteration_id": 9,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from mpnet to openai improved NDCG@5 by +0.1605",
+    "experiment_id_before": "26aa868e-86d9-4783-a457-879143bc902e",
+    "experiment_id_after": "29b683a2-eee3-4cc4-9857-7f468336f2a1",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.7037037037037037,
+      "ndcg_at_5": 0.709656580001414
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.8518518518518519,
+      "ndcg_at_5": 0.8701080250370103
+    },
+    "delta": {
+      "recall_at_5": 0.166667,
+      "precision_at_5": 0.066667,
+      "mrr": 0.148148,
+      "ndcg_at_5": 0.160451
+    }
+  },
+  {
+    "iteration_id": 10,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from mpnet to openai improved NDCG@5 by +0.1573",
+    "experiment_id_before": "654bb2d1-6117-4ab2-9d14-c006698d1e78",
+    "experiment_id_after": "e257000c-2748-4076-8851-b367f55d75ec",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.6435185185185186,
+      "ndcg_at_5": 0.6851558652012598
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3777777777777778,
+      "mrr": 0.8287037037037037,
+      "ndcg_at_5": 0.8424232031355002
+    },
+    "delta": {
+      "recall_at_5": 0.166667,
+      "precision_at_5": 0.122222,
+      "mrr": 0.185185,
+      "ndcg_at_5": 0.157267
+    }
+  },
+  {
+    "iteration_id": 11,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from mpnet to openai improved NDCG@5 by +0.1466",
+    "experiment_id_before": "9674ba2f-65d0-4352-b2b6-ae713ab1909a",
+    "experiment_id_after": "6648525b-e5ce-40cc-8326-d347eac74508",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.625,
+      "ndcg_at_5": 0.6792905510757126
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3333333333333333,
+      "mrr": 0.787037037037037,
+      "ndcg_at_5": 0.825908529962975
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.088889,
+      "mrr": 0.162037,
+      "ndcg_at_5": 0.146618
+    }
+  },
+  {
+    "iteration_id": 12,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from minilm to openai improved NDCG@5 by +0.1456",
+    "experiment_id_before": "c9b74e59-dd36-4005-93bc-d65c94fbb015",
+    "experiment_id_after": "f31be96b-8a91-44a2-ba7f-f46037c6e518",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2888888888888889,
+      "mrr": 0.6481481481481481,
+      "ndcg_at_5": 0.6431214088940674
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7886881906805483
+    },
+    "delta": {
+      "recall_at_5": 0.166667,
+      "precision_at_5": 0.088889,
+      "mrr": 0.106481,
+      "ndcg_at_5": 0.145567
+    }
+  },
+  {
+    "iteration_id": 13,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from recursive to sliding_window improved NDCG@5 by +0.1433",
+    "experiment_id_before": "9674ba2f-65d0-4352-b2b6-ae713ab1909a",
+    "experiment_id_after": "64994274-a732-48de-9408-d6e4948e1f9d",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.625,
+      "ndcg_at_5": 0.6792905510757126
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8225774418198043
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.144444,
+      "mrr": 0.171296,
+      "ndcg_at_5": 0.143287
+    }
+  },
+  {
+    "iteration_id": 14,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from mpnet to openai improved NDCG@5 by +0.1389",
+    "experiment_id_before": "a6e9480a-5728-4629-9c94-2f15cde9a038",
+    "experiment_id_after": "f31be96b-8a91-44a2-ba7f-f46037c6e518",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6497836745311969
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7886881906805483
+    },
+    "delta": {
+      "recall_at_5": 0.166667,
+      "precision_at_5": 0.1,
+      "mrr": 0.138889,
+      "ndcg_at_5": 0.138905
+    }
+  },
+  {
+    "iteration_id": 15,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from minilm to openai improved NDCG@5 by +0.1325",
+    "experiment_id_before": "7b409575-4212-4c2a-aee3-2d5b7ace6ae4",
+    "experiment_id_after": "6648525b-e5ce-40cc-8326-d347eac74508",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6546296296296297,
+      "ndcg_at_5": 0.6934102222413467
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3333333333333333,
+      "mrr": 0.787037037037037,
+      "ndcg_at_5": 0.825908529962975
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.055556,
+      "mrr": 0.132407,
+      "ndcg_at_5": 0.132498
+    }
+  },
+  {
+    "iteration_id": 16,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from embedding_semantic to heading_semantic improved NDCG@5 by +0.1261",
+    "experiment_id_before": "edca3010-1c91-4ddb-95b5-3c47727a6fdf",
+    "experiment_id_after": "1caab35e-b36f-42ff-b08e-a636abebe583",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6759259259259259,
+      "ndcg_at_5": 0.6830720334824171
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8092193095565285
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.044444,
+      "mrr": 0.12037,
+      "ndcg_at_5": 0.126147
+    }
+  },
+  {
+    "iteration_id": 17,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from minilm to openai improved NDCG@5 by +0.1190",
+    "experiment_id_before": "827d4a9c-ae91-488e-bb5d-7a69da9c5b6f",
+    "experiment_id_after": "e257000c-2748-4076-8851-b367f55d75ec",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6777777777777777,
+      "ndcg_at_5": 0.7234031919429005
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3777777777777778,
+      "mrr": 0.8287037037037037,
+      "ndcg_at_5": 0.8424232031355002
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.066667,
+      "mrr": 0.150926,
+      "ndcg_at_5": 0.11902
+    }
+  },
+  {
+    "iteration_id": 18,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from recursive to heading_semantic improved NDCG@5 by +0.1159",
+    "experiment_id_before": "1b7dfb0a-f7ce-4d4f-b09d-bcac3ee36258",
+    "experiment_id_after": "253b17eb-206a-401e-a078-ad241c3961fc",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.5712962962962963,
+      "ndcg_at_5": 0.638912745181271
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.7240740740740741,
+      "ndcg_at_5": 0.7547715104394916
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.044444,
+      "mrr": 0.152778,
+      "ndcg_at_5": 0.115859
+    }
+  },
+  {
+    "iteration_id": 19,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from recursive to heading_semantic improved NDCG@5 by +0.1158",
+    "experiment_id_before": "7b409575-4212-4c2a-aee3-2d5b7ace6ae4",
+    "experiment_id_after": "1caab35e-b36f-42ff-b08e-a636abebe583",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6546296296296297,
+      "ndcg_at_5": 0.6934102222413467
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8092193095565285
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.011111,
+      "mrr": 0.141667,
+      "ndcg_at_5": 0.115809
+    }
+  },
+  {
+    "iteration_id": 20,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "fixed",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from fixed to sliding_window improved NDCG@5 by +0.1129",
+    "experiment_id_before": "26aa868e-86d9-4783-a457-879143bc902e",
+    "experiment_id_after": "64994274-a732-48de-9408-d6e4948e1f9d",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.7037037037037037,
+      "ndcg_at_5": 0.709656580001414
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8225774418198043
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.077778,
+      "mrr": 0.092593,
+      "ndcg_at_5": 0.112921
+    }
+  },
+  {
+    "iteration_id": 21,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from embedding_semantic to fixed improved NDCG@5 by +0.1075",
+    "experiment_id_before": "edca3010-1c91-4ddb-95b5-3c47727a6fdf",
+    "experiment_id_after": "7ee9484b-aafc-43ce-a9b1-ebc690f15170",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6759259259259259,
+      "ndcg_at_5": 0.6830720334824171
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7905405536853943
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.033333,
+      "mrr": 0.078704,
+      "ndcg_at_5": 0.107469
+    }
+  },
+  {
+    "iteration_id": 22,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from embedding_semantic to heading_semantic improved NDCG@5 by +0.1073",
+    "experiment_id_before": "f31be96b-8a91-44a2-ba7f-f46037c6e518",
+    "experiment_id_after": "d702830f-f283-4d09-89e0-cd80866baaa1",
+    "metrics_before": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7886881906805483
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.9074074074074073,
+      "ndcg_at_5": 0.8959642364323179
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.077778,
+      "mrr": 0.152778,
+      "ndcg_at_5": 0.107276
+    }
+  },
+  {
+    "iteration_id": 23,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from sliding_window to heading_semantic improved NDCG@5 by +0.1035",
+    "experiment_id_before": "52ac462a-4942-4b38-a120-9dfbcbe8ef65",
+    "experiment_id_after": "d702830f-f283-4d09-89e0-cd80866baaa1",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.47777777777777775,
+      "mrr": 0.7824074074074074,
+      "ndcg_at_5": 0.7924372061408875
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.9074074074074073,
+      "ndcg_at_5": 0.8959642364323179
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.177778,
+      "mrr": 0.125,
+      "ndcg_at_5": 0.103527
+    }
+  },
+  {
+    "iteration_id": 24,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from mpnet to openai improved NDCG@5 by +0.1023",
+    "experiment_id_before": "4e3fe4e6-eeca-4818-892b-5698897f726e",
+    "experiment_id_after": "2964c02f-bf78-4044-89a2-fdb1ece0a6e5",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.7453703703703703,
+      "ndcg_at_5": 0.7681723197175967
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.8611111111111112,
+      "ndcg_at_5": 0.8704408539691294
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.044444,
+      "mrr": 0.115741,
+      "ndcg_at_5": 0.102269
+    }
+  },
+  {
+    "iteration_id": 25,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from embedding_semantic to fixed improved NDCG@5 by +0.1022",
+    "experiment_id_before": "b6596d30-e1db-4e20-8edd-632d03cbaeb4",
+    "experiment_id_after": "26aa868e-86d9-4783-a457-879143bc902e",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.5648148148148148,
+      "ndcg_at_5": 0.6074368305439186
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.7037037037037037,
+      "ndcg_at_5": 0.709656580001414
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.044444,
+      "mrr": 0.138889,
+      "ndcg_at_5": 0.10222
+    }
+  },
+  {
+    "iteration_id": 26,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from minilm to openai improved NDCG@5 by +0.1007",
+    "experiment_id_before": "edca3010-1c91-4ddb-95b5-3c47727a6fdf",
+    "experiment_id_after": "8f192307-ca0b-478c-a2e5-c83b124d8205",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6759259259259259,
+      "ndcg_at_5": 0.6830720334824171
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7685185185185186,
+      "ndcg_at_5": 0.7837653440939787
+    },
+    "delta": {
+      "recall_at_5": 0.166667,
+      "precision_at_5": 0.077778,
+      "mrr": 0.092593,
+      "ndcg_at_5": 0.100693
+    }
+  },
+  {
+    "iteration_id": 27,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from recursive to fixed improved NDCG@5 by +0.0992",
+    "experiment_id_before": "1b7dfb0a-f7ce-4d4f-b09d-bcac3ee36258",
+    "experiment_id_after": "353df195-e2a1-4b58-8bbf-b2496f58e9ee",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.5712962962962963,
+      "ndcg_at_5": 0.638912745181271
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.3333333333333333,
+      "mrr": 0.6666666666666666,
+      "ndcg_at_5": 0.7380717667183126
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.033333,
+      "mrr": 0.09537,
+      "ndcg_at_5": 0.099159
+    }
+  },
+  {
+    "iteration_id": 28,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from embedding_semantic to heading_semantic improved NDCG@5 by +0.0989",
+    "experiment_id_before": "40a88e30-b245-4c4f-bd7e-18c93dce865f",
+    "experiment_id_after": "253b17eb-206a-401e-a078-ad241c3961fc",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6472222222222223,
+      "ndcg_at_5": 0.655918738504899
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.7240740740740741,
+      "ndcg_at_5": 0.7547715104394916
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.011111,
+      "mrr": 0.076852,
+      "ndcg_at_5": 0.098853
+    }
+  },
+  {
+    "iteration_id": 29,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from recursive to fixed improved NDCG@5 by +0.0971",
+    "experiment_id_before": "7b409575-4212-4c2a-aee3-2d5b7ace6ae4",
+    "experiment_id_after": "7ee9484b-aafc-43ce-a9b1-ebc690f15170",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6546296296296297,
+      "ndcg_at_5": 0.6934102222413467
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7905405536853943
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.066667,
+      "mrr": 0.1,
+      "ndcg_at_5": 0.09713
+    }
+  },
+  {
+    "iteration_id": 30,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from minilm to openai improved NDCG@5 by +0.0921",
+    "experiment_id_before": "fb5963fa-c449-4a11-80c9-2c9072a710d5",
+    "experiment_id_after": "52ac462a-4942-4b38-a120-9dfbcbe8ef65",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.43333333333333335,
+      "mrr": 0.6962962962962963,
+      "ndcg_at_5": 0.7003377037305507
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.47777777777777775,
+      "mrr": 0.7824074074074074,
+      "ndcg_at_5": 0.7924372061408875
+    },
+    "delta": {
+      "recall_at_5": 0.166667,
+      "precision_at_5": 0.044444,
+      "mrr": 0.086111,
+      "ndcg_at_5": 0.0921
+    }
+  },
+  {
+    "iteration_id": 31,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from recursive to heading_semantic improved NDCG@5 by +0.0889",
+    "experiment_id_before": "9674ba2f-65d0-4352-b2b6-ae713ab1909a",
+    "experiment_id_after": "4e3fe4e6-eeca-4818-892b-5698897f726e",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.625,
+      "ndcg_at_5": 0.6792905510757126
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.7453703703703703,
+      "ndcg_at_5": 0.7681723197175967
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.011111,
+      "mrr": 0.12037,
+      "ndcg_at_5": 0.088882
+    }
+  },
+  {
+    "iteration_id": 32,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from embedding_semantic to heading_semantic improved NDCG@5 by +0.0867",
+    "experiment_id_before": "8f192307-ca0b-478c-a2e5-c83b124d8205",
+    "experiment_id_after": "2964c02f-bf78-4044-89a2-fdb1ece0a6e5",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7685185185185186,
+      "ndcg_at_5": 0.7837653440939787
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.8611111111111112,
+      "ndcg_at_5": 0.8704408539691294
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.088889,
+      "mrr": 0.092593,
+      "ndcg_at_5": 0.086676
+    }
+  },
+  {
+    "iteration_id": 33,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from embedding_semantic to fixed improved NDCG@5 by +0.0863",
+    "experiment_id_before": "8f192307-ca0b-478c-a2e5-c83b124d8205",
+    "experiment_id_after": "29b683a2-eee3-4cc4-9857-7f468336f2a1",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7685185185185186,
+      "ndcg_at_5": 0.7837653440939787
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.8518518518518519,
+      "ndcg_at_5": 0.8701080250370103
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.011111,
+      "mrr": 0.083333,
+      "ndcg_at_5": 0.086343
+    }
+  },
+  {
+    "iteration_id": 34,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from recursive to sliding_window improved NDCG@5 by +0.0851",
+    "experiment_id_before": "1b7dfb0a-f7ce-4d4f-b09d-bcac3ee36258",
+    "experiment_id_after": "f9f52ed2-9b49-4ff3-a6b5-cd5fc0cb3005",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.5712962962962963,
+      "ndcg_at_5": 0.638912745181271
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.6703703703703704,
+      "ndcg_at_5": 0.7240421847950803
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.088889,
+      "mrr": 0.099074,
+      "ndcg_at_5": 0.085129
+    }
+  },
+  {
+    "iteration_id": 35,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from embedding_semantic to fixed improved NDCG@5 by +0.0822",
+    "experiment_id_before": "40a88e30-b245-4c4f-bd7e-18c93dce865f",
+    "experiment_id_after": "353df195-e2a1-4b58-8bbf-b2496f58e9ee",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6472222222222223,
+      "ndcg_at_5": 0.655918738504899
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.3333333333333333,
+      "mrr": 0.6666666666666666,
+      "ndcg_at_5": 0.7380717667183126
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.088889,
+      "mrr": 0.019444,
+      "ndcg_at_5": 0.082153
+    }
+  },
+  {
+    "iteration_id": 36,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from recursive to fixed improved NDCG@5 by +0.0819",
+    "experiment_id_before": "2590ec85-f0bc-4619-a23b-be56b1317792",
+    "experiment_id_after": "827d4a9c-ae91-488e-bb5d-7a69da9c5b6f",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6414604414396018
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6777777777777777,
+      "ndcg_at_5": 0.7234031919429005
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.066667,
+      "mrr": 0.062037,
+      "ndcg_at_5": 0.081943
+    }
+  },
+  {
+    "iteration_id": 37,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0814",
+    "experiment_id_before": "59ee2e0e-921b-4222-b233-deee0e5547cd",
+    "experiment_id_after": "fb5963fa-c449-4a11-80c9-2c9072a710d5",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.5944444444444444,
+      "ndcg_at_5": 0.618922577802087
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.43333333333333335,
+      "mrr": 0.6962962962962963,
+      "ndcg_at_5": 0.7003377037305507
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.088889,
+      "mrr": 0.101852,
+      "ndcg_at_5": 0.081415
+    }
+  },
+  {
+    "iteration_id": 38,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0809",
+    "experiment_id_before": "26aa868e-86d9-4783-a457-879143bc902e",
+    "experiment_id_after": "7ee9484b-aafc-43ce-a9b1-ebc690f15170",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.7037037037037037,
+      "ndcg_at_5": 0.709656580001414
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7905405536853943
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.033333,
+      "mrr": 0.050926,
+      "ndcg_at_5": 0.080884
+    }
+  },
+  {
+    "iteration_id": 39,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from embedding_semantic to fixed improved NDCG@5 by +0.0803",
+    "experiment_id_before": "c9b74e59-dd36-4005-93bc-d65c94fbb015",
+    "experiment_id_after": "827d4a9c-ae91-488e-bb5d-7a69da9c5b6f",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2888888888888889,
+      "mrr": 0.6481481481481481,
+      "ndcg_at_5": 0.6431214088940674
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6777777777777777,
+      "ndcg_at_5": 0.7234031919429005
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.022222,
+      "mrr": 0.02963,
+      "ndcg_at_5": 0.080282
+    }
+  },
+  {
+    "iteration_id": 40,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from recursive to heading_semantic improved NDCG@5 by +0.0797",
+    "experiment_id_before": "31b3e7fa-046b-40cf-9c18-990b373d41e0",
+    "experiment_id_after": "d702830f-f283-4d09-89e0-cd80866baaa1",
+    "metrics_before": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.837962962962963,
+      "ndcg_at_5": 0.8162755142427307
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.9074074074074073,
+      "ndcg_at_5": 0.8959642364323179
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.0,
+      "mrr": 0.069444,
+      "ndcg_at_5": 0.079689
+    }
+  },
+  {
+    "iteration_id": 41,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from minilm to openai improved NDCG@5 by +0.0796",
+    "experiment_id_before": "7ee9484b-aafc-43ce-a9b1-ebc690f15170",
+    "experiment_id_after": "29b683a2-eee3-4cc4-9857-7f468336f2a1",
+    "metrics_before": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7905405536853943
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.8518518518518519,
+      "ndcg_at_5": 0.8701080250370103
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.033333,
+      "mrr": 0.097222,
+      "ndcg_at_5": 0.079567
+    }
+  },
+  {
+    "iteration_id": 42,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0756",
+    "experiment_id_before": "b6596d30-e1db-4e20-8edd-632d03cbaeb4",
+    "experiment_id_after": "edca3010-1c91-4ddb-95b5-3c47727a6fdf",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.5648148148148148,
+      "ndcg_at_5": 0.6074368305439186
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6759259259259259,
+      "ndcg_at_5": 0.6830720334824171
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.044444,
+      "mrr": 0.111111,
+      "ndcg_at_5": 0.075635
+    }
+  },
+  {
+    "iteration_id": 43,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from embedding_semantic to sliding_window improved NDCG@5 by +0.0729",
+    "experiment_id_before": "edca3010-1c91-4ddb-95b5-3c47727a6fdf",
+    "experiment_id_after": "31e8bcc6-6f1a-4292-a093-3f21a78d5643",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6759259259259259,
+      "ndcg_at_5": 0.6830720334824171
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.6944444444444444,
+      "ndcg_at_5": 0.7559857803244941
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.155556,
+      "mrr": 0.018519,
+      "ndcg_at_5": 0.072914
+    }
+  },
+  {
+    "iteration_id": 44,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "recursive",
+    "reason": "Changing chunking_strategy from embedding_semantic to recursive improved NDCG@5 by +0.0719",
+    "experiment_id_before": "b6596d30-e1db-4e20-8edd-632d03cbaeb4",
+    "experiment_id_after": "9674ba2f-65d0-4352-b2b6-ae713ab1909a",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.5648148148148148,
+      "ndcg_at_5": 0.6074368305439186
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.625,
+      "ndcg_at_5": 0.6792905510757126
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": -0.022222,
+      "mrr": 0.060185,
+      "ndcg_at_5": 0.071854
+    }
+  },
+  {
+    "iteration_id": 45,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from sliding_window to heading_semantic improved NDCG@5 by +0.0683",
+    "experiment_id_before": "54ac3d75-9180-42a8-9ef9-ec7faca1c8d2",
+    "experiment_id_after": "2964c02f-bf78-4044-89a2-fdb1ece0a6e5",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.7425925925925926,
+      "ndcg_at_5": 0.8021299049355606
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.8611111111111112,
+      "ndcg_at_5": 0.8704408539691294
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.166667,
+      "mrr": 0.118519,
+      "ndcg_at_5": 0.068311
+    }
+  },
+  {
+    "iteration_id": 46,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from embedding_semantic to sliding_window improved NDCG@5 by +0.0681",
+    "experiment_id_before": "40a88e30-b245-4c4f-bd7e-18c93dce865f",
+    "experiment_id_after": "f9f52ed2-9b49-4ff3-a6b5-cd5fc0cb3005",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6472222222222223,
+      "ndcg_at_5": 0.655918738504899
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.6703703703703704,
+      "ndcg_at_5": 0.7240421847950803
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.144444,
+      "mrr": 0.023148,
+      "ndcg_at_5": 0.068123
+    }
+  },
+  {
+    "iteration_id": 47,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from sliding_window to fixed improved NDCG@5 by +0.0680",
+    "experiment_id_before": "54ac3d75-9180-42a8-9ef9-ec7faca1c8d2",
+    "experiment_id_after": "29b683a2-eee3-4cc4-9857-7f468336f2a1",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.7425925925925926,
+      "ndcg_at_5": 0.8021299049355606
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.8518518518518519,
+      "ndcg_at_5": 0.8701080250370103
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.088889,
+      "mrr": 0.109259,
+      "ndcg_at_5": 0.067978
+    }
+  },
+  {
+    "iteration_id": 48,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "mpnet",
+    "reason": "Changing embedding_model from minilm to mpnet improved NDCG@5 by +0.0666",
+    "experiment_id_before": "31e8bcc6-6f1a-4292-a093-3f21a78d5643",
+    "experiment_id_after": "64994274-a732-48de-9408-d6e4948e1f9d",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.6944444444444444,
+      "ndcg_at_5": 0.7559857803244941
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8225774418198043
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.077778,
+      "mrr": 0.101852,
+      "ndcg_at_5": 0.066592
+    }
+  },
+  {
+    "iteration_id": 49,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from sliding_window to fixed improved NDCG@5 by +0.0662",
+    "experiment_id_before": "59ee2e0e-921b-4222-b233-deee0e5547cd",
+    "experiment_id_after": "654bb2d1-6117-4ab2-9d14-c006698d1e78",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.5944444444444444,
+      "ndcg_at_5": 0.618922577802087
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.6435185185185186,
+      "ndcg_at_5": 0.6851558652012598
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.088889,
+      "mrr": 0.049074,
+      "ndcg_at_5": 0.066233
+    }
+  },
+  {
+    "iteration_id": 50,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from recursive to sliding_window improved NDCG@5 by +0.0626",
+    "experiment_id_before": "7b409575-4212-4c2a-aee3-2d5b7ace6ae4",
+    "experiment_id_after": "31e8bcc6-6f1a-4292-a093-3f21a78d5643",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6546296296296297,
+      "ndcg_at_5": 0.6934102222413467
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.6944444444444444,
+      "ndcg_at_5": 0.7559857803244941
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.188889,
+      "mrr": 0.039815,
+      "ndcg_at_5": 0.062576
+    }
+  },
+  {
+    "iteration_id": 51,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from minilm to openai improved NDCG@5 by +0.0612",
+    "experiment_id_before": "1caab35e-b36f-42ff-b08e-a636abebe583",
+    "experiment_id_after": "2964c02f-bf78-4044-89a2-fdb1ece0a6e5",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8092193095565285
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.8611111111111112,
+      "ndcg_at_5": 0.8704408539691294
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.033333,
+      "mrr": 0.064815,
+      "ndcg_at_5": 0.061222
+    }
+  },
+  {
+    "iteration_id": 52,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from recursive to sliding_window improved NDCG@5 by +0.0589",
+    "experiment_id_before": "2590ec85-f0bc-4619-a23b-be56b1317792",
+    "experiment_id_after": "fb5963fa-c449-4a11-80c9-2c9072a710d5",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6414604414396018
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.43333333333333335,
+      "mrr": 0.6962962962962963,
+      "ndcg_at_5": 0.7003377037305507
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.188889,
+      "mrr": 0.080556,
+      "ndcg_at_5": 0.058877
+    }
+  },
+  {
+    "iteration_id": 53,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "fixed",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from fixed to heading_semantic improved NDCG@5 by +0.0585",
+    "experiment_id_before": "26aa868e-86d9-4783-a457-879143bc902e",
+    "experiment_id_after": "4e3fe4e6-eeca-4818-892b-5698897f726e",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.7037037037037037,
+      "ndcg_at_5": 0.709656580001414
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.7453703703703703,
+      "ndcg_at_5": 0.7681723197175967
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.055556,
+      "mrr": 0.041667,
+      "ndcg_at_5": 0.058516
+    }
+  },
+  {
+    "iteration_id": 54,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from embedding_semantic to sliding_window improved NDCG@5 by +0.0572",
+    "experiment_id_before": "c9b74e59-dd36-4005-93bc-d65c94fbb015",
+    "experiment_id_after": "fb5963fa-c449-4a11-80c9-2c9072a710d5",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2888888888888889,
+      "mrr": 0.6481481481481481,
+      "ndcg_at_5": 0.6431214088940674
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.43333333333333335,
+      "mrr": 0.6962962962962963,
+      "ndcg_at_5": 0.7003377037305507
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.144444,
+      "mrr": 0.048148,
+      "ndcg_at_5": 0.057216
+    }
+  },
+  {
+    "iteration_id": 55,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "heading_semantic",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from heading_semantic to sliding_window improved NDCG@5 by +0.0544",
+    "experiment_id_before": "4e3fe4e6-eeca-4818-892b-5698897f726e",
+    "experiment_id_after": "64994274-a732-48de-9408-d6e4948e1f9d",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.7453703703703703,
+      "ndcg_at_5": 0.7681723197175967
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8225774418198043
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.133333,
+      "mrr": 0.050926,
+      "ndcg_at_5": 0.054405
+    }
+  },
+  {
+    "iteration_id": 56,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from embedding_semantic to fixed improved NDCG@5 by +0.0537",
+    "experiment_id_before": "f31be96b-8a91-44a2-ba7f-f46037c6e518",
+    "experiment_id_after": "e257000c-2748-4076-8851-b367f55d75ec",
+    "metrics_before": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7886881906805483
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3777777777777778,
+      "mrr": 0.8287037037037037,
+      "ndcg_at_5": 0.8424232031355002
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.0,
+      "mrr": 0.074074,
+      "ndcg_at_5": 0.053735
+    }
+  },
+  {
+    "iteration_id": 57,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "fixed",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from fixed to heading_semantic improved NDCG@5 by +0.0535",
+    "experiment_id_before": "e257000c-2748-4076-8851-b367f55d75ec",
+    "experiment_id_after": "d702830f-f283-4d09-89e0-cd80866baaa1",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3777777777777778,
+      "mrr": 0.8287037037037037,
+      "ndcg_at_5": 0.8424232031355002
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.9074074074074073,
+      "ndcg_at_5": 0.8959642364323179
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.077778,
+      "mrr": 0.078704,
+      "ndcg_at_5": 0.053541
+    }
+  },
+  {
+    "iteration_id": 58,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from sliding_window to heading_semantic improved NDCG@5 by +0.0532",
+    "experiment_id_before": "31e8bcc6-6f1a-4292-a093-3f21a78d5643",
+    "experiment_id_after": "1caab35e-b36f-42ff-b08e-a636abebe583",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.6944444444444444,
+      "ndcg_at_5": 0.7559857803244941
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8092193095565285
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.2,
+      "mrr": 0.101852,
+      "ndcg_at_5": 0.053234
+    }
+  },
+  {
+    "iteration_id": 59,
+    "parameter_changed": "hybrid_alpha",
+    "old_value": "0.9",
+    "new_value": "0.5",
+    "reason": "Changing hybrid_alpha from 0.9 to 0.5 improved NDCG@5 by +0.0525",
+    "experiment_id_before": "c3a842e0-6f36-41a7-9812-ee8366adb239",
+    "experiment_id_after": "04d69501-2a27-4447-b45e-6d99bbb5115e",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.6388888888888888,
+      "ndcg_at_5": 0.6637884732642407
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6731481481481482,
+      "ndcg_at_5": 0.7163186943703633
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.022222,
+      "mrr": 0.034259,
+      "ndcg_at_5": 0.05253
+    }
+  },
+  {
+    "iteration_id": 60,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "heading_semantic",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from heading_semantic to fixed improved NDCG@5 by +0.0509",
+    "experiment_id_before": "8e8af283-a2d9-4275-a7c1-baf22b4ed2a7",
+    "experiment_id_after": "827d4a9c-ae91-488e-bb5d-7a69da9c5b6f",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6574074074074074,
+      "ndcg_at_5": 0.6725423665448055
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6777777777777777,
+      "ndcg_at_5": 0.7234031919429005
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.066667,
+      "mrr": 0.02037,
+      "ndcg_at_5": 0.050861
+    }
+  },
+  {
+    "iteration_id": 61,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from sliding_window to fixed improved NDCG@5 by +0.0500",
+    "experiment_id_before": "52ac462a-4942-4b38-a120-9dfbcbe8ef65",
+    "experiment_id_after": "e257000c-2748-4076-8851-b367f55d75ec",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.47777777777777775,
+      "mrr": 0.7824074074074074,
+      "ndcg_at_5": 0.7924372061408875
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3777777777777778,
+      "mrr": 0.8287037037037037,
+      "ndcg_at_5": 0.8424232031355002
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.1,
+      "mrr": 0.046296,
+      "ndcg_at_5": 0.049986
+    }
+  },
+  {
+    "iteration_id": 62,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from recursive to fixed improved NDCG@5 by +0.0465",
+    "experiment_id_before": "61653079-6101-4fc4-9dec-579f0316e2ae",
+    "experiment_id_after": "654bb2d1-6117-4ab2-9d14-c006698d1e78",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6388888888888888,
+      "ndcg_at_5": 0.6386925774597404
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.6435185185185186,
+      "ndcg_at_5": 0.6851558652012598
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.011111,
+      "mrr": 0.00463,
+      "ndcg_at_5": 0.046463
+    }
+  },
+  {
+    "iteration_id": 63,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "openai",
+    "reason": "Changing embedding_model from minilm to openai improved NDCG@5 by +0.0461",
+    "experiment_id_before": "31e8bcc6-6f1a-4292-a093-3f21a78d5643",
+    "experiment_id_after": "54ac3d75-9180-42a8-9ef9-ec7faca1c8d2",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.6944444444444444,
+      "ndcg_at_5": 0.7559857803244941
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.7425925925925926,
+      "ndcg_at_5": 0.8021299049355606
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.0,
+      "mrr": 0.048148,
+      "ndcg_at_5": 0.046144
+    }
+  },
+  {
+    "iteration_id": 64,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0450",
+    "experiment_id_before": "0fdb5db7-9d65-4f9d-b529-29b5643bfac4",
+    "experiment_id_after": "98aa484d-9061-458e-9a91-a36b68723ce8",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.7407407407407408,
+      "ndcg_at_5": 0.7214026937274789
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.7777777777777778,
+      "ndcg_at_5": 0.7664145557368607
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.0,
+      "mrr": 0.037037,
+      "ndcg_at_5": 0.045012
+    }
+  },
+  {
+    "iteration_id": 65,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from recursive to heading_semantic improved NDCG@5 by +0.0445",
+    "experiment_id_before": "6648525b-e5ce-40cc-8326-d347eac74508",
+    "experiment_id_after": "2964c02f-bf78-4044-89a2-fdb1ece0a6e5",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3333333333333333,
+      "mrr": 0.787037037037037,
+      "ndcg_at_5": 0.825908529962975
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.8611111111111112,
+      "ndcg_at_5": 0.8704408539691294
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.033333,
+      "mrr": 0.074074,
+      "ndcg_at_5": 0.044532
+    }
+  },
+  {
+    "iteration_id": 66,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from recursive to fixed improved NDCG@5 by +0.0442",
+    "experiment_id_before": "6648525b-e5ce-40cc-8326-d347eac74508",
+    "experiment_id_after": "29b683a2-eee3-4cc4-9857-7f468336f2a1",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3333333333333333,
+      "mrr": 0.787037037037037,
+      "ndcg_at_5": 0.825908529962975
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.8518518518518519,
+      "ndcg_at_5": 0.8701080250370103
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.044444,
+      "mrr": 0.064815,
+      "ndcg_at_5": 0.044199
+    }
+  },
+  {
+    "iteration_id": 67,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "recursive",
+    "reason": "Changing chunking_strategy from embedding_semantic to recursive improved NDCG@5 by +0.0421",
+    "experiment_id_before": "8f192307-ca0b-478c-a2e5-c83b124d8205",
+    "experiment_id_after": "6648525b-e5ce-40cc-8326-d347eac74508",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7685185185185186,
+      "ndcg_at_5": 0.7837653440939787
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3333333333333333,
+      "mrr": 0.787037037037037,
+      "ndcg_at_5": 0.825908529962975
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.055556,
+      "mrr": 0.018519,
+      "ndcg_at_5": 0.042143
+    }
+  },
+  {
+    "iteration_id": 68,
+    "parameter_changed": "hybrid_alpha",
+    "old_value": "0.3",
+    "new_value": "0.5",
+    "reason": "Changing hybrid_alpha from 0.3 to 0.5 improved NDCG@5 by +0.0417",
+    "experiment_id_before": "6312362c-170f-49ab-805a-fe48e08b1c70",
+    "experiment_id_after": "04d69501-2a27-4447-b45e-6d99bbb5115e",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2888888888888889,
+      "mrr": 0.6175925925925926,
+      "ndcg_at_5": 0.6746195198799194
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6731481481481482,
+      "ndcg_at_5": 0.7163186943703633
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.011111,
+      "mrr": 0.055556,
+      "ndcg_at_5": 0.041699
+    }
+  },
+  {
+    "iteration_id": 69,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0410",
+    "experiment_id_before": "4e3fe4e6-eeca-4818-892b-5698897f726e",
+    "experiment_id_after": "1caab35e-b36f-42ff-b08e-a636abebe583",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.7453703703703703,
+      "ndcg_at_5": 0.7681723197175967
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8092193095565285
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.011111,
+      "mrr": 0.050926,
+      "ndcg_at_5": 0.041047
+    }
+  },
+  {
+    "iteration_id": 70,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0382",
+    "experiment_id_before": "654bb2d1-6117-4ab2-9d14-c006698d1e78",
+    "experiment_id_after": "827d4a9c-ae91-488e-bb5d-7a69da9c5b6f",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.6435185185185186,
+      "ndcg_at_5": 0.6851558652012598
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6777777777777777,
+      "ndcg_at_5": 0.7234031919429005
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.055556,
+      "mrr": 0.034259,
+      "ndcg_at_5": 0.038247
+    }
+  },
+  {
+    "iteration_id": 71,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from sliding_window to heading_semantic improved NDCG@5 by +0.0362",
+    "experiment_id_before": "59ee2e0e-921b-4222-b233-deee0e5547cd",
+    "experiment_id_after": "57309fbb-c845-4295-81dc-78b2921ca19d",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.5944444444444444,
+      "ndcg_at_5": 0.618922577802087
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6175925925925926,
+      "ndcg_at_5": 0.655153079574384
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.1,
+      "mrr": 0.023148,
+      "ndcg_at_5": 0.036231
+    }
+  },
+  {
+    "iteration_id": 72,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from embedding_semantic to fixed improved NDCG@5 by +0.0354",
+    "experiment_id_before": "a6e9480a-5728-4629-9c94-2f15cde9a038",
+    "experiment_id_after": "654bb2d1-6117-4ab2-9d14-c006698d1e78",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6497836745311969
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.6435185185185186,
+      "ndcg_at_5": 0.6851558652012598
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.022222,
+      "mrr": 0.027778,
+      "ndcg_at_5": 0.035372
+    }
+  },
+  {
+    "iteration_id": 73,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from sliding_window to fixed improved NDCG@5 by +0.0346",
+    "experiment_id_before": "31e8bcc6-6f1a-4292-a093-3f21a78d5643",
+    "experiment_id_after": "7ee9484b-aafc-43ce-a9b1-ebc690f15170",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.6944444444444444,
+      "ndcg_at_5": 0.7559857803244941
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7905405536853943
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.122222,
+      "mrr": 0.060185,
+      "ndcg_at_5": 0.034555
+    }
+  },
+  {
+    "iteration_id": 74,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0325",
+    "experiment_id_before": "c2dbff3e-153e-4275-86d4-af27c0cf25bc",
+    "experiment_id_after": "5de0aa66-8f91-4d32-a683-d6d0cd171f3f",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.75,
+      "ndcg_at_5": 0.7299160428235659
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.7777777777777778,
+      "ndcg_at_5": 0.7624332204975713
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.0,
+      "mrr": 0.027778,
+      "ndcg_at_5": 0.032517
+    }
+  },
+  {
+    "iteration_id": 75,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from recursive to heading_semantic improved NDCG@5 by +0.0311",
+    "experiment_id_before": "2590ec85-f0bc-4619-a23b-be56b1317792",
+    "experiment_id_after": "8e8af283-a2d9-4275-a7c1-baf22b4ed2a7",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6414604414396018
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6574074074074074,
+      "ndcg_at_5": 0.6725423665448055
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.0,
+      "mrr": 0.041667,
+      "ndcg_at_5": 0.031082
+    }
+  },
+  {
+    "iteration_id": 76,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "embedding_semantic",
+    "reason": "Changing chunking_strategy from sliding_window to embedding_semantic improved NDCG@5 by +0.0309",
+    "experiment_id_before": "59ee2e0e-921b-4222-b233-deee0e5547cd",
+    "experiment_id_after": "a6e9480a-5728-4629-9c94-2f15cde9a038",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.5944444444444444,
+      "ndcg_at_5": 0.618922577802087
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6497836745311969
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.066667,
+      "mrr": 0.021296,
+      "ndcg_at_5": 0.030861
+    }
+  },
+  {
+    "iteration_id": 77,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from sliding_window to heading_semantic improved NDCG@5 by +0.0307",
+    "experiment_id_before": "f9f52ed2-9b49-4ff3-a6b5-cd5fc0cb3005",
+    "experiment_id_after": "253b17eb-206a-401e-a078-ad241c3961fc",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.6703703703703704,
+      "ndcg_at_5": 0.7240421847950803
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.7240740740740741,
+      "ndcg_at_5": 0.7547715104394916
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.133333,
+      "mrr": 0.053704,
+      "ndcg_at_5": 0.030729
+    }
+  },
+  {
+    "iteration_id": 78,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from recursive to fixed improved NDCG@5 by +0.0304",
+    "experiment_id_before": "9674ba2f-65d0-4352-b2b6-ae713ab1909a",
+    "experiment_id_after": "26aa868e-86d9-4783-a457-879143bc902e",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.625,
+      "ndcg_at_5": 0.6792905510757126
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.7037037037037037,
+      "ndcg_at_5": 0.709656580001414
+    },
+    "delta": {
+      "recall_at_5": -0.055556,
+      "precision_at_5": 0.066667,
+      "mrr": 0.078704,
+      "ndcg_at_5": 0.030366
+    }
+  },
+  {
+    "iteration_id": 79,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "heading_semantic",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from heading_semantic to fixed improved NDCG@5 by +0.0300",
+    "experiment_id_before": "57309fbb-c845-4295-81dc-78b2921ca19d",
+    "experiment_id_after": "654bb2d1-6117-4ab2-9d14-c006698d1e78",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6175925925925926,
+      "ndcg_at_5": 0.655153079574384
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.6435185185185186,
+      "ndcg_at_5": 0.6851558652012598
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.011111,
+      "mrr": 0.025926,
+      "ndcg_at_5": 0.030003
+    }
+  },
+  {
+    "iteration_id": 80,
+    "parameter_changed": "hybrid_alpha",
+    "old_value": "0.9",
+    "new_value": "0.7",
+    "reason": "Changing hybrid_alpha from 0.9 to 0.7 improved NDCG@5 by +0.0296",
+    "experiment_id_before": "c3a842e0-6f36-41a7-9812-ee8366adb239",
+    "experiment_id_after": "7b409575-4212-4c2a-aee3-2d5b7ace6ae4",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.6388888888888888,
+      "ndcg_at_5": 0.6637884732642407
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6546296296296297,
+      "ndcg_at_5": 0.6934102222413467
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.022222,
+      "mrr": 0.015741,
+      "ndcg_at_5": 0.029622
+    }
+  },
+  {
+    "iteration_id": 81,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from embedding_semantic to heading_semantic improved NDCG@5 by +0.0294",
+    "experiment_id_before": "c9b74e59-dd36-4005-93bc-d65c94fbb015",
+    "experiment_id_after": "8e8af283-a2d9-4275-a7c1-baf22b4ed2a7",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2888888888888889,
+      "mrr": 0.6481481481481481,
+      "ndcg_at_5": 0.6431214088940674
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6574074074074074,
+      "ndcg_at_5": 0.6725423665448055
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.044444,
+      "mrr": 0.009259,
+      "ndcg_at_5": 0.029421
+    }
+  },
+  {
+    "iteration_id": 82,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "heading_semantic",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from heading_semantic to sliding_window improved NDCG@5 by +0.0278",
+    "experiment_id_before": "8e8af283-a2d9-4275-a7c1-baf22b4ed2a7",
+    "experiment_id_after": "fb5963fa-c449-4a11-80c9-2c9072a710d5",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6574074074074074,
+      "ndcg_at_5": 0.6725423665448055
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.43333333333333335,
+      "mrr": 0.6962962962962963,
+      "ndcg_at_5": 0.7003377037305507
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.188889,
+      "mrr": 0.038889,
+      "ndcg_at_5": 0.027795
+    }
+  },
+  {
+    "iteration_id": 83,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "recursive",
+    "reason": "Changing chunking_strategy from embedding_semantic to recursive improved NDCG@5 by +0.0276",
+    "experiment_id_before": "f31be96b-8a91-44a2-ba7f-f46037c6e518",
+    "experiment_id_after": "31b3e7fa-046b-40cf-9c18-990b373d41e0",
+    "metrics_before": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7886881906805483
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.837962962962963,
+      "ndcg_at_5": 0.8162755142427307
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.077778,
+      "mrr": 0.083333,
+      "ndcg_at_5": 0.027587
+    }
+  },
+  {
+    "iteration_id": 84,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from recursive to fixed improved NDCG@5 by +0.0261",
+    "experiment_id_before": "31b3e7fa-046b-40cf-9c18-990b373d41e0",
+    "experiment_id_after": "e257000c-2748-4076-8851-b367f55d75ec",
+    "metrics_before": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.837962962962963,
+      "ndcg_at_5": 0.8162755142427307
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3777777777777778,
+      "mrr": 0.8287037037037037,
+      "ndcg_at_5": 0.8424232031355002
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.077778,
+      "mrr": -0.009259,
+      "ndcg_at_5": 0.026148
+    }
+  },
+  {
+    "iteration_id": 85,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "recursive",
+    "reason": "Changing chunking_strategy from sliding_window to recursive improved NDCG@5 by +0.0238",
+    "experiment_id_before": "52ac462a-4942-4b38-a120-9dfbcbe8ef65",
+    "experiment_id_after": "31b3e7fa-046b-40cf-9c18-990b373d41e0",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.47777777777777775,
+      "mrr": 0.7824074074074074,
+      "ndcg_at_5": 0.7924372061408875
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.837962962962963,
+      "ndcg_at_5": 0.8162755142427307
+    },
+    "delta": {
+      "recall_at_5": -0.055556,
+      "precision_at_5": -0.177778,
+      "mrr": 0.055556,
+      "ndcg_at_5": 0.023838
+    }
+  },
+  {
+    "iteration_id": 86,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "recursive",
+    "reason": "Changing chunking_strategy from sliding_window to recursive improved NDCG@5 by +0.0238",
+    "experiment_id_before": "54ac3d75-9180-42a8-9ef9-ec7faca1c8d2",
+    "experiment_id_after": "6648525b-e5ce-40cc-8326-d347eac74508",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.7425925925925926,
+      "ndcg_at_5": 0.8021299049355606
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3333333333333333,
+      "mrr": 0.787037037037037,
+      "ndcg_at_5": 0.825908529962975
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.133333,
+      "mrr": 0.044444,
+      "ndcg_at_5": 0.023779
+    }
+  },
+  {
+    "iteration_id": 87,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from sliding_window to fixed improved NDCG@5 by +0.0231",
+    "experiment_id_before": "fb5963fa-c449-4a11-80c9-2c9072a710d5",
+    "experiment_id_after": "827d4a9c-ae91-488e-bb5d-7a69da9c5b6f",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.43333333333333335,
+      "mrr": 0.6962962962962963,
+      "ndcg_at_5": 0.7003377037305507
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6777777777777777,
+      "ndcg_at_5": 0.7234031919429005
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.122222,
+      "mrr": -0.018519,
+      "ndcg_at_5": 0.023065
+    }
+  },
+  {
+    "iteration_id": 88,
+    "parameter_changed": "hybrid_alpha",
+    "old_value": "0.7",
+    "new_value": "0.5",
+    "reason": "Changing hybrid_alpha from 0.7 to 0.5 improved NDCG@5 by +0.0229",
+    "experiment_id_before": "7b409575-4212-4c2a-aee3-2d5b7ace6ae4",
+    "experiment_id_after": "04d69501-2a27-4447-b45e-6d99bbb5115e",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6546296296296297,
+      "ndcg_at_5": 0.6934102222413467
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6731481481481482,
+      "ndcg_at_5": 0.7163186943703633
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.0,
+      "mrr": 0.018519,
+      "ndcg_at_5": 0.022908
+    }
+  },
+  {
+    "iteration_id": 89,
+    "parameter_changed": "embedding_model",
+    "old_value": "openai",
+    "new_value": "mpnet",
+    "reason": "Changing embedding_model from openai to mpnet improved NDCG@5 by +0.0204",
+    "experiment_id_before": "54ac3d75-9180-42a8-9ef9-ec7faca1c8d2",
+    "experiment_id_after": "64994274-a732-48de-9408-d6e4948e1f9d",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.7425925925925926,
+      "ndcg_at_5": 0.8021299049355606
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8225774418198043
+    },
+    "delta": {
+      "recall_at_5": -0.111111,
+      "precision_at_5": -0.077778,
+      "mrr": 0.053704,
+      "ndcg_at_5": 0.020448
+    }
+  },
+  {
+    "iteration_id": 90,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "recursive",
+    "reason": "Changing chunking_strategy from sliding_window to recursive improved NDCG@5 by +0.0198",
+    "experiment_id_before": "59ee2e0e-921b-4222-b233-deee0e5547cd",
+    "experiment_id_after": "61653079-6101-4fc4-9dec-579f0316e2ae",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.5944444444444444,
+      "ndcg_at_5": 0.618922577802087
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6388888888888888,
+      "ndcg_at_5": 0.6386925774597404
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.1,
+      "mrr": 0.044444,
+      "ndcg_at_5": 0.01977
+    }
+  },
+  {
+    "iteration_id": 91,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0191",
+    "experiment_id_before": "515d86ba-57bd-45c4-9c96-5303b7877900",
+    "experiment_id_after": "85a871a5-25ef-4756-b976-a83f4924bf13",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.7824074074074074,
+      "ndcg_at_5": 0.7918478264987664
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.8074074074074074,
+      "ndcg_at_5": 0.8109635575258228
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.033333,
+      "mrr": 0.025,
+      "ndcg_at_5": 0.019116
+    }
+  },
+  {
+    "iteration_id": 92,
+    "parameter_changed": "hybrid_alpha",
+    "old_value": "0.3",
+    "new_value": "0.7",
+    "reason": "Changing hybrid_alpha from 0.3 to 0.7 improved NDCG@5 by +0.0188",
+    "experiment_id_before": "6312362c-170f-49ab-805a-fe48e08b1c70",
+    "experiment_id_after": "7b409575-4212-4c2a-aee3-2d5b7ace6ae4",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2888888888888889,
+      "mrr": 0.6175925925925926,
+      "ndcg_at_5": 0.6746195198799194
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6546296296296297,
+      "ndcg_at_5": 0.6934102222413467
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.011111,
+      "mrr": 0.037037,
+      "ndcg_at_5": 0.018791
+    }
+  },
+  {
+    "iteration_id": 93,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "fixed",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from fixed to heading_semantic improved NDCG@5 by +0.0187",
+    "experiment_id_before": "7ee9484b-aafc-43ce-a9b1-ebc690f15170",
+    "experiment_id_after": "1caab35e-b36f-42ff-b08e-a636abebe583",
+    "metrics_before": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.34444444444444444,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7905405536853943
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.26666666666666666,
+      "mrr": 0.7962962962962963,
+      "ndcg_at_5": 0.8092193095565285
+    },
+    "delta": {
+      "recall_at_5": -0.055556,
+      "precision_at_5": -0.077778,
+      "mrr": 0.041667,
+      "ndcg_at_5": 0.018679
+    }
+  },
+  {
+    "iteration_id": 94,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0186",
+    "experiment_id_before": "8b004a86-1407-435f-a1cb-9e03a61ac3a5",
+    "experiment_id_after": "266a3702-5e72-4684-a571-1c3301940e09",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.7916666666666666,
+      "ndcg_at_5": 0.8016682993214498
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.8194444444444444,
+      "ndcg_at_5": 0.8202688181465522
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.033333,
+      "mrr": 0.027778,
+      "ndcg_at_5": 0.018601
+    }
+  },
+  {
+    "iteration_id": 95,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from embedding_semantic to sliding_window improved NDCG@5 by +0.0184",
+    "experiment_id_before": "8f192307-ca0b-478c-a2e5-c83b124d8205",
+    "experiment_id_after": "54ac3d75-9180-42a8-9ef9-ec7faca1c8d2",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.7685185185185186,
+      "ndcg_at_5": 0.7837653440939787
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.4666666666666667,
+      "mrr": 0.7425925925925926,
+      "ndcg_at_5": 0.8021299049355606
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.077778,
+      "mrr": -0.025926,
+      "ndcg_at_5": 0.018365
+    }
+  },
+  {
+    "iteration_id": 96,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0174",
+    "experiment_id_before": "57309fbb-c845-4295-81dc-78b2921ca19d",
+    "experiment_id_after": "8e8af283-a2d9-4275-a7c1-baf22b4ed2a7",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6175925925925926,
+      "ndcg_at_5": 0.655153079574384
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6574074074074074,
+      "ndcg_at_5": 0.6725423665448055
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.0,
+      "mrr": 0.039815,
+      "ndcg_at_5": 0.017389
+    }
+  },
+  {
+    "iteration_id": 97,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "embedding_semantic",
+    "reason": "Changing chunking_strategy from recursive to embedding_semantic improved NDCG@5 by +0.0170",
+    "experiment_id_before": "1b7dfb0a-f7ce-4d4f-b09d-bcac3ee36258",
+    "experiment_id_after": "40a88e30-b245-4c4f-bd7e-18c93dce865f",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.5712962962962963,
+      "ndcg_at_5": 0.638912745181271
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6472222222222223,
+      "ndcg_at_5": 0.655918738504899
+    },
+    "delta": {
+      "recall_at_5": -0.055556,
+      "precision_at_5": -0.055556,
+      "mrr": 0.075926,
+      "ndcg_at_5": 0.017006
+    }
+  },
+  {
+    "iteration_id": 98,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "fixed",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from fixed to heading_semantic improved NDCG@5 by +0.0167",
+    "experiment_id_before": "353df195-e2a1-4b58-8bbf-b2496f58e9ee",
+    "experiment_id_after": "253b17eb-206a-401e-a078-ad241c3961fc",
+    "metrics_before": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.3333333333333333,
+      "mrr": 0.6666666666666666,
+      "ndcg_at_5": 0.7380717667183126
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.7240740740740741,
+      "ndcg_at_5": 0.7547715104394916
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.077778,
+      "mrr": 0.057407,
+      "ndcg_at_5": 0.0167
+    }
+  },
+  {
+    "iteration_id": 99,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from recursive to heading_semantic improved NDCG@5 by +0.0165",
+    "experiment_id_before": "61653079-6101-4fc4-9dec-579f0316e2ae",
+    "experiment_id_after": "57309fbb-c845-4295-81dc-78b2921ca19d",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6388888888888888,
+      "ndcg_at_5": 0.6386925774597404
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6175925925925926,
+      "ndcg_at_5": 0.655153079574384
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.0,
+      "mrr": -0.021296,
+      "ndcg_at_5": 0.016461
+    }
+  },
+  {
+    "iteration_id": 100,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0141",
+    "experiment_id_before": "9674ba2f-65d0-4352-b2b6-ae713ab1909a",
+    "experiment_id_after": "7b409575-4212-4c2a-aee3-2d5b7ace6ae4",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.625,
+      "ndcg_at_5": 0.6792905510757126
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6546296296296297,
+      "ndcg_at_5": 0.6934102222413467
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.033333,
+      "mrr": 0.02963,
+      "ndcg_at_5": 0.01412
+    }
+  },
+  {
+    "iteration_id": 101,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "sliding_window",
+    "new_value": "fixed",
+    "reason": "Changing chunking_strategy from sliding_window to fixed improved NDCG@5 by +0.0140",
+    "experiment_id_before": "f9f52ed2-9b49-4ff3-a6b5-cd5fc0cb3005",
+    "experiment_id_after": "353df195-e2a1-4b58-8bbf-b2496f58e9ee",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.3888888888888889,
+      "mrr": 0.6703703703703704,
+      "ndcg_at_5": 0.7240421847950803
+    },
+    "metrics_after": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.3333333333333333,
+      "mrr": 0.6666666666666666,
+      "ndcg_at_5": 0.7380717667183126
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.055556,
+      "mrr": -0.003704,
+      "ndcg_at_5": 0.01403
+    }
+  },
+  {
+    "iteration_id": 102,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "embedding_semantic",
+    "reason": "Changing chunking_strategy from recursive to embedding_semantic improved NDCG@5 by +0.0111",
+    "experiment_id_before": "61653079-6101-4fc4-9dec-579f0316e2ae",
+    "experiment_id_after": "a6e9480a-5728-4629-9c94-2f15cde9a038",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6388888888888888,
+      "ndcg_at_5": 0.6386925774597404
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6497836745311969
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.033333,
+      "mrr": -0.023148,
+      "ndcg_at_5": 0.011091
+    }
+  },
+  {
+    "iteration_id": 103,
+    "parameter_changed": "hybrid_alpha",
+    "old_value": "0.9",
+    "new_value": "0.3",
+    "reason": "Changing hybrid_alpha from 0.9 to 0.3 improved NDCG@5 by +0.0108",
+    "experiment_id_before": "c3a842e0-6f36-41a7-9812-ee8366adb239",
+    "experiment_id_after": "6312362c-170f-49ab-805a-fe48e08b1c70",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2555555555555556,
+      "mrr": 0.6388888888888888,
+      "ndcg_at_5": 0.6637884732642407
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2888888888888889,
+      "mrr": 0.6175925925925926,
+      "ndcg_at_5": 0.6746195198799194
+    },
+    "delta": {
+      "recall_at_5": 0.111111,
+      "precision_at_5": 0.033333,
+      "mrr": -0.021296,
+      "ndcg_at_5": 0.010831
+    }
+  },
+  {
+    "iteration_id": 104,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "recursive",
+    "reason": "Changing chunking_strategy from embedding_semantic to recursive improved NDCG@5 by +0.0103",
+    "experiment_id_before": "edca3010-1c91-4ddb-95b5-3c47727a6fdf",
+    "experiment_id_after": "7b409575-4212-4c2a-aee3-2d5b7ace6ae4",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.3111111111111111,
+      "mrr": 0.6759259259259259,
+      "ndcg_at_5": 0.6830720334824171
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6546296296296297,
+      "ndcg_at_5": 0.6934102222413467
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.033333,
+      "mrr": -0.021296,
+      "ndcg_at_5": 0.010338
+    }
+  },
+  {
+    "iteration_id": 105,
+    "parameter_changed": "reranker_type",
+    "old_value": "cohere",
+    "new_value": "cross_encoder",
+    "reason": "Changing reranker_type from cohere to cross_encoder improved NDCG@5 by +0.0098",
+    "experiment_id_before": "515d86ba-57bd-45c4-9c96-5303b7877900",
+    "experiment_id_after": "8b004a86-1407-435f-a1cb-9e03a61ac3a5",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.7824074074074074,
+      "ndcg_at_5": 0.7918478264987664
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.7916666666666666,
+      "ndcg_at_5": 0.8016682993214498
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.0,
+      "mrr": 0.009259,
+      "ndcg_at_5": 0.00982
+    }
+  },
+  {
+    "iteration_id": 106,
+    "parameter_changed": "reranker_type",
+    "old_value": "cohere",
+    "new_value": "cross_encoder",
+    "reason": "Changing reranker_type from cohere to cross_encoder improved NDCG@5 by +0.0093",
+    "experiment_id_before": "85a871a5-25ef-4756-b976-a83f4924bf13",
+    "experiment_id_after": "266a3702-5e72-4684-a571-1c3301940e09",
+    "metrics_before": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.8074074074074074,
+      "ndcg_at_5": 0.8109635575258228
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888888888888,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.8194444444444444,
+      "ndcg_at_5": 0.8202688181465522
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.0,
+      "mrr": 0.012037,
+      "ndcg_at_5": 0.009305
+    }
+  },
+  {
+    "iteration_id": 107,
+    "parameter_changed": "reranker_type",
+    "old_value": "cohere",
+    "new_value": "cross_encoder",
+    "reason": "Changing reranker_type from cohere to cross_encoder improved NDCG@5 by +0.0085",
+    "experiment_id_before": "0fdb5db7-9d65-4f9d-b529-29b5643bfac4",
+    "experiment_id_after": "c2dbff3e-153e-4275-86d4-af27c0cf25bc",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.7407407407407408,
+      "ndcg_at_5": 0.7214026937274789
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.75,
+      "ndcg_at_5": 0.7299160428235659
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.0,
+      "mrr": 0.009259,
+      "ndcg_at_5": 0.008513
+    }
+  },
+  {
+    "iteration_id": 108,
+    "parameter_changed": "embedding_model",
+    "old_value": "minilm",
+    "new_value": "mpnet",
+    "reason": "Changing embedding_model from minilm to mpnet improved NDCG@5 by +0.0067",
+    "experiment_id_before": "c9b74e59-dd36-4005-93bc-d65c94fbb015",
+    "experiment_id_after": "a6e9480a-5728-4629-9c94-2f15cde9a038",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2888888888888889,
+      "mrr": 0.6481481481481481,
+      "ndcg_at_5": 0.6431214088940674
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6497836745311969
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.011111,
+      "mrr": -0.032407,
+      "ndcg_at_5": 0.006662
+    }
+  },
+  {
+    "iteration_id": 109,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from embedding_semantic to heading_semantic improved NDCG@5 by +0.0054",
+    "experiment_id_before": "a6e9480a-5728-4629-9c94-2f15cde9a038",
+    "experiment_id_after": "57309fbb-c845-4295-81dc-78b2921ca19d",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2777777777777778,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6497836745311969
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333333334,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6175925925925926,
+      "ndcg_at_5": 0.655153079574384
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.033333,
+      "mrr": 0.001852,
+      "ndcg_at_5": 0.005369
+    }
+  },
+  {
+    "iteration_id": 110,
+    "parameter_changed": "reranker_type",
+    "old_value": "cross_encoder",
+    "new_value": "cohere",
+    "reason": "Changing reranker_type from cross_encoder to cohere improved NDCG@5 by +0.0040",
+    "experiment_id_before": "5de0aa66-8f91-4d32-a683-d6d0cd171f3f",
+    "experiment_id_after": "98aa484d-9061-458e-9a91-a36b68723ce8",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.7777777777777778,
+      "ndcg_at_5": 0.7624332204975713
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.7777777777777778,
+      "ndcg_at_5": 0.7664145557368607
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.0,
+      "mrr": 0.0,
+      "ndcg_at_5": 0.003981
+    }
+  },
+  {
+    "iteration_id": 111,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "embedding_semantic",
+    "new_value": "sliding_window",
+    "reason": "Changing chunking_strategy from embedding_semantic to sliding_window improved NDCG@5 by +0.0037",
+    "experiment_id_before": "f31be96b-8a91-44a2-ba7f-f46037c6e518",
+    "experiment_id_after": "52ac462a-4942-4b38-a120-9dfbcbe8ef65",
+    "metrics_before": {
+      "recall_at_5": 0.9444444444444444,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.7546296296296297,
+      "ndcg_at_5": 0.7886881906805483
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.47777777777777775,
+      "mrr": 0.7824074074074074,
+      "ndcg_at_5": 0.7924372061408875
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.1,
+      "mrr": 0.027778,
+      "ndcg_at_5": 0.003749
+    }
+  },
+  {
+    "iteration_id": 112,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "minilm",
+    "reason": "Changing embedding_model from mpnet to minilm improved NDCG@5 by +0.0028",
+    "experiment_id_before": "61653079-6101-4fc4-9dec-579f0316e2ae",
+    "experiment_id_after": "2590ec85-f0bc-4619-a23b-be56b1317792",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6388888888888888,
+      "ndcg_at_5": 0.6386925774597404
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6414604414396018
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.0,
+      "mrr": -0.023148,
+      "ndcg_at_5": 0.002768
+    }
+  },
+  {
+    "iteration_id": 113,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "recursive",
+    "new_value": "embedding_semantic",
+    "reason": "Changing chunking_strategy from recursive to embedding_semantic improved NDCG@5 by +0.0017",
+    "experiment_id_before": "2590ec85-f0bc-4619-a23b-be56b1317792",
+    "experiment_id_after": "c9b74e59-dd36-4005-93bc-d65c94fbb015",
+    "metrics_before": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.24444444444444446,
+      "mrr": 0.6157407407407408,
+      "ndcg_at_5": 0.6414604414396018
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777777777778,
+      "precision_at_5": 0.2888888888888889,
+      "mrr": 0.6481481481481481,
+      "ndcg_at_5": 0.6431214088940674
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.044444,
+      "mrr": 0.032407,
+      "ndcg_at_5": 0.001661
+    }
+  },
+  {
+    "iteration_id": 114,
+    "parameter_changed": "chunking_strategy",
+    "old_value": "fixed",
+    "new_value": "heading_semantic",
+    "reason": "Changing chunking_strategy from fixed to heading_semantic improved NDCG@5 by +0.0003",
+    "experiment_id_before": "29b683a2-eee3-4cc4-9857-7f468336f2a1",
+    "experiment_id_after": "2964c02f-bf78-4044-89a2-fdb1ece0a6e5",
+    "metrics_before": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.37777777777777777,
+      "mrr": 0.8518518518518519,
+      "ndcg_at_5": 0.8701080250370103
+    },
+    "metrics_after": {
+      "recall_at_5": 1.0,
+      "precision_at_5": 0.30000000000000004,
+      "mrr": 0.8611111111111112,
+      "ndcg_at_5": 0.8704408539691294
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.077778,
+      "mrr": 0.009259,
+      "ndcg_at_5": 0.000333
+    }
+  }
+]
