@@ -27,7 +27,7 @@ import psutil
 from src.cache import JSONCache
 from src.evaluation import LLMJudge, compute_overlap_relevance, mrr, ndcg_at_k, precision_at_k, recall_at_k
 from src.evaluation.ground_truth import load_ground_truth
-from src.factories import create_chunker, create_embedder, create_llm, create_retriever, load_configs
+from src.factories import create_chunker, create_embedder, create_llm, create_reranker, create_retriever, load_configs
 from src.generator import build_qa_prompt, extract_citations
 from src.interfaces import BaseEmbedder
 from src.schemas import (
@@ -109,6 +109,12 @@ def _run_single_config(
 
         # Retrieve
         retrieval_results = retriever.retrieve(gt_query.question, top_k=config.top_k)
+
+        # Apply reranking if configured
+        if config.use_reranking and config.reranker_type:
+            reranker = create_reranker(config.reranker_type)
+            retrieval_results = reranker.rerank(gt_query.question, retrieval_results, top_k=config.top_k)
+
         retrieved_ids = [r.chunk.id for r in retrieval_results]
         retrieved_chunks = [r.chunk for r in retrieval_results]
 
