@@ -353,3 +353,73 @@ def run_experiment_grid(
     logger.info("Saved %d results to %s", len(all_results), output_dir)
 
     return all_results
+
+
+def run_reproducibility_check(
+    results: list[ExperimentResult],
+    documents: list[Document],
+    ground_truth_path: str = "data/ground_truth.json",
+    threshold: float = 0.05,
+) -> dict:
+    """Re-run the best config (by NDCG@5) and compare metrics within threshold.
+
+    Returns dict with 'passed' bool, per-metric results, and best config info.
+    Skips judge to avoid LLM variance — retrieval metrics only.
+    """
+    best = max(results, key=lambda r: r.metrics.ndcg_at_5)
+    config = best.config
+    ground_truth = load_ground_truth(ground_truth_path)
+
+    # Recreate embedder
+    embedder: BaseEmbedder | None = (
+        create_embedder(config.embedding_model, device="cpu")
+        if config.embedding_model is not None
+        else None
+    )
+
+    cache_dir = str(Path("results/experiments") / "llm_cache")
+    cache = JSONCache(cache_dir)
+
+    run2 = _run_single_config(
+        config=config,
+        embedder=embedder,
+        documents=documents,
+        ground_truth=ground_truth,
+        judge=None,
+        cache=cache,
+    )
+
+    metric_results = {}
+    all_pass = True
+    for metric in ["ndcg_at_5", "recall_at_5", "precision_at_5", "mrr"]:
+        v1 = getattr(best.metrics, metric)
+        v2 = getattr(run2.metrics, metric)
+        delta = abs(v1 - v2)
+        max_val = max(v1, 0.001)
+        passed = delta / max_val < threshold
+        if not passed:
+            all_pass = False
+        metric_results[metric] = {
+            "run1": v1,
+            "run2": v2,
+            "delta": delta,
+            "variance_pct": (delta / max_val) * 100,
+            "passed": passed,
+        }
+
+    return {
+        "passed": all_pass,
+        "threshold": threshold,
+        "best_config": _config_label(config),
+        "best_experiment_id": best.experiment_id,
+        "metrics": metric_results,
+    }
+
+
+def _config_label(config: ExperimentConfig) -> str:
+    """Short label for a config."""
+    parts = [config.chunking_strategy, config.embedding_model or "bm25", config.retriever_type]
+    label = "_".join(parts)
+    if config.use_reranking:
+        label += f"_rr({config.reranker_type})"
+    return label

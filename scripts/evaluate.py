@@ -133,34 +133,23 @@ def main() -> int:
     # Reproducibility check
     if args.reproducibility_check:
         logger.info("Running reproducibility check on best config...")
-        from src.experiment_runner import _run_single_config
-        from src.evaluation.ground_truth import load_ground_truth
-        from src.factories import create_embedder
-        from src.cache import JSONCache
+        from src.experiment_runner import run_reproducibility_check
 
-        gt = load_ground_truth(args.ground_truth)
-        embedder = create_embedder(bc.embedding_model) if bc.embedding_model else None
-        cache = JSONCache(str(Path(args.output) / "llm_cache"))
-
-        run2 = _run_single_config(bc, embedder, documents, gt, judge=None, cache=cache)
+        check = run_reproducibility_check(
+            results=results,
+            documents=documents,
+            ground_truth_path=args.ground_truth,
+        )
 
         print(f"\n  REPRODUCIBILITY CHECK")
         print(f"  {'Metric':<15} {'Run 1':>8} {'Run 2':>8} {'Delta':>8} {'Status':>8}")
-        metrics_pairs = [
-            ("NDCG@5", best.metrics.ndcg_at_5, run2.metrics.ndcg_at_5),
-            ("Recall@5", best.metrics.recall_at_5, run2.metrics.recall_at_5),
-            ("Precision@5", best.metrics.precision_at_5, run2.metrics.precision_at_5),
-            ("MRR", best.metrics.mrr, run2.metrics.mrr),
-        ]
-        all_pass = True
-        for name, v1, v2 in metrics_pairs:
-            delta = abs(v1 - v2)
-            threshold = max(v1, 0.001) * 0.05
-            status = "PASS" if delta < threshold else "FAIL"
-            if status == "FAIL":
-                all_pass = False
-            print(f"  {name:<15} {v1:>8.4f} {v2:>8.4f} {delta:>8.4f} {status:>8}")
-        print(f"\n  Reproducibility: {'PASSED' if all_pass else 'FAILED'}")
+        metric_labels = {"ndcg_at_5": "NDCG@5", "recall_at_5": "Recall@5",
+                         "precision_at_5": "Precision@5", "mrr": "MRR"}
+        for metric, info in check["metrics"].items():
+            status = "PASS" if info["passed"] else "FAIL"
+            print(f"  {metric_labels[metric]:<15} {info['run1']:>8.4f} {info['run2']:>8.4f} "
+                  f"{info['delta']:>8.4f} {status:>8}")
+        print(f"\n  Reproducibility: {'PASSED' if check['passed'] else 'FAILED'}")
 
     return 0
 

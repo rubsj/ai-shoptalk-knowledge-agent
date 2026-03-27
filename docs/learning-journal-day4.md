@@ -96,4 +96,97 @@ The other 4 chunkers (Fixed, SlidingWindow, HeadingSemanticChunker, EmbeddingSem
 
 ---
 
-*Entries will be added as Day 4 work continues through ground truth generation, experiment grid execution, visualization, and analysis.*
+## Entry 7: Full Grid Run — Four Failures Before Success
+
+Running 46 experiment configs across 4 PDFs (515 chunks) required four attempts, each failing for a different reason. The debugging sequence is worth documenting because each failure was a different category of problem — hardware, process isolation, rate limiting, and environment configuration.
+
+### Failure 1: MPS Crash (SIGSEGV exit 139)
+
+The first run died immediately when MiniLM tried to encode 515 chunks on the Apple Silicon GPU. SentenceTransformer defaults to MPS (Metal Performance Shaders) when it detects Apple Silicon. For small batches this works fine — all unit tests pass. But encoding 515 chunks in one call triggered a segfault in the MPS backend.
+
+```
+Process finished with exit code 139 (interrupted by signal 11: SIGSEGV)
+```
+
+This is a known-ish issue: MPS support in PyTorch is still maturing, and large batch operations on certain models can hit memory alignment or buffer overflow bugs in the Metal shaders. The symptoms are GPU-level crashes, not Python exceptions — there's nothing to catch.
+
+**Fix:** `create_embedder(embedder_name, device="cpu")` in the experiment runner. CPU encoding of 515 chunks takes ~14s on the M5 Max (vs ~2s on GPU for batches that don't crash). Acceptable for an experiment grid that runs once. The irony: 128GB of unified memory doesn't help when the GPU shader itself crashes.
+
+**Lesson:** "Works on small data" and "works on GPU" are two different claims. Always test your GPU codepath with production-scale data before committing to a long run. MPS is not CUDA — it's younger and less battle-tested for ML workloads.
+
+### Failure 2: Sandbox Kills tqdm Progress Workers
+
+After fixing the MPS crash, the next run died with workers being killed by the macOS sandbox. SentenceTransformer's `encode()` method spawns progress bar workers via Python's multiprocessing module when `show_progress_bar=True` (the default). In the Claude Code sandbox environment, child process spawning is restricted — the workers get SIGKILL'd, which propagates as a crash.
+
+This failure was confusing because the stack trace pointed to `multiprocessing/resource_tracker.py`, not to anything in the embedding code. The connection to tqdm/progress bars isn't obvious.
+
+**Fix:** Added `show_progress_bar=False` to both `MiniLMEmbedder.embed()` and `MpnetEmbedder.embed()`. The progress bar was informational-only — removing it has zero impact on results.
+
+**Lesson:** Libraries that "helpfully" spawn subprocesses for UX features (progress bars, logging, monitoring) can break in restricted environments. When running in sandboxes, containers, or serverless, audit your dependencies for implicit subprocess spawning. The fix is usually a single parameter, but finding it requires understanding what the library does behind the scenes.
+
+### Failure 3: Cohere Trial Key Rate Limiting (HTTP 429)
+
+With GPU and process issues resolved, the grid ran successfully through 37 configs — all the MiniLM, mpnet, and BM25 experiments. It crashed on config 38: the first Cohere reranking config. Cohere's trial API key is limited to 10 calls per minute. Each config runs 18 queries, so the very first reranking config exhausted the rate limit after 10 queries.
+
+The error was a raw `TooManyRequestsError` from the Cohere SDK. The experiment runner had no retry logic, so the entire grid crashed — losing the ability to continue with the remaining 8 configs (4 Cohere + the non-Cohere configs that hadn't run yet).
+
+**Fix (two layers):**
+1. **Retry with backoff in `CohereReranker`:** 5 retries, base delay of 10 seconds with linear backoff (`delay * (attempt + 1)`). The trial key replenishes at 10 calls/min, so a 10-20s wait is usually sufficient.
+2. **Grid resilience in `_run_single_config`:** Wrapped each config execution in try/except. A failing config logs the error and continues to the next one instead of crashing the entire grid. This means a rate limit crash on Cohere config #1 doesn't prevent the remaining 7 reranking configs from attempting (they'll wait and retry too).
+
+**Lesson:** Any experiment grid that makes API calls must be resilient at two levels: the individual API call (retry with backoff) and the grid orchestration (skip-and-continue). A grid of N configs that crashes on config K wastes K-1 runs worth of compute and API cost. The grid runner should be treated like a batch job scheduler — individual job failures shouldn't halt the entire batch.
+
+### Failure 4: TOKENIZERS_PARALLELISM Fork Warning
+
+Even after the above fixes, running via `nohup` produced warnings that looked like errors:
+
+```
+huggingface/tokenizers: The current process just got forked,
+before the parallelism layer has been initialized...
+```
+
+This is the HuggingFace tokenizers library complaining about Python's fork behavior. When a process forks after importing `tokenizers`, the child process inherits the parent's memory but not its thread state, which can cause deadlocks. Setting `TOKENIZERS_PARALLELISM=false` suppresses this by disabling the parallelism layer entirely.
+
+Combined with `OMP_NUM_THREADS=1` (prevents OpenMP from spawning threads that conflict with the sandbox), the full invocation became:
+
+```bash
+TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=1 nohup .venv/bin/python scripts/evaluate.py --no-judge &
+```
+
+**Fix:** Environment variables set before invocation. No code changes needed.
+
+### The Successful Run
+
+After all four fixes, the grid completed: 45/46 configs in 48.6 minutes, ~$0.30 estimated cost. One config failed (a Cohere reranking config that exhausted all retries — the trial key's burst limit is genuinely too low for 18 queries at 10/min even with backoff). The grid runner logged the failure and continued.
+
+Best config: `heading_semantic_openai_dense` — NDCG@5=0.896, Recall@5=1.000, MRR=0.907.
+
+**Meta-lesson:** The progression of failures tells a story about the layers between "code that works in tests" and "code that runs at scale": unit-test-passing code → GPU hardware limits → OS process isolation → API rate limits → library environment configuration. Each layer is invisible until you hit it, and each requires a different category of fix (device selection, parameter tuning, retry logic, environment variables). Integration testing with realistic data volume would have caught failures 1-3 before the grid run.
+
+---
+
+## Entry 8: Visualization, Reporting, and the Iteration Log Pattern
+
+**What:** Built 10 chart functions in `src/visualization.py`, a comparison report generator in `src/reporting.py`, and an iteration log builder in `src/iteration_log.py`. These are the analysis artifacts that turn 45 experiment results into answers to the 4 required questions (Q1-Q4).
+
+### The Iteration Log as Automated Ablation
+
+The iteration log (`build_iteration_log()`) finds all config pairs that differ by exactly one parameter and records the metric delta. This is essentially automated ablation analysis — instead of manually designing "change one thing" experiments, the function discovers them from the grid results. With 45 configs and 6 comparable parameters, it found 108 single-parameter comparison pairs.
+
+The key design decision: "before" is always the lower-NDCG config, so positive deltas mean improvement. This makes the log directional — you can read it as "changing X from A to B improved NDCG@5 by +0.24" rather than just "these two differ by 0.24." Sorting by absolute delta puts the highest-impact parameter changes at the top.
+
+One subtlety: reranking is a 2-parameter change (`use_reranking` and `reranker_type` change together), so it doesn't appear in the single-parameter iteration log. The reranking comparison in the report handles this separately by matching reranked configs to their base.
+
+### Precision@5 Target: Unreachable by Design
+
+The PRD target of Precision@5 > 0.60 was not met by any of the 45 configs. Best was 0.478. This isn't a bug — it's a ceiling imposed by the ground truth. With an average of ~3 relevant chunks per query and top_k=5, a perfect retriever achieves Precision@5 = 3/5 = 0.60. Many queries have only 2 gold chunks, making their theoretical max 0.40.
+
+This is the kind of finding the experiment grid is designed to surface. The target was set before knowing the ground truth density. In practice, Precision@5 matters less than Recall@5 for RAG — you'd rather have all relevant chunks in your top-5 (even with some noise) than miss a key passage. The system achieves Recall@5 = 1.0 on its best config, meaning every relevant chunk is retrieved.
+
+### Report Structure: 11 Sections
+
+The comparison report answers more than just Q1-Q4. The PRD requires iteration log traceability (Section 7g), judge target checks (Section 2b), and self-evaluation answers (Section 8c). The generator handles all cases: with judge scores, without judge scores, with/without iteration log, with/without reranking data. Each section degrades gracefully when data is missing rather than crashing.
+
+---
+
+*Day 4 continues with full judge run and final commit.*
