@@ -218,11 +218,15 @@ def _run_single_config(
         else "local"
     )
 
-    # 10. Compute cost estimate for API embedders
+    # 10. Compute cost estimate (embedding + LLM generation)
     cost_estimate_usd = 0.0
     if embedding_source == "api":
         total_tokens = len(all_chunks) * _AVG_TOKENS_PER_CHUNK
-        cost_estimate_usd = total_tokens * _OPENAI_EMBED_COST_PER_TOKEN
+        cost_estimate_usd += total_tokens * _OPENAI_EMBED_COST_PER_TOKEN
+    # LLM generation cost: gpt-4o-mini at ~$0.15/1M input + ~$0.60/1M output
+    # Rough estimate: ~1500 input tokens per query (prompt + chunks), ~200 output tokens
+    n_queries = len(ground_truth.queries)
+    cost_estimate_usd += n_queries * (1500 * 0.15 + 200 * 0.60) / 1_000_000
 
     performance = PerformanceMetrics(
         ingestion_time_seconds=ingestion_time,
