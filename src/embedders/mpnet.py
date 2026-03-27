@@ -32,7 +32,9 @@ class MpnetEmbedder(BaseEmbedder):
         """Batch embed texts. Returns shape (len(texts), 768), L2-normalised."""
         if not texts:
             return np.empty((0, self._DIMENSIONS), dtype=np.float32)
-        embeddings = self._model.encode(texts, convert_to_numpy=True).astype(np.float32)
+        embeddings = self._model.encode(
+            texts, convert_to_numpy=True, show_progress_bar=False,
+        ).astype(np.float32)
         embeddings = np.ascontiguousarray(embeddings)
         faiss.normalize_L2(embeddings)
         return embeddings

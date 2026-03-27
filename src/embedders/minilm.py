@@ -36,7 +36,9 @@ class MiniLMEmbedder(BaseEmbedder):
         """Batch embed texts. Returns shape (len(texts), 384), L2-normalised."""
         if not texts:
             return np.empty((0, self._DIMENSIONS), dtype=np.float32)
-        embeddings = self._model.encode(texts, convert_to_numpy=True).astype(np.float32)
+        embeddings = self._model.encode(
+            texts, convert_to_numpy=True, show_progress_bar=False,
+        ).astype(np.float32)
         # WHY: copy() before normalize_L2 to avoid mutating the array in-place
         # if the caller holds a reference to the same buffer
         embeddings = np.ascontiguousarray(embeddings)
