@@ -21,8 +21,8 @@ from src.schemas import RetrievalResult
 logger = logging.getLogger(__name__)
 
 _MODEL = "rerank-english-v3.0"
-_MAX_RETRIES = 3
-_RETRY_DELAY_SECONDS = 7  # trial key = 10 calls/min, so ~6s between calls is safe
+_MAX_RETRIES = 5
+_RETRY_DELAY_SECONDS = 10  # trial key = 10 calls/min, need >6s between calls
 
 
 class CohereReranker(BaseReranker):

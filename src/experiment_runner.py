@@ -299,24 +299,32 @@ def run_experiment_grid(
 
         for config in group_configs:
             logger.info(
-                "Running: chunker=%s  embedder=%s  retriever=%s",
+                "Running: chunker=%s  embedder=%s  retriever=%s  reranker=%s",
                 config.chunking_strategy,
                 config.embedding_model,
                 config.retriever_type,
+                config.reranker_type or "none",
             )
-            result = _run_single_config(
-                config=config,
-                embedder=embedder,
-                documents=documents,
-                ground_truth=ground_truth,
-                judge=judge,
-                cache=cache,
-            )
-            all_results.append(result)
+            try:
+                result = _run_single_config(
+                    config=config,
+                    embedder=embedder,
+                    documents=documents,
+                    ground_truth=ground_truth,
+                    judge=judge,
+                    cache=cache,
+                )
+                all_results.append(result)
 
-            # Save per-experiment JSON incrementally
-            result_file = out_path / f"{result.experiment_id}.json"
-            result_file.write_text(json.dumps(result.model_dump(mode="json"), indent=2, default=str))
+                # Save per-experiment JSON incrementally
+                result_file = out_path / f"{result.experiment_id}.json"
+                result_file.write_text(json.dumps(result.model_dump(mode="json"), indent=2, default=str))
+            except Exception:
+                logger.exception(
+                    "Config FAILED: chunker=%s embedder=%s retriever=%s reranker=%s — skipping",
+                    config.chunking_strategy, config.embedding_model,
+                    config.retriever_type, config.reranker_type,
+                )
 
             # Time estimation checkpoint after first 4 configs
             if len(all_results) == 4:
