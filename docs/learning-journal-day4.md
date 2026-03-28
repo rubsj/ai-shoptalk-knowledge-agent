@@ -189,4 +189,46 @@ The comparison report answers more than just Q1-Q4. The PRD requires iteration l
 
 ---
 
-*Day 4 continues with full judge run and final commit.*
+## Entry 9: Judge Scores — LLM Leniency and What Calibration Revealed
+
+**What:** Ran all 46 configs with GPT-4o as 5-axis judge (Relevance, Accuracy, Completeness, Conciseness, Citation Quality). Best config scored 4.77/5.0 overall. Then manually scored 5 diverse query-answer pairs for calibration.
+
+### The Leniency Problem
+
+The LLM judge gave scores between 4.5 and 4.9 on almost every axis for the best configs. That's suspiciously generous. When I scored the same 5 answers myself, the human scores were generally lower — particularly on Citation Quality and Completeness, where the LLM was giving 5s to answers that cited chunks but didn't always cite the most relevant one, or that answered the question without covering edge cases mentioned in the source text.
+
+This is the known "leniency bias" flagged in the PRD troubleshooting guide. The LLM judge tends to score high when the answer is fluent and well-structured, even if it's missing nuance. For a portfolio project, the 4.77 score still demonstrates the pipeline works — but in production I'd anchor the judge prompt with concrete examples of 3/5 and 4/5 answers, not just describe the scale endpoints.
+
+### What the Judge Scores Actually Tell Us
+
+The more interesting signal from the judge is *relative* rather than absolute. Across all 46 configs, the judge scores don't vary much (most are 4.0-4.8), which tells us that once you retrieve *any* reasonable set of chunks, GPT-4o-mini generates a decent answer. The real differentiation is in the retrieval metrics (NDCG@5 ranges from 0.607 to 0.896). This confirms the PRD's hypothesis: retrieval quality is the bottleneck, not generation quality.
+
+---
+
+## Entry 10: Reproducibility — 0% Variance and Why
+
+**What:** Re-ran the best config (`heading_semantic_openai_dense`) and compared all 4 retrieval metrics against the original run. Result: 0.0% variance on every metric.
+
+**Why zero variance:** Three design choices made the pipeline fully deterministic:
+1. **Deterministic chunk IDs** — `make_chunk_id(doc_id, start_char, end_char)` produces identical IDs from identical input
+2. **Exact FAISS search** — `IndexFlatIP` does brute-force inner product, no approximate nearest neighbor randomness
+3. **LLM response caching** — `JSONCache` returns the cached response for identical prompts, eliminating LLM temperature variance
+
+If any of these three were non-deterministic (random IDs, approximate search like IVF/HNSW, uncached LLM calls with temperature > 0), the variance would be non-zero. The 0% result validates that the pipeline is end-to-end reproducible, which is exactly what PRD 2g requires.
+
+**Lesson:** Reproducibility isn't a property you test for at the end — it's a property you build in from the start by choosing deterministic algorithms and caching non-deterministic external calls. If I'd used `uuid4()` for chunk IDs (the Day 1 default) or approximate FAISS indices, the reproducibility check would have failed, and debugging *which* layer introduced the variance would have been painful.
+
+---
+
+## Day 4 Summary
+
+**What shipped:** Full experiment grid (46 configs, 18 queries), LLM judge scoring, 10 visualization charts, comparison report (11 sections), iteration log (114 entries), reproducibility check (0% variance), judge calibration (5 pairs with human scores). 562 tests, 94% coverage.
+
+**Key numbers:**
+- Best config: `heading_semantic_openai_dense` — NDCG@5=0.896, Recall@5=1.000, MRR=0.907
+- Judge overall: 4.77/5.0 (target was >4.0)
+- 3/4 retrieval targets met (Precision@5 structurally limited by GT density)
+- Grid wall time: 37.7 minutes with judge, ~$0.30 total API cost
+- Top insight: OpenAI embeddings provide +0.24 NDCG@5 over local models; heading-semantic chunking preserves document structure best
+
+**What I learned:** The gap between "code that passes tests" and "code that runs a full experiment grid" involves four distinct failure categories (hardware limits, process isolation, rate limiting, environment config). Evaluation metrics can be perfectly implemented but methodologically broken if assumptions about data aren't validated. And the most valuable finding from an experiment grid isn't always the best config — it's the structural insights like "Precision@5 is ceiling-limited" and "generation quality doesn't vary much across configs."
