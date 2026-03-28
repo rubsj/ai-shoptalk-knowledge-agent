@@ -138,20 +138,31 @@ def plot_chunking_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
         base = df[(~df["use_reranking"]) & (df["hybrid_alpha"].isna() | (df["hybrid_alpha"] == 0.7))]
         agg = base.groupby("chunking_strategy")[_METRICS].mean().reset_index()
 
-        fig, axes = plt.subplots(1, 4, figsize=(16, 5))
+        # Shorten strategy names for readability
+        short_names = {
+            "embedding_semantic": "emb_semantic",
+            "heading_semantic": "head_semantic",
+            "sliding_window": "slide_window",
+            "recursive": "recursive",
+            "fixed": "fixed",
+        }
+        agg["label"] = agg["chunking_strategy"].map(lambda x: short_names.get(x, x))
+
+        fig, axes = plt.subplots(1, 4, figsize=(16, 7))
         for i, metric in enumerate(_METRICS):
             ax = axes[i]
-            bars = ax.bar(agg["chunking_strategy"], agg[metric],
+            bars = ax.bar(agg["label"], agg[metric],
                           color=sns.color_palette("Set2", len(agg)))
             ax.set_title(_METRIC_LABELS[metric], fontsize=12)
             ax.set_ylim(0, 1.05)
-            ax.tick_params(axis="x", rotation=30)
+            ax.set_xticks(range(len(agg)))
+            ax.set_xticklabels(agg["label"], ha="right", fontsize=9, rotation=45)
             for bar in bars:
                 ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
                         f"{bar.get_height():.3f}", ha="center", va="bottom", fontsize=8)
         fig.suptitle("Q1: Chunking Strategy Comparison (averaged across embedders & retrievers)",
-                     fontsize=13, y=1.02)
-        fig.tight_layout()
+                     fontsize=13)
+        fig.subplots_adjust(bottom=0.22, top=0.90, wspace=0.3)
         return _save_fig(fig, output_dir, "chunking_comparison")
 
 
