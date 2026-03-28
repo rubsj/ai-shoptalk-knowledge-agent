@@ -472,17 +472,24 @@ At the end of every session, Sonnet must:
 - [ ] **ADR-005: YAML + Pydantic for experiment configs** written and committed
 - [ ] **Checkpoint:** Evaluation framework complete. Ready for big run.
 
-### Day 4 — Run Experiments + Analysis (Sunday Deep Work)
-- [ ] Full experiment grid run (35+ configs, excluding Ollama)
-- [ ] 10+ visualization charts (Q1-Q4)
-- [ ] Comparison report answering 4 required questions (Q1-Q4)
-- [ ] Extended experiments (α sweep, reranking comparison)
-- [ ] Judge calibration (manual vs LLM, 5 answers)
-- [ ] Pipeline orchestrator (ties all phases together)
-- [ ] **(v5)** Iteration log: every config change logged with reason, before/after metrics, delta → `results/iteration_log.json`
-- [ ] **(v5)** Final config traceability table: every decision in best config traces to specific experiment ID
-- [ ] **(v5)** Reproducibility verification: run best config twice, all metrics within 5% variance
-- [ ] **Checkpoint:** All core experiments complete. Best config meets retrieval targets. Iteration log complete. Reproducibility verified.
+### Day 4 — Run Experiments + Analysis (Sunday Deep Work) ✅ COMPLETE
+- [x] Full experiment grid run (46 configs with judge, excluding Ollama)
+- [x] 10 visualization charts (Q1-Q4, alpha sweep, judge radar, latency scatter, query difficulty)
+- [x] Comparison report answering 4 required questions (Q1-Q4) — 11 sections, 317 lines
+- [x] Extended experiments (α sweep 0.3/0.5/0.7/0.9, 8 reranking configs: cross_encoder + cohere)
+- [x] Judge calibration (5 pairs scored by human and LLM, saved to results/judge_calibration_input.json)
+- [x] Pipeline orchestrator (scripts/evaluate.py with --no-judge, --reproducibility-check flags)
+- [x] **(v5)** Iteration log: 114 entries with before/after metrics + delta → `results/iteration_log.json`
+- [x] **(v5)** Final config traceability table in comparison report → `results/comparison_report.md`
+- [x] **(v5)** Reproducibility verification: 0% variance on all 4 metrics (deterministic pipeline)
+- [x] **Checkpoint:** 46 configs complete. Best config (heading_semantic_openai_dense): NDCG@5=0.896, Recall@5=1.000, MRR=0.907, Judge=4.77/5.0. 3/4 retrieval targets met (Precision@5 missed — ceiling from GT density). Iteration log + reproducibility verified.
+
+> **Day 4 Key Results:**
+> - Best config: `heading_semantic_openai_dense` (experiment ID: `470e2e37`)
+> - PRD 2a: Recall@5=1.000 (PASS), MRR=0.907 (PASS), NDCG@5=0.896 (PASS), Precision@5=0.300 (FAIL — GT density ceiling)
+> - PRD 2b: Judge overall=4.77 (PASS, target >4.0)
+> - 562 tests, 94% coverage
+> - Branch: `feat/p5-day4-experiments`, PR #8
 
 ### Day 5 — Local Model Experiments + Concept Deep-Dive (NEW in v4)
 - [ ] OllamaEmbedder implementation (implements BaseEmbedder, calls localhost:11434)
