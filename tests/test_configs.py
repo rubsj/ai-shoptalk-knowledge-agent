@@ -17,8 +17,8 @@ class TestConfigCount:
     def test_at_least_35_configs(self) -> None:
         assert len(_all_configs()) >= 35
 
-    def test_exactly_35_configs(self) -> None:
-        assert len(_all_configs()) == 35
+    def test_exactly_46_configs(self) -> None:
+        assert len(_all_configs()) == 46
 
 
 class TestConfigValidity:
@@ -53,14 +53,15 @@ class TestBM25Configs:
 class TestHybridConfigs:
     def test_hybrid_configs_have_alpha_set(self) -> None:
         hybrid_configs = [c for c in _all_configs() if c.retriever_type == "hybrid"]
-        assert len(hybrid_configs) == 15
+        # 15 base + 3 alpha sweep + 2 cross_encoder rerank + 2 cohere rerank = 22
+        assert len(hybrid_configs) == 22
         for config in hybrid_configs:
             assert config.hybrid_alpha is not None
 
-    def test_hybrid_alpha_is_0_7(self) -> None:
+    def test_alpha_sweep_values(self) -> None:
         hybrid_configs = [c for c in _all_configs() if c.retriever_type == "hybrid"]
-        for config in hybrid_configs:
-            assert abs(config.hybrid_alpha - 0.7) < 1e-9
+        alphas = sorted({c.hybrid_alpha for c in hybrid_configs})
+        assert alphas == [0.3, 0.5, 0.7, 0.9]
 
     def test_hybrid_covers_all_embedders(self) -> None:
         hybrid_configs = [c for c in _all_configs() if c.retriever_type == "hybrid"]
@@ -107,6 +108,13 @@ class TestCommonDefaults:
         for config in _all_configs():
             assert config.top_k == 5
 
-    def test_use_reranking_is_false(self) -> None:
-        for config in _all_configs():
-            assert config.use_reranking is False
+    def test_reranking_configs_have_reranker_type(self) -> None:
+        rerank_configs = [c for c in _all_configs() if c.use_reranking]
+        assert len(rerank_configs) == 8
+        types = {c.reranker_type for c in rerank_configs}
+        assert types == {"cross_encoder", "cohere"}
+
+    def test_non_reranking_configs_have_no_reranker(self) -> None:
+        non_rerank = [c for c in _all_configs() if not c.use_reranking]
+        for config in non_rerank:
+            assert config.reranker_type is None

@@ -27,16 +27,18 @@ class MiniLMEmbedder(BaseEmbedder):
     _MODEL_NAME = "all-MiniLM-L6-v2"
     _DIMENSIONS = 384
 
-    def __init__(self) -> None:
+    def __init__(self, device: str | None = None) -> None:
         # WHY: eager load — 128GB M5 Max has no RAM pressure, lazy loading
         # just adds complexity for zero benefit here
-        self._model = SentenceTransformer(self._MODEL_NAME)
+        self._model = SentenceTransformer(self._MODEL_NAME, device=device)
 
     def embed(self, texts: list[str]) -> np.ndarray:
         """Batch embed texts. Returns shape (len(texts), 384), L2-normalised."""
         if not texts:
             return np.empty((0, self._DIMENSIONS), dtype=np.float32)
-        embeddings = self._model.encode(texts, convert_to_numpy=True).astype(np.float32)
+        embeddings = self._model.encode(
+            texts, convert_to_numpy=True, show_progress_bar=False,
+        ).astype(np.float32)
         # WHY: copy() before normalize_L2 to avoid mutating the array in-place
         # if the caller holds a reference to the same buffer
         embeddings = np.ascontiguousarray(embeddings)

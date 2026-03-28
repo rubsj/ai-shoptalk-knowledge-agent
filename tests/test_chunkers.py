@@ -610,3 +610,105 @@ class TestEmbeddingSemanticChunker:
     def test_merge_small_chunks_empty_input(self) -> None:
         chunker = EmbeddingSemanticChunker()
         assert chunker._merge_small_chunks([]) == []
+
+
+# ---------------------------------------------------------------------------
+# TestDeterministicChunkIDs — verifies same input → same IDs across all chunkers
+# ---------------------------------------------------------------------------
+
+
+class TestDeterministicChunkIDs:
+    """Chunk IDs must be deterministic: re-chunking the same document produces
+    the same IDs. This is required for ground truth evaluation to work correctly —
+    ground truth references chunk IDs, which must match on re-run.
+    """
+
+    def _chunk_twice(self, chunker, doc: Document) -> tuple[list[str], list[str]]:
+        ids_run1 = [c.id for c in chunker.chunk(doc)]
+        ids_run2 = [c.id for c in chunker.chunk(doc)]
+        return ids_run1, ids_run2
+
+    def test_fixed_chunker_ids_are_deterministic(self) -> None:
+        doc = _make_test_document(content="A" * 600, source="stable.pdf")
+        chunker = FixedSizeChunker(chunk_size=200, chunk_overlap=20)
+        ids1, ids2 = self._chunk_twice(chunker, doc)
+        assert ids1 == ids2
+        assert len(ids1) > 0
+
+    def test_recursive_chunker_ids_are_deterministic(self) -> None:
+        content = "Paragraph one.\n\nParagraph two.\n\nParagraph three.\n\n" * 5
+        doc = _make_test_document(content=content, source="stable.pdf")
+        chunker = RecursiveChunker(chunk_size=100, chunk_overlap=10)
+        ids1, ids2 = self._chunk_twice(chunker, doc)
+        assert ids1 == ids2
+        assert len(ids1) > 0
+
+    def test_sliding_window_ids_are_deterministic(self) -> None:
+        doc = _make_test_document(content="word " * 500, source="stable.pdf")
+        chunker = SlidingWindowChunker(window_size=100, step_size=50)
+        ids1, ids2 = self._chunk_twice(chunker, doc)
+        assert ids1 == ids2
+        assert len(ids1) > 0
+
+    def test_heading_semantic_ids_are_deterministic(self) -> None:
+        content = "# Section A\n\nContent A here.\n\n# Section B\n\nContent B here.\n"
+        doc = _make_test_document(content=content, source="stable.pdf")
+        chunker = HeadingSemanticChunker(min_chunk_size=5)
+        ids1, ids2 = self._chunk_twice(chunker, doc)
+        assert ids1 == ids2
+        assert len(ids1) > 0
+
+    def test_embedding_semantic_ids_are_deterministic(self) -> None:
+        sentences = [
+            "The transformer model uses attention mechanisms to process text",
+            "Self-attention computes queries keys and values efficiently here",
+        ]
+        content = ". ".join(sentences) + "."
+        doc = _make_test_document(content=content, source="stable.pdf")
+        dummy_embeddings = np.eye(2, 8)
+
+        with patch("sentence_transformers.SentenceTransformer") as MockST:
+            mock_model = MagicMock()
+            mock_model.encode.return_value = dummy_embeddings
+            MockST.return_value = mock_model
+
+            chunker = EmbeddingSemanticChunker()
+            ids1 = [c.id for c in chunker.chunk(doc)]
+
+        with patch("sentence_transformers.SentenceTransformer") as MockST:
+            mock_model = MagicMock()
+            mock_model.encode.return_value = dummy_embeddings
+            MockST.return_value = mock_model
+
+            ids2 = [c.id for c in chunker.chunk(doc)]
+
+        assert ids1 == ids2
+        assert len(ids1) > 0
+
+    def test_different_documents_have_different_ids(self) -> None:
+        """Different source paths → different document IDs → different chunk IDs."""
+        doc_a = _make_test_document(content="Same content here.", source="doc_a.pdf")
+        doc_b = _make_test_document(content="Same content here.", source="doc_b.pdf")
+        chunker = FixedSizeChunker(chunk_size=100, chunk_overlap=10)
+        ids_a = [c.id for c in chunker.chunk(doc_a)]
+        ids_b = [c.id for c in chunker.chunk(doc_b)]
+        assert ids_a != ids_b
+
+    def test_document_id_is_deterministic_from_source(self) -> None:
+        """Same source path → same Document.id, regardless of content."""
+        doc1 = _make_test_document(content="Content one.", source="paper.pdf")
+        doc2 = _make_test_document(content="Content two.", source="paper.pdf")
+        assert doc1.id == doc2.id
+
+    def test_make_chunk_id_is_deterministic(self) -> None:
+        from src.chunkers._utils import make_chunk_id
+        id1 = make_chunk_id("doc123", 0, 512)
+        id2 = make_chunk_id("doc123", 0, 512)
+        assert id1 == id2
+        assert len(id1) == 16
+
+    def test_make_chunk_id_differs_for_different_positions(self) -> None:
+        from src.chunkers._utils import make_chunk_id
+        id_a = make_chunk_id("doc123", 0, 512)
+        id_b = make_chunk_id("doc123", 512, 1024)
+        assert id_a != id_b

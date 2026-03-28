@@ -64,10 +64,10 @@
 | matplotlib/seaborn charts | P1–P4 | 11+ experiment comparison charts |
 | Click CLI | P2 | 3 commands: ingest, serve, evaluate |
 | Rich progress bars | P2 | Batch processing progress |
-| ADR template | P1–P4 | 6 ADRs (distributed across Days 1-5) |
+| ADR template | P1–P4 | 7 ADRs (distributed across Days 1-5) |
 
 ### New for P5 (Learn These)
-- **PyMuPDF** (`import fitz`) — PDF text extraction. `fitz.open()` = Java's `PDDocument.load()`.
+- **PyMuPDF** (`import fitz`) — PDF text extraction + page rendering. `fitz.open()` = Java's `PDDocument.load()`. `page.get_text("dict")` returns text AND image blocks with bounding boxes. Vision LLM (GPT-4o-mini) describes figures/tables, interleaved at correct position (ADR-006).
 - **rank-bm25** — `BM25Okapi(tokenized_corpus)`. Corpus = list of token lists, NOT embeddings.
 - **LiteLLM** — `from litellm import completion`. Wraps OpenAI/Anthropic/Cohere behind one API. Like Java's adapter pattern.
 - **NDCG** — Implement from scratch. `DCG@K = Σ(rel_i / log₂(i+1))`. `NDCG = DCG / ideal_DCG`.
@@ -213,7 +213,7 @@ OPTIONAL MONITORING: import psutil; psutil.virtual_memory().percent
 | Day 2 | Retrieval Pipeline: Embedders, FAISS, retrievers, rerankers, generator | PRD Day 2 | Resume here (Mar 19). Same scope as original Day 2. |
 | Day 3 | Evaluation Framework: Metrics, ground truth, judge, configs, runner | PRD Day 3 | Same scope. Add Ollama config YAMLs to experiment grid. |
 | Day 4 | Experiment Execution: Full grid, charts, comparison report (Q1-Q4) | PRD Day 4 | Expanded time (Sunday deep work). More configs with Ollama added. |
-| Day 5 | **NEW:** Local Model Experiments + Concept Deep-Dive | — | OllamaEmbedder implementation, local vs API comparison (Q5), ADR-006. |
+| Day 5 | **NEW:** Local Model Experiments + Concept Deep-Dive | — | OllamaEmbedder implementation, local vs API comparison (Q5), ADR-007. |
 | Day 6 | Streamlit UI + CLI Polish | PRD Day 5 (split) | UI and CLI only. Documentation moved to Day 7. |
 | Day 7 | Documentation Sprint: README, Loom, Concept Library, Journal | PRD Day 5 (split) | Dedicated documentation day for gold-standard depth. |
 
@@ -434,7 +434,7 @@ At the end of every session, Sonnet must:
 ### Day 1 — Foundation: Extraction + Chunking + Schemas ✅ COMPLETE
 - [x] All Pydantic schemas (matching requirements data models + PRD additions)
 - [x] All 6 ABCs (BaseChunker, BaseEmbedder, BaseVectorStore, BaseRetriever, BaseReranker, BaseLLM)
-- [x] PDF extraction with PyMuPDF + text cleaning
+- [x] PDF extraction with PyMuPDF + text cleaning + vision LLM image descriptions (ADR-006)
 - [x] 5 chunking strategies (Fixed, Recursive, Sliding Window, Heading-Semantic, Embedding-Semantic)
 - [x] Tests for schemas + all chunkers (≥95% coverage)
 - [x] **ADR-001: FAISS over ChromaDB** written and committed
@@ -472,17 +472,24 @@ At the end of every session, Sonnet must:
 - [ ] **ADR-005: YAML + Pydantic for experiment configs** written and committed
 - [ ] **Checkpoint:** Evaluation framework complete. Ready for big run.
 
-### Day 4 — Run Experiments + Analysis (Sunday Deep Work)
-- [ ] Full experiment grid run (35+ configs, excluding Ollama)
-- [ ] 10+ visualization charts (Q1-Q4)
-- [ ] Comparison report answering 4 required questions (Q1-Q4)
-- [ ] Extended experiments (α sweep, reranking comparison)
-- [ ] Judge calibration (manual vs LLM, 5 answers)
-- [ ] Pipeline orchestrator (ties all phases together)
-- [ ] **(v5)** Iteration log: every config change logged with reason, before/after metrics, delta → `results/iteration_log.json`
-- [ ] **(v5)** Final config traceability table: every decision in best config traces to specific experiment ID
-- [ ] **(v5)** Reproducibility verification: run best config twice, all metrics within 5% variance
-- [ ] **Checkpoint:** All core experiments complete. Best config meets retrieval targets. Iteration log complete. Reproducibility verified.
+### Day 4 — Run Experiments + Analysis (Sunday Deep Work) ✅ COMPLETE
+- [x] Full experiment grid run (46 configs with judge, excluding Ollama)
+- [x] 10 visualization charts (Q1-Q4, alpha sweep, judge radar, latency scatter, query difficulty)
+- [x] Comparison report answering 4 required questions (Q1-Q4) — 11 sections, 317 lines
+- [x] Extended experiments (α sweep 0.3/0.5/0.7/0.9, 8 reranking configs: cross_encoder + cohere)
+- [x] Judge calibration (5 pairs scored by human and LLM, saved to results/judge_calibration_input.json)
+- [x] Pipeline orchestrator (scripts/evaluate.py with --no-judge, --reproducibility-check flags)
+- [x] **(v5)** Iteration log: 114 entries with before/after metrics + delta → `results/iteration_log.json`
+- [x] **(v5)** Final config traceability table in comparison report → `results/comparison_report.md`
+- [x] **(v5)** Reproducibility verification: 0% variance on all 4 metrics (deterministic pipeline)
+- [x] **Checkpoint:** 46 configs complete. Best config (heading_semantic_openai_dense): NDCG@5=0.896, Recall@5=1.000, MRR=0.907, Judge=4.77/5.0. 3/4 retrieval targets met (Precision@5 missed — ceiling from GT density). Iteration log + reproducibility verified.
+
+> **Day 4 Key Results:**
+> - Best config: `heading_semantic_openai_dense` (experiment ID: `470e2e37`)
+> - PRD 2a: Recall@5=1.000 (PASS), MRR=0.907 (PASS), NDCG@5=0.896 (PASS), Precision@5=0.300 (FAIL — GT density ceiling)
+> - PRD 2b: Judge overall=4.77 (PASS, target >4.0)
+> - 562 tests, 94% coverage
+> - Branch: `feat/p5-day4-experiments`, PR #8
 
 ### Day 5 — Local Model Experiments + Concept Deep-Dive (NEW in v4)
 - [ ] OllamaEmbedder implementation (implements BaseEmbedder, calls localhost:11434)
@@ -490,7 +497,7 @@ At the end of every session, Sonnet must:
 - [ ] Run Ollama nomic configs (best 3 chunkers × 2 retrieval methods = 6 configs)
 - [ ] Local vs API embedding comparison chart (Q5)
 - [ ] Latency benchmarking: local embedding time vs OpenAI API time
-- [ ] **ADR-006: Local vs API embeddings** written and committed
+- [ ] **ADR-007: Local vs API embeddings** written and committed
 - [ ] Concept Library entries: "Cross-encoder Reranking", "Hybrid Search"
 - [ ] Learning Journal: deep-dive reflection on experimentation insights
 - [ ] **Checkpoint:** Q5 answered with data. Local embedding story documented.
@@ -535,7 +542,10 @@ This is why Pydantic validates at load time. Common: missing hybrid_alpha when m
 Iterate: increase chunk overlap, try reranking, try larger embedder. The debugging story is valuable in interviews regardless. Document what you tried.
 
 ### "PyMuPDF two-column PDF text interleaved"
-Use `page.get_text("blocks")` for coordinate-based extraction, sort by column position. Or: choose single-column technical docs.
+Use `page.get_text("dict")` for coordinate-based extraction with bounding boxes, sort by column position. NOTE: `get_text("blocks")` silently omits image blocks — always use `get_text("dict")` when you need image positions. Or: choose single-column technical docs.
+
+### "Figures/tables missing from extracted content"
+PyMuPDF's `get_text()` only extracts text. Use `describe_images=True` in `extract_pdf()` to render pages as PNG and send to GPT-4o-mini vision for figure descriptions. Results are cached to `data/extracted/{stem}.json` — subsequent calls are free. See ADR-006.
 
 ### "LiteLLM import error or routing issue"
 LiteLLM model strings: `"gpt-4o-mini"` (not `"openai/gpt-4o-mini"` unless explicitly routing). Check `litellm.model_list` for supported models. Fallback: raw OpenAI SDK behind BaseLLM if LiteLLM is problematic.

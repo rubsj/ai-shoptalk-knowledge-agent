@@ -7,16 +7,28 @@ Pipeline:
 Per-page cleaning (in order):
     1. remove_headers_footers()  — drop running headers/page numbers
     2. clean_text()              — fix ligatures, rejoin hyphenated words, collapse whitespace
+
+Optional: describe_images=True renders each page as PNG and sends to a vision
+LLM (GPT-4o-mini) to describe figures, tables, and diagrams. Descriptions are
+interleaved at the correct vertical position using PyMuPDF's block-level
+bounding boxes, so figure descriptions appear where the figure sits on the page
+rather than at the end.
 """
 
 from __future__ import annotations
 
+import base64
+import json
+import logging
 import re
 from pathlib import Path
 
 import fitz  # PyMuPDF — `pip install pymupdf` installs as `fitz`
+import litellm
 
 from src.schemas import Document, DocumentMetadata, PageInfo
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Pre-compiled regexes — compiled once at module load, not per-call.
@@ -124,8 +136,151 @@ def remove_headers_footers(text: str, page_number: int, total_pages: int) -> str
     return "\n".join(foot_keep)
 
 
-def extract_pdf(pdf_path: str | Path) -> Document:
+_VISION_SYSTEM_PROMPT = """\
+You are analyzing a page from an academic paper. Describe any figures, tables, \
+charts, diagrams, or other visual elements on this page.
+
+For each visual element:
+1. Identify it (e.g., "Figure 3", "Table 2")
+2. Describe what it shows in detail
+3. Include any axis labels, legends, column headers, or data values visible
+
+If this page contains only text and mathematical equations with no figures, \
+tables, or diagrams, respond with exactly: NO_VISUAL_ELEMENTS"""
+
+_NO_VISUALS_MARKER = "NO_VISUAL_ELEMENTS"
+
+
+def _describe_page_images(
+    page_png_bytes: bytes,
+    page_number: int,
+    vision_model: str = "gpt-4o-mini",
+) -> str:
+    """Send a rendered page image to a vision LLM and get figure descriptions.
+
+    Returns description text, or empty string if no visual elements found.
+    """
+    b64_image = base64.b64encode(page_png_bytes).decode("utf-8")
+
+    response = litellm.completion(
+        model=vision_model,
+        messages=[
+            {"role": "system", "content": _VISION_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/png;base64,{b64_image}"},
+                    },
+                    {
+                        "type": "text",
+                        "text": f"This is page {page_number + 1}. Describe any visual elements.",
+                    },
+                ],
+            },
+        ],
+        temperature=0.0,
+    )
+    content: str = response.choices[0].message.content
+    if _NO_VISUALS_MARKER in content:
+        return ""
+    return content
+
+
+def _extract_text_from_dict_block(block: dict) -> str:
+    """Extract plain text from a dict-mode text block (type=0).
+
+    Dict-mode blocks contain lines → spans → text. Joining preserves
+    the reading order that PyMuPDF determined from the PDF layout.
+    """
+    lines = []
+    for line in block.get("lines", []):
+        spans_text = "".join(span.get("text", "") for span in line.get("spans", []))
+        if spans_text.strip():
+            lines.append(spans_text)
+    return "\n".join(lines)
+
+
+def _extract_page_content(
+    page: object,
+    page_num: int,
+    total_pages: int,
+    describe_images: bool,
+    vision_model: str,
+) -> str:
+    """Extract one page's text, interleaving image descriptions at correct positions.
+
+    When describe_images=False (or page has no images): uses standard get_text().
+    When describe_images=True and page has image blocks:
+        1. get_text("dict") returns text AND image blocks with bounding boxes.
+           (get_text("blocks") misses image blocks for many PDFs — dict mode is
+           reliable for detecting embedded XObject images.)
+        2. Sort all blocks by y-coordinate (vertical position on page).
+        3. Render page as PNG, send to vision LLM for figure descriptions.
+        4. Insert description at the y-position of the first image block,
+           so it appears where the figure sits — not at end of page.
+    """
+    if not describe_images:
+        raw_text = page.get_text()  # type: ignore[union-attr]
+        return clean_text(remove_headers_footers(raw_text, page_num, total_pages))
+
+    # Dict mode returns {"blocks": [...]} where each block has "type" (0=text, 1=image)
+    # and "bbox" (x0, y0, x1, y1). This reliably detects embedded images that
+    # get_text("blocks") misses.
+    page_dict = page.get_text("dict")  # type: ignore[union-attr]
+    blocks = page_dict.get("blocks", [])
+    blocks.sort(key=lambda b: (b["bbox"][1], b["bbox"][0]))  # sort by y0, then x0
+
+    has_images = any(b["type"] == 1 for b in blocks)
+
+    if not has_images:
+        # No image blocks — standard text extraction
+        raw_text = page.get_text()  # type: ignore[union-attr]
+        return clean_text(remove_headers_footers(raw_text, page_num, total_pages))
+
+    # Page has image blocks — get description from vision LLM
+    image_description = ""
+    try:
+        pixmap = page.get_pixmap(dpi=150)  # type: ignore[union-attr]
+        png_bytes = pixmap.tobytes("png")
+        image_description = _describe_page_images(png_bytes, page_num, vision_model)
+        if image_description:
+            logger.debug("Page %d: got image description (%d chars)", page_num, len(image_description))
+    except Exception:
+        logger.exception("Page %d: failed to describe images, skipping", page_num)
+
+    # Build page content from blocks in vertical order
+    parts: list[str] = []
+    description_inserted = False
+
+    for block in blocks:
+        if block["type"] == 0:  # text block
+            text = _extract_text_from_dict_block(block)
+            if text.strip():
+                parts.append(text)
+        elif block["type"] == 1 and image_description and not description_inserted:
+            # Insert description at the vertical position of the first image block
+            parts.append(f"[Visual Content — Page {page_num + 1}]\n{image_description}")
+            description_inserted = True
+
+    raw_text = "\n".join(parts)
+    return clean_text(remove_headers_footers(raw_text, page_num, total_pages))
+
+
+def extract_pdf(
+    pdf_path: str | Path,
+    describe_images: bool = False,
+    vision_model: str = "gpt-4o-mini",
+) -> Document:
     """Extract text and metadata from a single PDF.
+
+    Args:
+        pdf_path: Path to the PDF file.
+        describe_images: If True, render each page as PNG and send to a vision
+            LLM to describe figures/tables/diagrams. Descriptions are interleaved
+            at the correct vertical position on the page.
+        vision_model: LiteLLM model name for vision calls (default: gpt-4o-mini).
 
     Raises FileNotFoundError if path is missing, ValueError if no text found.
     """
@@ -142,8 +297,7 @@ def extract_pdf(pdf_path: str | Path) -> Document:
     pages: list[PageInfo] = []
     for page_num in range(total_pages):
         page = doc[page_num]
-        raw_text = page.get_text()  # "" for image-only pages
-        cleaned = clean_text(remove_headers_footers(raw_text, page_num, total_pages))
+        cleaned = _extract_page_content(page, page_num, total_pages, describe_images, vision_model)
         pages.append(
             PageInfo(
                 page_number=page_num,
@@ -168,20 +322,78 @@ def extract_pdf(pdf_path: str | Path) -> Document:
     return Document(content=full_content, metadata=metadata, pages=pages)
 
 
-def extract_all_pdfs(pdf_dir: str | Path) -> list[Document]:
-    """Extract all PDFs in a directory. Skips files that fail (logs warning)."""
-    import logging
+# ---------------------------------------------------------------------------
+# Disk cache — extract once, reuse everywhere
+# ---------------------------------------------------------------------------
 
-    logger = logging.getLogger(__name__)
+
+def save_document(document: Document, output_path: str | Path) -> Path:
+    """Save a Document as JSON to disk. Returns the written path."""
+    out = Path(output_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(
+        json.dumps(document.model_dump(mode="json"), indent=2, default=str),
+        encoding="utf-8",
+    )
+    return out
+
+
+def load_document(path: str | Path) -> Document | None:
+    """Load a Document from a JSON file. Returns None if file does not exist."""
+    p = Path(path)
+    if not p.exists():
+        return None
+    data = json.loads(p.read_text(encoding="utf-8"))
+    return Document.model_validate(data)
+
+
+def extract_all_pdfs(
+    pdf_dir: str | Path,
+    describe_images: bool = False,
+    cache_dir: str | Path = "data/extracted",
+    force: bool = False,
+) -> list[Document]:
+    """Extract all PDFs in a directory, using disk cache when available.
+
+    Cache behaviour:
+        - If cache_dir/{stem}.json exists and force=False → load from cache.
+        - Otherwise → extract (optionally with image descriptions) → save to cache.
+        - Also saves a human-readable .txt to cache_dir/validation/ for inspection.
+
+    Args:
+        pdf_dir: Directory containing PDF files.
+        describe_images: If True, describe figures/tables via vision LLM on cache miss.
+        cache_dir: Directory for cached extraction results.
+        force: If True, re-extract even if cache exists.
+    """
     pdf_dir = Path(pdf_dir)
+    cache_path = Path(cache_dir)
+    cache_path.mkdir(parents=True, exist_ok=True)
     documents: list[Document] = []
 
     for pdf_path in sorted(pdf_dir.glob("*.pdf")):
+        stem = pdf_path.stem
+        json_cache = cache_path / f"{stem}.json"
+
+        # Try loading from cache
+        if not force and json_cache.exists():
+            cached_doc = load_document(json_cache)
+            if cached_doc is not None:
+                logger.info("Loaded from cache: %s", json_cache.name)
+                documents.append(cached_doc)
+                continue
+
+        # Cache miss — extract
         try:
-            doc = extract_pdf(pdf_path)
+            doc = extract_pdf(pdf_path, describe_images=describe_images)
+            # Save JSON (canonical) and .txt (human-readable validation copy)
+            save_document(doc, json_cache)
+            validation_dir = cache_path / "validation"
+            validation_dir.mkdir(parents=True, exist_ok=True)
+            (validation_dir / f"{stem}.txt").write_text(doc.content, encoding="utf-8")
+            logger.info("Extracted and cached %s: %d pages", pdf_path.name, doc.metadata.page_count)
             documents.append(doc)
-            logger.info(f"Extracted {pdf_path.name}: {doc.metadata.page_count} pages")
         except (FileNotFoundError, ValueError) as e:
-            logger.warning(f"Skipping {pdf_path.name}: {e}")
+            logger.warning("Skipping %s: %s", pdf_path.name, e)
 
     return documents

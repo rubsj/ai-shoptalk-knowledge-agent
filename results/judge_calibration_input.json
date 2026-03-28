@@ -1,0 +1,257 @@
+[
+  {
+    "pair_id": 1,
+    "config_label": "heading_semantic_openai_dense",
+    "experiment_id": "d702830f-f283-4d09-89e0-cd80866baaa1",
+    "query_id": "q02",
+    "question": "What are the main components of the Transformer model's architecture?",
+    "answer": "The main components of the Transformer model's architecture include:\n\n1. **Encoder**: The encoder consists of a stack of identical layers, each containing:\n   - A \"Multi-Head Attention\" block.\n   - A \"Feed Forward\" block.\n   - \"Add & Norm\" layers following each block.\n\n2. **Decoder**: The decoder also has a stack of identical layers, which include:\n   - A \"Masked Multi-Head Attention\" block.\n   - A \"Multi-Head Attention\" block that takes the output from the encoder.\n   - A \"Feed Forward\" block.\n   - \"Add & Norm\" layers following each block.\n\n3. **Input and Output Processing**:\n   - \"Input Embedding\" and \"Positional Encoding\" for the inputs.\n   - \"Output Probabilities\" processed through \"Linear\" and \"Softmax\" layers at the output.\n\nThese components work together to process input sequences and generate output sequences in an auto-regressive manner [1].",
+    "retrieved_chunk_ids": [
+      "8a42d3bfcb7f1218",
+      "2bca34384aa968b9",
+      "b3f462ed900c0511",
+      "c3e538a44b515291",
+      "d07fb5bee550b670"
+    ],
+    "context_chunks": [
+      {
+        "chunk_id": "8a42d3bfcb7f1218",
+        "rank": 1
+      },
+      {
+        "chunk_id": "2bca34384aa968b9",
+        "rank": 2
+      },
+      {
+        "chunk_id": "b3f462ed900c0511",
+        "rank": 3
+      },
+      {
+        "chunk_id": "c3e538a44b515291",
+        "rank": 4
+      },
+      {
+        "chunk_id": "d07fb5bee550b670",
+        "rank": 5
+      }
+    ],
+    "llm_judge_scores": {
+      "relevance": 5,
+      "accuracy": 5,
+      "completeness": 5,
+      "conciseness": 5,
+      "citation_quality": 5
+    },
+    "human_scores": {
+      "relevance": 5,
+      "accuracy": 5,
+      "completeness": 5,
+      "conciseness": 4,
+      "citation_quality": 4
+    }
+  },
+  {
+    "pair_id": 2,
+    "config_label": "heading_semantic_minilm_hybrid",
+    "experiment_id": "1caab35e-b36f-42ff-b08e-a636abebe583",
+    "query_id": "q04",
+    "question": "How is multi-head attention implemented in the Transformer model?",
+    "answer": "Multi-head attention in the Transformer model is implemented by linearly projecting the queries, keys, and values multiple times with different learned linear projections. Specifically, the model uses \\( h \\) parallel attention heads, where each head performs the attention function on projected versions of the queries, keys, and values. The outputs from these heads are then concatenated and projected again to produce the final output.\n\nThe formula for multi-head attention is given as:\n\n\\[\n\\text{MultiHead}(Q, K, V) = \\text{Concat}(\\text{head}_1, \\ldots, \\text{head}_h) W_O\n\\]\n\nwhere each head is computed as:\n\n\\[\n\\text{head}_i = \\text{Attention}(Q W^Q_i, K W^K_i, V W^V_i)\n\\]\n\nHere, \\( W^Q_i \\), \\( W^K_i \\), and \\( W^V_i \\) are parameter matrices for the queries, keys, and values, respectively, and \\( W_O \\) is the output projection matrix. In the implementation, the dimensions for the keys, values, and queries are set to \\( d_k \\), \\( d_k \\), and \\( d_v \\), respectively, with \\( d_v \\) being the output dimension. For the Transformer model, \\( h \\) is typically set to 8, and the dimensions are adjusted such that \\( d_k = d_v = d_{model}/h = 64 \\) [5]. \n\nThis approach allows the model to jointly attend to information from different representation subspaces at different positions, enhancing its ability to capture complex relationships in the data [5].",
+    "retrieved_chunk_ids": [
+      "df712f14394acbc9",
+      "6b832fb83f97028d",
+      "c3e538a44b515291",
+      "943bba20e1fd71c6",
+      "31b2067a887754e7"
+    ],
+    "context_chunks": [
+      {
+        "chunk_id": "df712f14394acbc9",
+        "rank": 1
+      },
+      {
+        "chunk_id": "6b832fb83f97028d",
+        "rank": 2
+      },
+      {
+        "chunk_id": "c3e538a44b515291",
+        "rank": 3
+      },
+      {
+        "chunk_id": "943bba20e1fd71c6",
+        "rank": 4
+      },
+      {
+        "chunk_id": "31b2067a887754e7",
+        "rank": 5
+      }
+    ],
+    "llm_judge_scores": {
+      "relevance": 5,
+      "accuracy": 5,
+      "completeness": 5,
+      "conciseness": 5,
+      "citation_quality": 5
+    },
+    "human_scores": {
+      "relevance": 5,
+      "accuracy": 5,
+      "completeness": 5,
+      "conciseness": 4,
+      "citation_quality": 4
+    }
+  },
+  {
+    "pair_id": 3,
+    "config_label": "recursive_minilm_dense",
+    "experiment_id": "98aa484d-9061-458e-9a91-a36b68723ce8",
+    "query_id": "q05",
+    "question": "What is the advantage of using self-attention over recurrent layers in terms of computational complexity and path length?",
+    "answer": "The advantage of using self-attention over recurrent layers lies in both computational complexity and path length. \n\nIn terms of computational complexity, self-attention layers have a complexity of O(n\u00b2 \u00b7 d), which is more efficient than the O(n \u00b7 d\u00b2) complexity of recurrent layers, especially for longer sequences. This makes self-attention faster when dealing with longer sequence lengths, as it requires fewer sequential operations (O(1) for self-attention compared to O(n) for recurrent layers) [1][5].\n\nRegarding path length, self-attention layers maintain a maximum path length of O(1), allowing for easier learning of long-range dependencies. In contrast, recurrent layers have a maximum path length of O(n), which can complicate the learning of such dependencies due to the longer paths that signals must traverse [4][5]. Thus, self-attention facilitates better handling of long-range dependencies in sequence transduction tasks.",
+    "retrieved_chunk_ids": [
+      "eccad2c52deff8a0",
+      "c798ccc1f40cd4a4",
+      "35cd100ddeb2b9f1",
+      "78471c35e9d547e8",
+      "8a299d0cda7f5a2f"
+    ],
+    "context_chunks": [
+      {
+        "chunk_id": "eccad2c52deff8a0",
+        "rank": 1
+      },
+      {
+        "chunk_id": "c798ccc1f40cd4a4",
+        "rank": 2
+      },
+      {
+        "chunk_id": "35cd100ddeb2b9f1",
+        "rank": 3
+      },
+      {
+        "chunk_id": "78471c35e9d547e8",
+        "rank": 4
+      },
+      {
+        "chunk_id": "8a299d0cda7f5a2f",
+        "rank": 5
+      }
+    ],
+    "llm_judge_scores": {
+      "relevance": 5,
+      "accuracy": 4,
+      "completeness": 4,
+      "conciseness": 4,
+      "citation_quality": 4
+    },
+    "human_scores": {
+      "relevance": 5,
+      "accuracy": 3,
+      "completeness": 4,
+      "conciseness": 4,
+      "citation_quality": 4
+    }
+  },
+  {
+    "pair_id": 4,
+    "config_label": "recursive_minilm_hybrid",
+    "experiment_id": "04d69501-2a27-4447-b45e-6d99bbb5115e",
+    "query_id": "q07",
+    "question": "What BLEU score did the big model achieve on the WMT 2014 English-to-French translation task, and how does it compare to previous models?",
+    "answer": "The big model achieved a BLEU score of 41.0 on the WMT 2014 English-to-French translation task, outperforming all previously published single models and achieving this at less than 1/4 the training cost of the previous state-of-the-art model [2][4].",
+    "retrieved_chunk_ids": [
+      "aa1e6bd016283c09",
+      "f46dcfdc15695560",
+      "3a05c7f302329d1d",
+      "cbb37c1990db6881",
+      "76ed68a284b53984"
+    ],
+    "context_chunks": [
+      {
+        "chunk_id": "aa1e6bd016283c09",
+        "rank": 1
+      },
+      {
+        "chunk_id": "f46dcfdc15695560",
+        "rank": 2
+      },
+      {
+        "chunk_id": "3a05c7f302329d1d",
+        "rank": 3
+      },
+      {
+        "chunk_id": "cbb37c1990db6881",
+        "rank": 4
+      },
+      {
+        "chunk_id": "76ed68a284b53984",
+        "rank": 5
+      }
+    ],
+    "llm_judge_scores": {
+      "relevance": 5,
+      "accuracy": 5,
+      "completeness": 4,
+      "conciseness": 4,
+      "citation_quality": 5
+    },
+    "human_scores": {
+      "relevance": 5,
+      "accuracy": 4,
+      "completeness": 4,
+      "conciseness": 5,
+      "citation_quality": 4
+    }
+  },
+  {
+    "pair_id": 5,
+    "config_label": "recursive_minilm_hybrid",
+    "experiment_id": "c3a842e0-6f36-41a7-9812-ee8366adb239",
+    "query_id": "q08",
+    "question": "What are the WSJ F1 scores for different constituency parsers as reported in Table 4?",
+    "answer": "The WSJ F1 scores for different constituency parsers as reported in Table 4 are as follows:\n\n- Vinyals & Kaiser et al. (2014): 88.3\n- Petrov et al. (2006): 90.4\n- Zhu et al. (2013): 90.4\n- Dyer et al. (2016): 91.7\n- Transformer (4 layers): 91.3\n- Zhu et al. (2013) (semi-supervised): 91.3\n- Huang & Harper (2009) (semi-supervised): 91.3 [2].",
+    "retrieved_chunk_ids": [
+      "99220e9652794b94",
+      "ec6135fa4066397e",
+      "bf61629852e439c8",
+      "3264132ba0157755",
+      "5a007bc6ff2e417e"
+    ],
+    "context_chunks": [
+      {
+        "chunk_id": "99220e9652794b94",
+        "rank": 1
+      },
+      {
+        "chunk_id": "ec6135fa4066397e",
+        "rank": 2
+      },
+      {
+        "chunk_id": "bf61629852e439c8",
+        "rank": 3
+      },
+      {
+        "chunk_id": "3264132ba0157755",
+        "rank": 4
+      },
+      {
+        "chunk_id": "5a007bc6ff2e417e",
+        "rank": 5
+      }
+    ],
+    "llm_judge_scores": {
+      "relevance": 5,
+      "accuracy": 5,
+      "completeness": 5,
+      "conciseness": 5,
+      "citation_quality": 5
+    },
+    "human_scores": {
+      "relevance": 5,
+      "accuracy": 5,
+      "completeness": 3,
+      "conciseness": 5,
+      "citation_quality": 3
+    }
+  }
+]

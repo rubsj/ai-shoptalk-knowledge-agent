@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "threshold": 0.05,
+  "best_config": "heading_semantic_openai_dense",
+  "best_experiment_id": "d702830f-f283-4d09-89e0-cd80866baaa1",
+  "metrics": {
+    "ndcg_at_5": {
+      "run1": 0.8959642364323179,
+      "run2": 0.8959642364323179,
+      "delta": 0.0,
+      "variance_pct": 0.0,
+      "passed": true
+    },
+    "recall_at_5": {
+      "run1": 1.0,
+      "run2": 1.0,
+      "delta": 0.0,
+      "variance_pct": 0.0,
+      "passed": true
+    },
+    "precision_at_5": {
+      "run1": 0.30000000000000004,
+      "run2": 0.30000000000000004,
+      "delta": 0.0,
+      "variance_pct": 0.0,
+      "passed": true
+    },
+    "mrr": {
+      "run1": 0.9074074074074073,
+      "run2": 0.9074074074074073,
+      "delta": 0.0,
+      "variance_pct": 0.0,
+      "passed": true
+    }
+  }
+}

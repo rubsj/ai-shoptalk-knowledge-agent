@@ -5,6 +5,7 @@ No raw dicts cross module boundaries — everything typed here.
 
 from __future__ import annotations
 
+import hashlib
 import uuid
 from typing import Literal
 
@@ -55,11 +56,20 @@ class DocumentMetadata(BaseModel):
 class Document(BaseModel):
     """Fully extracted PDF, ready for chunking."""
 
-    # auto-generate ID so callers don't have to
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique document ID")
+    # ID derived from source path so re-extraction produces the same ID.
+    # WHY: ground truth chunk IDs encode document_id; deterministic doc IDs
+    # mean chunk IDs are stable across runs with the same PDF.
+    id: str = Field(default="", description="Unique document ID (derived from metadata.source)")
     content: str = Field(..., min_length=1, description="Full text content (all pages joined with \\n\\n)")
     metadata: DocumentMetadata = Field(..., description="Bibliographic metadata")
     pages: list[PageInfo] = Field(..., min_length=1, description="Per-page text and metadata")
+
+    @model_validator(mode="after")
+    def derive_id_from_source(self) -> Document:
+        """Set id = md5(source)[:16] if not explicitly provided."""
+        if not self.id:
+            self.id = hashlib.md5(self.metadata.source.encode()).hexdigest()[:16]
+        return self
 
 
 # ---------------------------------------------------------------------------
@@ -331,7 +341,12 @@ class ExperimentResult(BaseModel):
 class GroundTruthChunk(BaseModel):
     """Single chunk relevance judgment within a ground truth query."""
 
-    chunk_id: str = Field(..., min_length=1, description="ID of the relevant Chunk")
+    chunk_id: str = Field(..., min_length=1, description="ID of the relevant Chunk (kept for logging/backward compat)")
+    # Char-offset fields enable cross-chunker matching: when a different chunker is used
+    # during evaluation, IDs won't match but the same text spans overlap in char space.
+    document_id: str = Field(default="", description="ID of the source Document (set during GT generation)")
+    start_char: int | None = Field(default=None, ge=0, description="Start char offset in Document.content")
+    end_char: int | None = Field(default=None, ge=0, description="End char offset in Document.content")
     relevance_grade: int = Field(
         ..., ge=0, le=3,
         description="0=irrelevant, 1=same doc, 2=same section, 3=gold (directly answers)",

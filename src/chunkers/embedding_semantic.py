@@ -16,11 +16,10 @@ from __future__ import annotations
 
 import gc
 import re
-import uuid
 
 import numpy as np
 
-from src.chunkers._utils import find_page_number
+from src.chunkers._utils import find_page_number, make_chunk_id
 from src.interfaces import BaseChunker
 from src.schemas import Chunk, ChunkMetadata, Document
 
@@ -113,14 +112,19 @@ class EmbeddingSemanticChunker(BaseChunker):
 
         # Build Chunk objects with provenance metadata
         chunks: list[Chunk] = []
+        search_start = 0
         for i, text in enumerate(merged_texts):
             if not text.strip():
                 continue
-            # Find char offset in original content
-            start = content.find(text[:50])  # use first 50 chars as search key
+            # Find char offset in original content using advancing search position
+            # WHY: advancing search_start prevents matching an earlier duplicate
+            start = content.find(text[:50], search_start)
             if start == -1:
-                start = 0
+                start = content.find(text[:50])
+            if start == -1:
+                start = search_start
             end = start + len(text)
+            search_start = start + 1
             page_number = find_page_number(document, start)
             chunks.append(
                 self._make_chunk(document, text, start, end, i)
@@ -221,7 +225,7 @@ class EmbeddingSemanticChunker(BaseChunker):
         """Helper to construct a Chunk with consistent metadata."""
         page_number = find_page_number(document, start)
         return Chunk(
-            id=str(uuid.uuid4()),
+            id=make_chunk_id(document.id, start, end),
             content=text,
             metadata=ChunkMetadata(
                 document_id=document.id,

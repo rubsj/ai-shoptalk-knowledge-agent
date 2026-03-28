@@ -25,9 +25,9 @@ from pathlib import Path
 import psutil
 
 from src.cache import JSONCache
-from src.evaluation import LLMJudge, mrr, ndcg_at_k, precision_at_k, recall_at_k
+from src.evaluation import LLMJudge, compute_overlap_relevance, mrr, ndcg_at_k, precision_at_k, recall_at_k
 from src.evaluation.ground_truth import load_ground_truth
-from src.factories import create_chunker, create_embedder, create_llm, create_retriever, load_configs
+from src.factories import create_chunker, create_embedder, create_llm, create_reranker, create_retriever, load_configs
 from src.generator import build_qa_prompt, extract_citations
 from src.interfaces import BaseEmbedder
 from src.schemas import (
@@ -109,6 +109,12 @@ def _run_single_config(
 
         # Retrieve
         retrieval_results = retriever.retrieve(gt_query.question, top_k=config.top_k)
+
+        # Apply reranking if configured
+        if config.use_reranking and config.reranker_type:
+            reranker = create_reranker(config.reranker_type)
+            retrieval_results = reranker.rerank(gt_query.question, retrieval_results, top_k=config.top_k)
+
         retrieved_ids = [r.chunk.id for r in retrieval_results]
         retrieved_chunks = [r.chunk for r in retrieval_results]
 
@@ -120,13 +126,13 @@ def _run_single_config(
         latency_ms = (time.monotonic() - query_start) * 1000
         total_latency_ms += latency_ms
 
-        # Compute per-query retrieval metrics
-        relevant_ids = {
-            c.chunk_id for c in gt_query.relevant_chunks if c.relevance_grade >= 1
-        }
-        graded_relevance = {
-            c.chunk_id: c.relevance_grade for c in gt_query.relevant_chunks
-        }
+        # Compute per-query retrieval metrics via char offset overlap matching.
+        # WHY: ground truth was generated with RecursiveChunker; other chunkers produce
+        # different char offsets → different deterministic IDs → exact ID match = 0.0.
+        # compute_overlap_relevance falls back to exact ID matching for legacy GT entries.
+        relevant_ids, graded_relevance = compute_overlap_relevance(
+            retrieved_chunks, gt_query.relevant_chunks
+        )
 
         q_metrics = RetrievalMetrics(
             recall_at_5=recall_at_k(retrieved_ids, relevant_ids, k=5),
@@ -212,11 +218,15 @@ def _run_single_config(
         else "local"
     )
 
-    # 10. Compute cost estimate for API embedders
+    # 10. Compute cost estimate (embedding + LLM generation)
     cost_estimate_usd = 0.0
     if embedding_source == "api":
         total_tokens = len(all_chunks) * _AVG_TOKENS_PER_CHUNK
-        cost_estimate_usd = total_tokens * _OPENAI_EMBED_COST_PER_TOKEN
+        cost_estimate_usd += total_tokens * _OPENAI_EMBED_COST_PER_TOKEN
+    # LLM generation cost: gpt-4o-mini at ~$0.15/1M input + ~$0.60/1M output
+    # Rough estimate: ~1500 input tokens per query (prompt + chunks), ~200 output tokens
+    n_queries = len(ground_truth.queries)
+    cost_estimate_usd += n_queries * (1500 * 0.15 + 200 * 0.60) / 1_000_000
 
     performance = PerformanceMetrics(
         ingestion_time_seconds=ingestion_time,
@@ -271,6 +281,9 @@ def run_experiment_grid(
     out_path.mkdir(parents=True, exist_ok=True)
 
     all_results: list[ExperimentResult] = []
+    grid_start = time.monotonic()
+    total_configs = sum(len(g) for g in groups.values())
+
     for embedder_name in _EMBEDDER_ORDER:
         if embedder_name not in groups:
             continue
@@ -280,30 +293,56 @@ def run_experiment_grid(
         if mem_pct > 85:
             logger.warning("Memory usage %.1f%% — above 85%% threshold before loading embedder", mem_pct)
 
+        # WHY device="cpu": MPS (Apple Silicon GPU) crashes on large batch encoding
+        # in some environments. CPU is ~10x slower but reliable. On 128GB M5 Max,
+        # CPU encoding of 515 chunks takes ~14s — acceptable for experiment grid.
         embedder: BaseEmbedder | None = (
-            create_embedder(embedder_name) if embedder_name is not None else None
+            create_embedder(embedder_name, device="cpu") if embedder_name is not None else None
         )
 
         for config in group_configs:
             logger.info(
-                "Running: chunker=%s  embedder=%s  retriever=%s",
+                "Running: chunker=%s  embedder=%s  retriever=%s  reranker=%s",
                 config.chunking_strategy,
                 config.embedding_model,
                 config.retriever_type,
+                config.reranker_type or "none",
             )
-            result = _run_single_config(
-                config=config,
-                embedder=embedder,
-                documents=documents,
-                ground_truth=ground_truth,
-                judge=judge,
-                cache=cache,
-            )
-            all_results.append(result)
+            try:
+                result = _run_single_config(
+                    config=config,
+                    embedder=embedder,
+                    documents=documents,
+                    ground_truth=ground_truth,
+                    judge=judge,
+                    cache=cache,
+                )
+                all_results.append(result)
 
-            # Save per-experiment JSON incrementally
-            result_file = out_path / f"{result.experiment_id}.json"
-            result_file.write_text(json.dumps(result.model_dump(mode="json"), indent=2, default=str))
+                # Save per-experiment JSON incrementally
+                result_file = out_path / f"{result.experiment_id}.json"
+                result_file.write_text(json.dumps(result.model_dump(mode="json"), indent=2, default=str))
+            except Exception:
+                logger.exception(
+                    "Config FAILED: chunker=%s embedder=%s retriever=%s reranker=%s — skipping",
+                    config.chunking_strategy, config.embedding_model,
+                    config.retriever_type, config.reranker_type,
+                )
+
+            # Time estimation checkpoint after first 4 configs
+            if len(all_results) == 4:
+                elapsed_m = (time.monotonic() - grid_start) / 60
+                est_total_m = elapsed_m * total_configs / 4
+                logger.info(
+                    "4 configs completed in %.1fm. Estimated total for %d configs: ~%.0fm.",
+                    elapsed_m, total_configs, est_total_m,
+                )
+                if est_total_m > 180:
+                    logger.warning(
+                        "Grid will take ~%.0fm. Consider running with --no-judge first "
+                        "(retrieval metrics only), then re-running judge on top-5 configs only.",
+                        est_total_m,
+                    )
 
         del embedder
         gc.collect()
@@ -314,3 +353,73 @@ def run_experiment_grid(
     logger.info("Saved %d results to %s", len(all_results), output_dir)
 
     return all_results
+
+
+def run_reproducibility_check(
+    results: list[ExperimentResult],
+    documents: list[Document],
+    ground_truth_path: str = "data/ground_truth.json",
+    threshold: float = 0.05,
+) -> dict:
+    """Re-run the best config (by NDCG@5) and compare metrics within threshold.
+
+    Returns dict with 'passed' bool, per-metric results, and best config info.
+    Skips judge to avoid LLM variance — retrieval metrics only.
+    """
+    best = max(results, key=lambda r: r.metrics.ndcg_at_5)
+    config = best.config
+    ground_truth = load_ground_truth(ground_truth_path)
+
+    # Recreate embedder
+    embedder: BaseEmbedder | None = (
+        create_embedder(config.embedding_model, device="cpu")
+        if config.embedding_model is not None
+        else None
+    )
+
+    cache_dir = str(Path("results/experiments") / "llm_cache")
+    cache = JSONCache(cache_dir)
+
+    run2 = _run_single_config(
+        config=config,
+        embedder=embedder,
+        documents=documents,
+        ground_truth=ground_truth,
+        judge=None,
+        cache=cache,
+    )
+
+    metric_results = {}
+    all_pass = True
+    for metric in ["ndcg_at_5", "recall_at_5", "precision_at_5", "mrr"]:
+        v1 = getattr(best.metrics, metric)
+        v2 = getattr(run2.metrics, metric)
+        delta = abs(v1 - v2)
+        max_val = max(v1, 0.001)
+        passed = delta / max_val < threshold
+        if not passed:
+            all_pass = False
+        metric_results[metric] = {
+            "run1": v1,
+            "run2": v2,
+            "delta": delta,
+            "variance_pct": (delta / max_val) * 100,
+            "passed": passed,
+        }
+
+    return {
+        "passed": all_pass,
+        "threshold": threshold,
+        "best_config": _config_label(config),
+        "best_experiment_id": best.experiment_id,
+        "metrics": metric_results,
+    }
+
+
+def _config_label(config: ExperimentConfig) -> str:
+    """Short label for a config."""
+    parts = [config.chunking_strategy, config.embedding_model or "bm25", config.retriever_type]
+    label = "_".join(parts)
+    if config.use_reranking:
+        label += f"_rr({config.reranker_type})"
+    return label

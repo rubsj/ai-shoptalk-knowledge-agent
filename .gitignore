@@ -1,10 +1,8 @@
-# Source PDFs — download locally, do not commit
-data/pdfs/*.pdf
-
 # Generated artifacts
 data/indices/
 data/cache/
-results/
+# Results — LLM cache excluded (large, regenerable), everything else committed
+results/experiments/llm_cache/
 
 # Secrets
 .env

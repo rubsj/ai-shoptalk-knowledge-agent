@@ -9,9 +9,7 @@ Config params: chunk_size (default 512), chunk_overlap (default 50).
 
 from __future__ import annotations
 
-import uuid
-
-from src.chunkers._utils import find_page_number
+from src.chunkers._utils import find_page_number, make_chunk_id
 from src.interfaces import BaseChunker
 from src.schemas import Chunk, ChunkMetadata, Document
 
@@ -61,24 +59,43 @@ class RecursiveChunker(BaseChunker):
             List of Chunks with metadata.
         """
         raw_chunks = self._split_text(document.content, self.separators)
+
+        # Track raw chunk positions BEFORE overlap merge.
+        # WHY: _merge_with_overlap prepends overlap text, so the merged chunk
+        # is NOT a verbatim substring of document.content — find() would fail.
+        # Raw chunks ARE substrings, so we locate them first.
+        raw_positions: list[int] = []
+        search_start = 0
+        for text in raw_chunks:
+            pos = document.content.find(text, search_start)
+            if pos == -1:
+                pos = document.content.find(text)
+            if pos == -1:
+                pos = search_start
+            raw_positions.append(pos)
+            search_start = pos + 1
+
         merged = self._merge_with_overlap(raw_chunks)
 
         chunks: list[Chunk] = []
+        chunk_index = 0
         for i, text in enumerate(merged):
             if not text.strip():
                 continue
-            # Find start offset in original content for metadata
-            # WHY: text.find() works here because chunks are substrings of content.
-            # For duplicate text (unlikely in academic papers), this returns the first occurrence.
-            start = document.content.find(text)
-            if start == -1:
-                # Fallback: text may have been modified during merge; use 0 as default
-                start = 0
-            end = start + len(text)
+            # For chunk 0: starts at raw position.
+            # For chunk i>0: overlap prepends chunk_overlap chars, so the chunk
+            # covers from (raw_pos - overlap) through (raw_pos + raw_len).
+            raw_start = raw_positions[i]
+            raw_end = raw_start + len(raw_chunks[i])
+            if i == 0 or self.chunk_overlap == 0:
+                start = raw_start
+            else:
+                start = max(0, raw_start - self.chunk_overlap)
+            end = raw_end
             page_number = find_page_number(document, start)
             chunks.append(
                 Chunk(
-                    id=str(uuid.uuid4()),
+                    id=make_chunk_id(document.id, start, end),
                     content=text,
                     metadata=ChunkMetadata(
                         document_id=document.id,
@@ -86,10 +103,11 @@ class RecursiveChunker(BaseChunker):
                         page_number=page_number,
                         start_char=start,
                         end_char=end,
-                        chunk_index=i,
+                        chunk_index=chunk_index,
                     ),
                 )
             )
+            chunk_index += 1
         return chunks
 
     def _split_text(self, text: str, separators: list[str]) -> list[str]:

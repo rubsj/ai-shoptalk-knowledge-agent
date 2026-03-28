@@ -55,12 +55,12 @@ def create_chunker(config: ExperimentConfig) -> BaseChunker:
     raise ValueError(f"Unknown chunking_strategy: {strategy!r}")
 
 
-def create_embedder(model_name: str) -> BaseEmbedder:
+def create_embedder(model_name: str, device: str | None = None) -> BaseEmbedder:
     """Return the embedder for the given model name ('minilm', 'mpnet', or 'openai')."""
     if model_name == "minilm":
-        return MiniLMEmbedder()
+        return MiniLMEmbedder(device=device)
     if model_name == "mpnet":
-        return MpnetEmbedder()
+        return MpnetEmbedder(device=device)
     if model_name == "openai":
         from src.embedders.openai_embedder import OpenAIEmbedder
 

@@ -12,11 +12,9 @@ Config params: window_size (tokens), step_size (tokens, controls overlap).
 
 from __future__ import annotations
 
-import uuid
-
 import tiktoken
 
-from src.chunkers._utils import find_page_number
+from src.chunkers._utils import find_page_number, make_chunk_id
 from src.interfaces import BaseChunker
 from src.schemas import Chunk, ChunkMetadata, Document
 
@@ -98,7 +96,7 @@ class SlidingWindowChunker(BaseChunker):
 
                 chunks.append(
                     Chunk(
-                        id=str(uuid.uuid4()),
+                        id=make_chunk_id(document.id, char_start, char_end),
                         content=chunk_text,
                         metadata=ChunkMetadata(
                             document_id=document.id,
