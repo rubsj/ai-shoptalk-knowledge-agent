@@ -236,7 +236,7 @@ python scripts/evaluate.py
 # → 46 JSON results in results/experiments/, charts in results/charts/
 
 # Web UI
-streamlit run src/streamlit_app.py
+streamlit run streamlit_app.py
 # → Opens browser at localhost:8501
 
 # Run tests
@@ -270,6 +270,7 @@ Required API keys: `OPENAI_API_KEY` (embeddings + generation), `COHERE_API_KEY` 
 ## Project Structure
 
 ```
+├── streamlit_app.py           # 5-panel Streamlit UI (run from project root)
 ├── scripts/
 │   ├── ingest.py              # PDF → chunk → embed → FAISS index
 │   ├── serve.py               # Interactive Q&A REPL
@@ -284,7 +285,6 @@ Required API keys: `OPENAI_API_KEY` (embeddings + generation), `COHERE_API_KEY` 
 │   ├── experiment_runner.py   # Grid orchestrator, pools by embedding model
 │   ├── reporting.py           # Comparison report + iteration log generation
 │   ├── visualization.py       # 11 chart types (heatmap, radar, scatter, ...)
-│   ├── streamlit_app.py       # 5-panel Streamlit UI
 │   ├── chunkers/              # Fixed, Recursive, SlidingWindow, HeadingSemantic, EmbeddingSemantic
 │   ├── embedders/             # MiniLM, mpnet, OpenAI, Ollama
 │   ├── retrievers/            # Dense, BM25, Hybrid (composes Dense + BM25)

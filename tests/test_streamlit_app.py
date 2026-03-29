@@ -1,4 +1,4 @@
-"""Tests for src/streamlit_app.py helper functions.
+"""Tests for streamlit_app.py helper functions.
 
 Tests only the pure helper functions (build_config_from_ui, run_query) — these
 are extracted specifically to be testable without a running Streamlit server.
@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from src.schemas import Citation, Chunk, ChunkMetadata, ExperimentConfig
-from src.streamlit_app import build_config_from_ui, run_query
+from streamlit_app import build_config_from_ui, run_query
 
 
 # ---------------------------------------------------------------------------
@@ -203,10 +203,10 @@ class TestRunQuery:
         mock_embedder = MagicMock()
         mock_store = MagicMock()
 
-        with patch("src.streamlit_app.create_retriever", return_value=mock_retriever):
-            with patch("src.streamlit_app.create_llm", return_value=mock_llm):
-                with patch("src.streamlit_app.build_qa_prompt", return_value="prompt"):
-                    with patch("src.streamlit_app.extract_citations", return_value=[cit]):
+        with patch("streamlit_app.create_retriever", return_value=mock_retriever):
+            with patch("streamlit_app.create_llm", return_value=mock_llm):
+                with patch("streamlit_app.build_qa_prompt", return_value="prompt"):
+                    with patch("streamlit_app.extract_citations", return_value=[cit]):
                         result = run_query(
                             query="How fast does ShopTalk ship?",
                             config=cfg,
@@ -231,10 +231,10 @@ class TestRunQuery:
         mock_llm = MagicMock()
         mock_llm.generate.return_value = "No citations here."
 
-        with patch("src.streamlit_app.create_retriever", return_value=mock_retriever):
-            with patch("src.streamlit_app.create_llm", return_value=mock_llm):
-                with patch("src.streamlit_app.build_qa_prompt", return_value="prompt"):
-                    with patch("src.streamlit_app.extract_citations", return_value=[]):
+        with patch("streamlit_app.create_retriever", return_value=mock_retriever):
+            with patch("streamlit_app.create_llm", return_value=mock_llm):
+                with patch("streamlit_app.build_qa_prompt", return_value="prompt"):
+                    with patch("streamlit_app.extract_citations", return_value=[]):
                         result = run_query(
                             query="anything",
                             config=cfg,
@@ -269,11 +269,11 @@ class TestRunQuery:
         mock_llm = MagicMock()
         mock_llm.generate.return_value = "Reranked answer."
 
-        with patch("src.streamlit_app.create_retriever", return_value=mock_retriever):
-            with patch("src.streamlit_app.create_reranker", return_value=mock_reranker):
-                with patch("src.streamlit_app.create_llm", return_value=mock_llm):
-                    with patch("src.streamlit_app.build_qa_prompt", return_value="prompt"):
-                        with patch("src.streamlit_app.extract_citations", return_value=[]):
+        with patch("streamlit_app.create_retriever", return_value=mock_retriever):
+            with patch("streamlit_app.create_reranker", return_value=mock_reranker):
+                with patch("streamlit_app.create_llm", return_value=mock_llm):
+                    with patch("streamlit_app.build_qa_prompt", return_value="prompt"):
+                        with patch("streamlit_app.extract_citations", return_value=[]):
                             result = run_query(
                                 query="test",
                                 config=cfg,
@@ -294,10 +294,10 @@ class TestRunQuery:
         mock_llm = MagicMock()
         mock_llm.generate.return_value = "answer"
 
-        with patch("src.streamlit_app.create_retriever", return_value=mock_retriever):
-            with patch("src.streamlit_app.create_llm", return_value=mock_llm):
-                with patch("src.streamlit_app.build_qa_prompt", return_value="prompt"):
-                    with patch("src.streamlit_app.extract_citations", return_value=[]):
+        with patch("streamlit_app.create_retriever", return_value=mock_retriever):
+            with patch("streamlit_app.create_llm", return_value=mock_llm):
+                with patch("streamlit_app.build_qa_prompt", return_value="prompt"):
+                    with patch("streamlit_app.extract_citations", return_value=[]):
                         result = run_query(
                             query="timing?",
                             config=cfg,
@@ -317,12 +317,12 @@ class TestRunQuery:
 class TestStreamlitAppImport:
     def test_module_imports_without_error(self):
         """Importing streamlit_app must not raise even if Streamlit is absent."""
-        import src.streamlit_app  # noqa: F401
+        import streamlit_app  # noqa: F401
 
     def test_build_config_from_ui_is_callable(self):
-        from src.streamlit_app import build_config_from_ui
+        from streamlit_app import build_config_from_ui
         assert callable(build_config_from_ui)
 
     def test_run_query_is_callable(self):
-        from src.streamlit_app import run_query
+        from streamlit_app import run_query
         assert callable(run_query)
