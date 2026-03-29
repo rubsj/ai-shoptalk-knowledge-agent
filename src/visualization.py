@@ -285,7 +285,8 @@ def plot_reranking_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
                 base_row = match.iloc[0]
                 reranker = rr_row["reranker_type"]
                 short = "CE" if reranker == "cross_encoder" else reranker.upper()
-                pair_label = f"{rr_row['chunking_strategy']}_{rr_row['embedding_model']}_{rr_row['retriever_type']}+{short}"
+                # Shorten: all reranking configs use recursive, so show embedder_retriever+reranker
+                pair_label = f"{rr_row['embedding_model']}_{rr_row['retriever_type']}+{short}"
                 for m in _METRICS:
                     pairs.append({
                         "config": pair_label,
@@ -307,9 +308,12 @@ def plot_reranking_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
         ax.set_title("Q3: Reranking Impact (delta vs base config)", fontsize=14)
         ax.set_ylabel("Metric Delta (reranked − base)")
         ax.set_xlabel("")
-        ax.tick_params(axis="x", rotation=45)
+        for label in ax.get_xticklabels():
+            label.set_rotation(45)
+            label.set_ha("right")
+            label.set_fontsize(9)
         ax.legend(title="Metric", fontsize=9)
-        fig.tight_layout()
+        fig.subplots_adjust(bottom=0.20)
         return _save_fig(fig, output_dir, "reranking_comparison")
 
 
