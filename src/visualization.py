@@ -219,10 +219,9 @@ def plot_embedding_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
         axes[2].set_ylabel("USD")
 
         fig.suptitle("Q4: Embedding Model Comparison", fontsize=13)
-        # Place legend below the figure, spanning all panels
-        handles, labels = axes[0].get_legend_handles_labels()
-        fig.legend(handles, labels, loc="lower center", ncol=4, fontsize=10,
-                   bbox_to_anchor=(0.5, -0.02), frameon=True)
+        # Legend below the Retrieval Metrics panel only (left-aligned)
+        axes[0].legend(fontsize=9, loc="upper center", bbox_to_anchor=(0.5, -0.08),
+                       ncol=4, frameon=True)
         fig.subplots_adjust(wspace=0.35, top=0.90, bottom=0.15)
         return _save_fig(fig, output_dir, "embedding_comparison")
 
