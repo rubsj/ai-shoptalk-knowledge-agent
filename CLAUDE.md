@@ -491,16 +491,22 @@ At the end of every session, Sonnet must:
 > - 562 tests, 94% coverage
 > - Branch: `feat/p5-day4-experiments`, PR #8
 
-### Day 5 — Local Model Experiments + Concept Deep-Dive (NEW in v4)
-- [ ] OllamaEmbedder implementation (implements BaseEmbedder, calls localhost:11434)
-- [ ] Verify Ollama + nomic-embed-text running locally
-- [ ] Run Ollama nomic configs (best 3 chunkers × 2 retrieval methods = 6 configs)
-- [ ] Local vs API embedding comparison chart (Q5)
-- [ ] Latency benchmarking: local embedding time vs OpenAI API time
-- [ ] **ADR-007: Local vs API embeddings** written and committed
-- [ ] Concept Library entries: "Cross-encoder Reranking", "Hybrid Search"
-- [ ] Learning Journal: deep-dive reflection on experimentation insights
-- [ ] **Checkpoint:** Q5 answered with data. Local embedding story documented.
+### Day 5 — Local Model Experiments + Concept Deep-Dive (NEW in v4) ✅ COMPLETE
+- [x] OllamaEmbedder implementation (implements BaseEmbedder, calls localhost:11434)
+- [x] Verify Ollama + nomic-embed-text running locally
+- [x] Run Ollama nomic configs (best 3 chunkers × 2 retrieval methods = 6 configs)
+- [x] Local vs API embedding comparison chart (Q5) — Chart 11
+- [x] Latency benchmarking: local embedding time vs OpenAI API time
+- [x] **ADR-007: Local vs API embeddings** written and committed
+- [x] Concept Library entries: "Cross-encoder Reranking", "Hybrid Search" (Notion only)
+- [x] Learning Journal: deep-dive reflection on experimentation insights (Notion)
+- [x] **Checkpoint:** Q5 answered. Best Ollama config: sliding_window+hybrid NDCG@5=0.757 (-0.139 vs OpenAI best). 576 tests, ≥94% coverage. PR #10 merged.
+
+> **Day 5 Key Results:**
+> - Best Ollama config: `sliding_window_ollama_nomic_hybrid` (NDCG@5=0.757, Recall@5=0.889, MRR=0.722, $0 cost)
+> - 3 of 6 Ollama configs match or exceed equivalent mpnet. Widest gap: −0.065 vs mpnet sliding_window+hybrid.
+> - httpx added as dependency. OllamaUnavailableError + graceful skip pattern implemented.
+> - 576 tests, coverage ≥94%. Branch: `feat/p5-day5-ollama`, PR #10.
 
 ### Day 6 — Streamlit UI + CLI Polish
 - [ ] Click CLI (ingest, serve, evaluate)
