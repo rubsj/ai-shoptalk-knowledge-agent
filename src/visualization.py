@@ -321,11 +321,11 @@ def plot_reranking_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
             label.set_fontsize(9)
         ax.legend(title="Metric", fontsize=9)
         if zero_metrics:
-            ax.annotate(
-                f"Note: {', '.join(zero_metrics)} delta = 0 for all configs\n"
+            fig.text(
+                0.5, 0.96,
+                f"Note: {', '.join(zero_metrics)} delta = 0 for all configs "
                 "(reranking reorders results but doesn't change the retrieved set)",
-                xy=(0.02, 0.97), xycoords="axes fraction", fontsize=9,
-                va="top", ha="left", style="italic", color="gray",
+                fontsize=9, ha="center", va="bottom", style="italic", color="gray",
             )
         fig.subplots_adjust(bottom=0.20)
         return _save_fig(fig, output_dir, "reranking_comparison")
