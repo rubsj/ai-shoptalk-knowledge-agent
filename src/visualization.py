@@ -195,23 +195,27 @@ def plot_embedding_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
         axes[0].yaxis.set_major_locator(plt.MultipleLocator(0.1))
         axes[0].grid(axis="y", alpha=0.3)
 
-        # Panel 2: latency
+        # Panel 2: latency — label inside each bar
         lat_colors = sns.color_palette("Set2", len(agg))
         lat_bars = axes[1].bar(agg["embedding_model"], agg["avg_query_latency_ms"],
                                color=lat_colors)
         for bar in lat_bars:
-            axes[1].text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 10,
-                         f"{bar.get_height():.0f}", ha="center", va="bottom", fontsize=8)
+            h = bar.get_height()
+            axes[1].text(bar.get_x() + bar.get_width() / 2, h / 2,
+                         f"{h:.0f}ms", ha="center", va="center", fontsize=8,
+                         fontweight="bold")
         axes[1].set_title("Avg Query Latency (ms)", fontsize=12)
         axes[1].set_ylabel("ms")
 
-        # Panel 3: cost
+        # Panel 3: cost — label inside each bar
         cost_colors = sns.color_palette("Set3", len(agg))
         cost_bars = axes[2].bar(agg["embedding_model"], agg["cost_estimate_usd"],
                                 color=cost_colors)
         for bar in cost_bars:
-            axes[2].text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.0001,
-                         f"${bar.get_height():.4f}", ha="center", va="bottom", fontsize=7)
+            h = bar.get_height()
+            axes[2].text(bar.get_x() + bar.get_width() / 2, h / 2,
+                         f"${h:.4f}", ha="center", va="center", fontsize=7,
+                         fontweight="bold")
         axes[2].set_title("Cost Estimate (USD)", fontsize=12)
         axes[2].set_ylabel("USD")
 
