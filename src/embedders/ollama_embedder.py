@@ -15,7 +15,6 @@ from __future__ import annotations
 import logging
 import os
 
-import faiss
 import httpx
 import numpy as np
 
@@ -83,7 +82,9 @@ class OllamaEmbedder(BaseEmbedder):
 
         embeddings = np.array(vectors, dtype=np.float32)
         embeddings = np.ascontiguousarray(embeddings)
-        faiss.normalize_L2(embeddings)
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+        norms = np.maximum(norms, 1e-12)
+        embeddings /= norms
         return embeddings
 
     def embed_query(self, query: str) -> np.ndarray:

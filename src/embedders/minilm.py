@@ -10,7 +10,6 @@ np.linalg.norm(emb) ≈ 1.0 before FAISS IndexFlatIP add().
 
 from __future__ import annotations
 
-import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
@@ -42,7 +41,9 @@ class MiniLMEmbedder(BaseEmbedder):
         # WHY: copy() before normalize_L2 to avoid mutating the array in-place
         # if the caller holds a reference to the same buffer
         embeddings = np.ascontiguousarray(embeddings)
-        faiss.normalize_L2(embeddings)
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+        norms = np.maximum(norms, 1e-12)
+        embeddings /= norms
         return embeddings
 
     def embed_query(self, query: str) -> np.ndarray:
