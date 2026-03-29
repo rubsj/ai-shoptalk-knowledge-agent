@@ -65,6 +65,10 @@ def create_embedder(model_name: str, device: str | None = None) -> BaseEmbedder:
         from src.embedders.openai_embedder import OpenAIEmbedder
 
         return OpenAIEmbedder()
+    if model_name == "ollama_nomic":
+        from src.embedders.ollama_embedder import OllamaEmbedder
+
+        return OllamaEmbedder(device=device)
     raise ValueError(f"Unknown embedding model: {model_name!r}")
 
 

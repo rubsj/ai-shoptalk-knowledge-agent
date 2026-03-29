@@ -17,8 +17,8 @@ class TestConfigCount:
     def test_at_least_35_configs(self) -> None:
         assert len(_all_configs()) >= 35
 
-    def test_exactly_46_configs(self) -> None:
-        assert len(_all_configs()) == 46
+    def test_exactly_52_configs(self) -> None:
+        assert len(_all_configs()) == 52
 
 
 class TestConfigValidity:
@@ -53,8 +53,8 @@ class TestBM25Configs:
 class TestHybridConfigs:
     def test_hybrid_configs_have_alpha_set(self) -> None:
         hybrid_configs = [c for c in _all_configs() if c.retriever_type == "hybrid"]
-        # 15 base + 3 alpha sweep + 2 cross_encoder rerank + 2 cohere rerank = 22
-        assert len(hybrid_configs) == 22
+        # 15 base + 3 alpha sweep + 2 cross_encoder rerank + 2 cohere rerank = 22, + 3 ollama = 25
+        assert len(hybrid_configs) == 25
         for config in hybrid_configs:
             assert config.hybrid_alpha is not None
 
@@ -66,13 +66,13 @@ class TestHybridConfigs:
     def test_hybrid_covers_all_embedders(self) -> None:
         hybrid_configs = [c for c in _all_configs() if c.retriever_type == "hybrid"]
         embedders = {c.embedding_model for c in hybrid_configs}
-        assert embedders == {"minilm", "mpnet", "openai"}
+        assert embedders == {"minilm", "mpnet", "openai", "ollama_nomic"}
 
 
 class TestSlidingWindowConfigs:
     def test_sliding_window_configs_have_window_params(self) -> None:
         sliding = [c for c in _all_configs() if c.chunking_strategy == "sliding_window"]
-        assert len(sliding) == 7
+        assert len(sliding) == 9
         for config in sliding:
             assert config.window_size_tokens == 128
             assert config.step_size_tokens == 64

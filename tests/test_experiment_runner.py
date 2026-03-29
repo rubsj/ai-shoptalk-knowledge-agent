@@ -831,8 +831,8 @@ class TestRunExperimentGrid:
 
 
 class TestEmbedderOrder:
-    def test_order_is_minilm_mpnet_none_openai(self) -> None:
-        assert _EMBEDDER_ORDER == ["minilm", "mpnet", None, "openai"]
+    def test_order_is_minilm_mpnet_none_ollama_openai(self) -> None:
+        assert _EMBEDDER_ORDER == ["minilm", "mpnet", None, "ollama_nomic", "openai"]
 
     def test_none_is_in_order(self) -> None:
         assert None in _EMBEDDER_ORDER

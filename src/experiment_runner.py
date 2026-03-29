@@ -27,6 +27,7 @@ import psutil
 from src.cache import JSONCache
 from src.evaluation import LLMJudge, compute_overlap_relevance, mrr, ndcg_at_k, precision_at_k, recall_at_k
 from src.evaluation.ground_truth import load_ground_truth
+from src.embedders.ollama_embedder import OllamaUnavailableError
 from src.factories import create_chunker, create_embedder, create_llm, create_reranker, create_retriever, load_configs
 from src.generator import build_qa_prompt, extract_citations
 from src.interfaces import BaseEmbedder
@@ -45,7 +46,7 @@ from src.vector_store import FAISSVectorStore
 
 logger = logging.getLogger(__name__)
 
-_EMBEDDER_ORDER: list[str | None] = ["minilm", "mpnet", None, "openai"]
+_EMBEDDER_ORDER: list[str | None] = ["minilm", "mpnet", None, "ollama_nomic", "openai"]
 
 # text-embedding-3-small pricing: $0.02 per 1M tokens
 _OPENAI_EMBED_COST_PER_TOKEN = 0.02 / 1_000_000
@@ -296,9 +297,13 @@ def run_experiment_grid(
         # WHY device="cpu": MPS (Apple Silicon GPU) crashes on large batch encoding
         # in some environments. CPU is ~10x slower but reliable. On 128GB M5 Max,
         # CPU encoding of 515 chunks takes ~14s — acceptable for experiment grid.
-        embedder: BaseEmbedder | None = (
-            create_embedder(embedder_name, device="cpu") if embedder_name is not None else None
-        )
+        try:
+            embedder: BaseEmbedder | None = (
+                create_embedder(embedder_name, device="cpu") if embedder_name is not None else None
+            )
+        except OllamaUnavailableError as e:
+            logger.warning("Skipping embedder group %r — Ollama not available: %s", embedder_name, e)
+            continue
 
         for config in group_configs:
             logger.info(

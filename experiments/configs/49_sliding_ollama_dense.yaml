@@ -1,0 +1,9 @@
+chunking_strategy: sliding_window
+chunk_size: 512
+chunk_overlap: 50
+window_size_tokens: 128
+step_size_tokens: 64
+top_k: 5
+use_reranking: false
+embedding_model: ollama_nomic
+retriever_type: dense
