@@ -508,11 +508,16 @@ At the end of every session, Sonnet must:
 > - httpx added as dependency. OllamaUnavailableError + graceful skip pattern implemented.
 > - 576 tests, coverage ≥94%. Branch: `feat/p5-day5-ollama`, PR #10.
 
-### Day 6 — Streamlit UI + CLI Polish
-- [ ] Click CLI (ingest, serve, evaluate)
-- [ ] Streamlit app (5 panels: upload, config, question, answer+citations, source viewer)
-- [ ] End-to-end verification: all CLI commands work, Streamlit serves correctly
-- [ ] **Checkpoint:** All functional deliverables working.
+### Day 6 — Streamlit UI + CLI Polish ✅ COMPLETE
+- [x] Click CLI (ingest, serve, evaluate) — all converted/implemented with Click decorators
+- [x] `src/vector_store.py` — added `chunks` read-only property for BM25/hybrid retriever
+- [x] `scripts/ingest.py` — PDF → chunk → embed → FAISS index, Rich progress, Ollama guard
+- [x] `scripts/serve.py` — interactive QA REPL, cited answers, Ollama guard
+- [x] `scripts/evaluate.py` — argparse → Click conversion, all flags preserved
+- [x] `src/streamlit_app.py` — 5-panel app: upload, config, process, Q&A, source viewer
+- [x] `tests/test_cli.py` — CliRunner tests for all 3 scripts (15 tests, all mocked)
+- [x] `tests/test_streamlit_app.py` — helper function tests (15 tests, all mocked)
+- [x] **Checkpoint:** 606 tests, 94% coverage (src/). Branch: `feat/p5-day6-ui`.
 
 ### Day 7 — Documentation Sprint
 - [ ] README.md (gold standard: title → badges → key results → architecture Mermaid → ADR table → tech stack → quick start)

@@ -119,5 +119,10 @@ class FAISSVectorStore(BaseVectorStore):
     # Extra helpers
     # ------------------------------------------------------------------
 
+    @property
+    def chunks(self) -> list[Chunk]:
+        """Read-only access to loaded chunks — needed by create_retriever() for BM25/hybrid."""
+        return list(self._chunks)
+
     def __len__(self) -> int:
         return self._index.ntotal
