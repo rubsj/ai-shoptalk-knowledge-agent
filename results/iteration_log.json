@@ -3076,5 +3076,167 @@
       "mrr": 0.009259,
       "ndcg_at_5": 0.000333
     }
+  },
+  {
+    "iteration_id": 115,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "ollama_nomic",
+    "reason": "Switching embedding_model from mpnet to ollama_nomic for heading_semantic/dense changed NDCG@5 by -0.0218 (local embeddings, zero API cost)",
+    "experiment_id_before": "9c48a6d2-1fc4-446b-98c3-0ccf4b8a9b16",
+    "experiment_id_after": "675af614-e632-4d6f-8658-540bb7aa7766",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333,
+      "precision_at_5": 0.2444444444,
+      "mrr": 0.6175925926,
+      "ndcg_at_5": 0.6551530796
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777778,
+      "precision_at_5": 0.2,
+      "mrr": 0.5916666667,
+      "ndcg_at_5": 0.6333074465
+    },
+    "delta": {
+      "recall_at_5": -0.055556,
+      "precision_at_5": -0.044444,
+      "mrr": -0.025926,
+      "ndcg_at_5": -0.021846
+    }
+  },
+  {
+    "iteration_id": 116,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "ollama_nomic",
+    "reason": "Switching embedding_model from mpnet to ollama_nomic for fixed/dense changed NDCG@5 by +0.0135 (local embeddings, zero API cost)",
+    "experiment_id_before": "9966a1d1-f48b-47cc-b62c-a68314e8e244",
+    "experiment_id_after": "89101687-a42e-43c8-ba01-c6aa8da25d77",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333,
+      "precision_at_5": 0.2555555556,
+      "mrr": 0.6435185185,
+      "ndcg_at_5": 0.6851558652
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888889,
+      "precision_at_5": 0.2555555556,
+      "mrr": 0.6342592593,
+      "ndcg_at_5": 0.6986102375
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": 0.0,
+      "mrr": -0.009259,
+      "ndcg_at_5": 0.013454
+    }
+  },
+  {
+    "iteration_id": 117,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "ollama_nomic",
+    "reason": "Switching embedding_model from mpnet to ollama_nomic for sliding_window/dense changed NDCG@5 by +0.0174 (local embeddings, zero API cost)",
+    "experiment_id_before": "59ee2e0e-921b-4222-b233-deee0e5547cd",
+    "experiment_id_after": "7fee594f-2213-4ccb-9b15-2ff1061c3cf2",
+    "metrics_before": {
+      "recall_at_5": 0.7777777778,
+      "precision_at_5": 0.3444444444,
+      "mrr": 0.5944444444,
+      "ndcg_at_5": 0.6189225778
+    },
+    "metrics_after": {
+      "recall_at_5": 0.7777777778,
+      "precision_at_5": 0.3222222222,
+      "mrr": 0.6203703704,
+      "ndcg_at_5": 0.6363095744
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": -0.022222,
+      "mrr": 0.025926,
+      "ndcg_at_5": 0.017387
+    }
+  },
+  {
+    "iteration_id": 118,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "ollama_nomic",
+    "reason": "Switching embedding_model from mpnet to ollama_nomic for heading_semantic/hybrid changed NDCG@5 by -0.0456 (local embeddings, zero API cost)",
+    "experiment_id_before": "740dadc8-39e9-4c8e-a834-2f89403558a6",
+    "experiment_id_after": "dcbbe7f1-2588-4a06-a4c1-d8b2374f343b",
+    "metrics_before": {
+      "recall_at_5": 0.8888888889,
+      "precision_at_5": 0.2555555556,
+      "mrr": 0.7453703704,
+      "ndcg_at_5": 0.7681723197
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8333333333,
+      "precision_at_5": 0.2222222222,
+      "mrr": 0.6962962963,
+      "ndcg_at_5": 0.7225498861
+    },
+    "delta": {
+      "recall_at_5": -0.055556,
+      "precision_at_5": -0.033333,
+      "mrr": -0.049074,
+      "ndcg_at_5": -0.045622
+    }
+  },
+  {
+    "iteration_id": 119,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "ollama_nomic",
+    "reason": "Switching embedding_model from mpnet to ollama_nomic for fixed/hybrid changed NDCG@5 by +0.0257 (local embeddings, zero API cost)",
+    "experiment_id_before": "f541ac55-f79c-4c16-a88c-0a390af35f5e",
+    "experiment_id_after": "b1c83e80-90cf-486a-a412-cad7473e2658",
+    "metrics_before": {
+      "recall_at_5": 0.8333333333,
+      "precision_at_5": 0.3111111111,
+      "mrr": 0.7037037037,
+      "ndcg_at_5": 0.70965658
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888889,
+      "precision_at_5": 0.2666666667,
+      "mrr": 0.6990740741,
+      "ndcg_at_5": 0.7353673091
+    },
+    "delta": {
+      "recall_at_5": 0.055556,
+      "precision_at_5": -0.044444,
+      "mrr": -0.00463,
+      "ndcg_at_5": 0.025711
+    }
+  },
+  {
+    "iteration_id": 120,
+    "parameter_changed": "embedding_model",
+    "old_value": "mpnet",
+    "new_value": "ollama_nomic",
+    "reason": "Switching embedding_model from mpnet to ollama_nomic for sliding_window/hybrid changed NDCG@5 by -0.0654 (local embeddings, zero API cost)",
+    "experiment_id_before": "c6c3f325-2563-43cd-9250-e1e0312d0b25",
+    "experiment_id_after": "dddcac4b-c08e-4855-8be4-a91ca827738a",
+    "metrics_before": {
+      "recall_at_5": 0.8888888889,
+      "precision_at_5": 0.3888888889,
+      "mrr": 0.7962962963,
+      "ndcg_at_5": 0.8225774418
+    },
+    "metrics_after": {
+      "recall_at_5": 0.8888888889,
+      "precision_at_5": 0.3888888889,
+      "mrr": 0.7222222222,
+      "ndcg_at_5": 0.757203022
+    },
+    "delta": {
+      "recall_at_5": 0.0,
+      "precision_at_5": 0.0,
+      "mrr": -0.074074,
+      "ndcg_at_5": -0.065374
+    }
   }
 ]

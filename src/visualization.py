@@ -508,6 +508,130 @@ def plot_query_difficulty(results: list[ExperimentResult | dict], output_dir: Pa
 
 
 # ---------------------------------------------------------------------------
+# Chart 11 — Local vs API embedding comparison
+# ---------------------------------------------------------------------------
+
+
+def plot_local_vs_api_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
+    """Chart 11: 3-panel figure comparing local vs API embeddings.
+
+    Panel 1 (Quality): Grouped bars — NDCG@5 by embedding model, for dense +
+        hybrid retrieval (all chunkers averaged).
+    Panel 2 (Latency): Horizontal bars — avg query latency (ms) per model.
+    Panel 3 (Cost): Bar chart — estimated embedding cost per full run ($).
+
+    Data: filter for configs that have an embedding_model (exclude bm25-only).
+    """
+    # Embedding model display names and order
+    model_order = ["minilm", "mpnet", "ollama_nomic", "openai"]
+    model_labels = {
+        "minilm": "MiniLM\n(384d, local)",
+        "mpnet": "mpnet\n(768d, local)",
+        "ollama_nomic": "Ollama\nnomic (768d, local)",
+        "openai": "OpenAI\ntext-embed-3-small\n(1536d, API)",
+    }
+    colors = {
+        "minilm": "tab:blue",
+        "mpnet": "tab:orange",
+        "ollama_nomic": "tab:green",
+        "openai": "tab:red",
+    }
+    # Approximate cost per run (52-config grid full run)
+    # OpenAI text-embedding-3-small: ~$0.00002/1K tokens, ~400 tokens avg chunk,
+    # 515 chunks × 10 openai configs → ~$0.04 per model-load
+    cost_per_run = {
+        "minilm": 0.0,
+        "mpnet": 0.0,
+        "ollama_nomic": 0.0,
+        "openai": 0.04,
+    }
+
+    emb_df = df[df["embedding_model"].isin(model_order)].copy()
+
+    # Panel 1: NDCG@5 by model (dense + hybrid, all chunkers)
+    dense_hybrid = emb_df[emb_df["retriever_type"].isin(["dense", "hybrid"])]
+    ndcg_by_model = (
+        dense_hybrid.groupby(["embedding_model", "retriever_type"])["ndcg_at_5"]
+        .mean()
+        .reset_index()
+    )
+
+    # Panel 2: avg latency per model
+    latency_by_model = (
+        emb_df.groupby("embedding_model")["avg_query_latency_ms"].mean().reset_index()
+    )
+
+    with plt.style.context(_STYLE):
+        fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+
+        # --- Panel 1: Quality ---
+        ax1 = axes[0]
+        x = np.arange(len(model_order))
+        width = 0.35
+        for i, rtype in enumerate(["dense", "hybrid"]):
+            vals = []
+            for m in model_order:
+                row = ndcg_by_model[
+                    (ndcg_by_model["embedding_model"] == m)
+                    & (ndcg_by_model["retriever_type"] == rtype)
+                ]
+                vals.append(row["ndcg_at_5"].values[0] if len(row) > 0 else 0.0)
+            offset = (i - 0.5) * width
+            bars = ax1.bar(x + offset, vals, width, label=rtype.capitalize(),
+                           alpha=0.85, edgecolor="black", linewidth=0.5)
+            for bar, val in zip(bars, vals):
+                if val > 0:
+                    ax1.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.005,
+                             f"{val:.3f}", ha="center", va="bottom", fontsize=7)
+
+        ax1.set_xticks(x)
+        ax1.set_xticklabels([model_labels[m] for m in model_order], fontsize=8)
+        ax1.set_ylabel("NDCG@5 (avg across chunkers)", fontsize=10)
+        ax1.set_title("Quality: Local vs API Embeddings", fontsize=11)
+        ax1.set_ylim(0, 1.0)
+        ax1.legend(fontsize=9)
+        ax1.axhline(y=0.75, color="red", linestyle="--", alpha=0.4, label="target")
+
+        # --- Panel 2: Latency ---
+        ax2 = axes[1]
+        sorted_latency = latency_by_model.set_index("embedding_model").reindex(model_order).reset_index()
+        bar_colors = [colors[m] for m in sorted_latency["embedding_model"]]
+        bars2 = ax2.barh(
+            [model_labels[m] for m in sorted_latency["embedding_model"]],
+            sorted_latency["avg_query_latency_ms"],
+            color=bar_colors, alpha=0.85, edgecolor="black", linewidth=0.5,
+        )
+        for bar, val in zip(bars2, sorted_latency["avg_query_latency_ms"]):
+            ax2.text(val + 20, bar.get_y() + bar.get_height() / 2,
+                     f"{val:.0f}ms", va="center", fontsize=9)
+        ax2.set_xlabel("Avg Query Latency (ms)", fontsize=10)
+        ax2.set_title("Latency by Embedding Model", fontsize=11)
+
+        # --- Panel 3: Cost ---
+        ax3 = axes[2]
+        cost_vals = [cost_per_run[m] for m in model_order]
+        bar_colors3 = [colors[m] for m in model_order]
+        bars3 = ax3.bar(
+            [model_labels[m] for m in model_order],
+            cost_vals,
+            color=bar_colors3, alpha=0.85, edgecolor="black", linewidth=0.5,
+        )
+        for bar, val in zip(bars3, cost_vals):
+            label = f"${val:.2f}" if val > 0 else "$0.00"
+            ax3.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.001,
+                     label, ha="center", va="bottom", fontsize=10, fontweight="bold")
+        ax3.set_ylabel("Estimated Embedding Cost per Run ($)", fontsize=10)
+        ax3.set_title("Cost: Local vs API", fontsize=11)
+        ax3.set_xticks(range(len(model_order)))
+        ax3.set_xticklabels([model_labels[m] for m in model_order], fontsize=8,
+                             rotation=0, ha="center")
+
+        fig.suptitle("Chart 11: Local vs API Embeddings — Quality · Latency · Cost", fontsize=13)
+        fig.tight_layout()
+        return _save_fig(fig, output_dir, "local_vs_api_comparison")
+
+
+# ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
 
@@ -516,7 +640,7 @@ def generate_all_charts(
     results: list[ExperimentResult | dict],
     output_dir: str = "results/charts",
 ) -> list[Path]:
-    """Generate all 10 charts and return their file paths."""
+    """Generate all 11 charts and return their file paths."""
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
 
@@ -533,6 +657,7 @@ def generate_all_charts(
         plot_judge_radar(results, out),
         plot_latency_vs_quality(df, out),
         plot_query_difficulty(results, out),
+        plot_local_vs_api_comparison(df, out),
     ]
 
     return paths

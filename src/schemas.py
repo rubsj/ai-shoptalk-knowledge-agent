@@ -26,7 +26,7 @@ ChunkingStrategy = Literal[
     "embedding_semantic",
 ]
 
-EmbeddingModel = Literal["minilm", "mpnet", "openai"]
+EmbeddingModel = Literal["minilm", "mpnet", "openai", "ollama_nomic"]
 
 RerankerType = Literal["cohere", "cross_encoder"]
 

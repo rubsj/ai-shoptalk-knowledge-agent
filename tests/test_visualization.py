@@ -276,9 +276,9 @@ class TestPlotQueryDifficulty:
 
 
 class TestGenerateAllCharts:
-    def test_returns_10_paths(self, sample_results, tmp_path):
+    def test_returns_11_paths(self, sample_results, tmp_path):
         paths = generate_all_charts(sample_results, str(tmp_path))
-        assert len(paths) == 10
+        assert len(paths) == 11
         for p in paths:
             assert p.exists()
             assert p.suffix == ".png"
@@ -288,11 +288,11 @@ class TestGenerateAllCharts:
         out = tmp_path / "charts_subdir"
         paths = generate_all_charts(sample_results, str(out))
         assert out.exists()
-        assert len(paths) == 10
+        assert len(paths) == 11
 
     def test_empty_results(self, tmp_path):
-        """Empty results should still produce 10 PNGs (with empty/placeholder content)."""
+        """Empty results should still produce 11 PNGs (with empty/placeholder content)."""
         # Provide a minimal single result so DataFrame operations don't crash
         results = [_make_result()]
         paths = generate_all_charts(results, str(tmp_path))
-        assert len(paths) == 10
+        assert len(paths) == 11

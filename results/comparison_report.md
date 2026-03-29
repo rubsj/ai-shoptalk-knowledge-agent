@@ -333,3 +333,48 @@ Tested via the experiment grid and integration tests:
 
 *Q6 (local vs API embeddings) deferred to Day 5 — Ollama experiments.*
 
+
+
+---
+
+## Q5: Do Local Embeddings Match API Quality?
+
+### Setup
+
+Tested `nomic-embed-text` (768d) via Ollama against MiniLM (384d), mpnet (768d), and OpenAI `text-embedding-3-small` (1536d). Six experiments: best 3 chunkers (`heading_semantic`, `fixed`, `sliding_window`) × {dense, hybrid}, `top_k=5`, no reranking, `hybrid_alpha=0.7`.
+
+### Results
+
+| Config | Embedder | Retriever | NDCG@5 | Recall@5 | MRR | Avg Latency |
+|--------|----------|-----------|--------|----------|-----|-------------|
+| heading\_semantic\_ollama\_nomic\_dense | Ollama (local) | Dense | 0.633 | 0.778 | 0.592 | ~2963ms |
+| fixed\_ollama\_nomic\_dense | Ollama (local) | Dense | 0.699 | 0.889 | 0.634 | ~1930ms |
+| sliding\_window\_ollama\_nomic\_dense | Ollama (local) | Dense | 0.636 | 0.778 | 0.620 | ~2052ms |
+| heading\_semantic\_ollama\_nomic\_hybrid | Ollama (local) | Hybrid | 0.723 | 0.833 | 0.696 | ~2353ms |
+| fixed\_ollama\_nomic\_hybrid | Ollama (local) | Hybrid | 0.735 | 0.889 | 0.699 | ~1670ms |
+| sliding\_window\_ollama\_nomic\_hybrid | Ollama (local) | Hybrid | **0.757** | **0.889** | **0.722** | ~1772ms |
+
+### Comparison Against Equivalent mpnet Configs (same 768d, same chunkers)
+
+| Chunker | Retriever | mpnet NDCG@5 | Ollama NDCG@5 | Delta |
+|---------|-----------|--------------|---------------|-------|
+| heading\_semantic | Dense | 0.655 | 0.633 | −0.022 |
+| fixed | Dense | 0.685 | 0.699 | **+0.014** |
+| sliding\_window | Dense | 0.619 | 0.636 | **+0.017** |
+| heading\_semantic | Hybrid | 0.768 | 0.723 | −0.046 |
+| fixed | Hybrid | 0.710 | 0.735 | **+0.026** |
+| sliding\_window | Hybrid | 0.823 | 0.757 | −0.065 |
+
+### Hybrid Search Impact for Ollama
+
+Hybrid retrieval improved Ollama results vs dense across all chunkers:
+
+- `heading_semantic`: +0.090 NDCG@5 (0.633 → 0.723)
+- `fixed`: +0.037 (0.699 → 0.735)
+- `sliding_window`: +0.121 (0.636 → 0.757)
+
+### Verdict
+
+**Ollama is competitive with mpnet** (same 768d, also local): 3 of 6 Ollama configs match or exceed the equivalent mpnet config. The quality gap vs OpenAI is ~0.14 NDCG@5 (best Ollama: 0.757 vs best OpenAI dense: 0.896), but Ollama costs **$0 in API fees** vs ~$0.04/run for OpenAI embeddings. For workloads where data privacy matters or API costs are a concern, Ollama nomic-embed-text with hybrid retrieval delivers acceptable quality (≥0.75 NDCG@5) at zero embedding cost.
+
+See Chart 11 (`results/charts/local_vs_api_comparison.png`) for a 3-panel visual summary.
