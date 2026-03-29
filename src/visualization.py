@@ -120,14 +120,15 @@ def plot_config_metric_heatmap(df: pd.DataFrame, output_dir: Path) -> Path:
         # Sort by NDCG@5 descending
         pivot = pivot.sort_values("NDCG@5", ascending=True)
 
-        height = max(8, len(pivot) * 0.35)
-        fig, ax = plt.subplots(figsize=(10, height))
+        height = max(8, len(pivot) * 0.38)
+        fig, ax = plt.subplots(figsize=(12, height))
         sns.heatmap(pivot, annot=True, fmt=".3f", cmap="YlOrRd", ax=ax,
-                    vmin=0, vmax=1, linewidths=0.5)
+                    vmin=0, vmax=1, linewidths=0.5, annot_kws={"fontsize": 8})
         ax.set_title("Retrieval Metrics by Configuration", fontsize=14, pad=15)
         ax.set_xlabel("")
         ax.set_ylabel("")
-        fig.tight_layout()
+        ax.tick_params(axis="y", labelsize=8)
+        fig.subplots_adjust(left=0.32)
         return _save_fig(fig, output_dir, "config_metric_heatmap")
 
 
@@ -177,33 +178,46 @@ def plot_embedding_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
             "cost_estimate_usd": "mean",
         }).reset_index()
 
-        fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+        fig, axes = plt.subplots(1, 3, figsize=(16, 6), gridspec_kw={"width_ratios": [2, 1, 1]})
 
         # Panel 1: retrieval metrics
         x = np.arange(len(agg))
         width = 0.2
+        colors = sns.color_palette("Set1", 4)
         for i, metric in enumerate(_METRICS):
-            axes[0].bar(x + i * width, agg[metric], width, label=_METRIC_LABELS[metric])
+            bars = axes[0].bar(x + i * width, agg[metric], width,
+                               label=_METRIC_LABELS[metric], color=colors[i])
+            for bar in bars:
+                axes[0].text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
+                             f"{bar.get_height():.3f}", ha="center", va="bottom", fontsize=7)
         axes[0].set_xticks(x + width * 1.5)
         axes[0].set_xticklabels(agg["embedding_model"])
         axes[0].set_title("Retrieval Metrics", fontsize=12)
-        axes[0].set_ylim(0, 1.05)
-        axes[0].legend(fontsize=8)
+        axes[0].set_ylim(0, 1.15)
+        axes[0].legend(fontsize=8, loc="lower right")
 
         # Panel 2: latency
-        axes[1].bar(agg["embedding_model"], agg["avg_query_latency_ms"],
-                    color=sns.color_palette("Set2", len(agg)))
+        lat_colors = sns.color_palette("Set2", len(agg))
+        lat_bars = axes[1].bar(agg["embedding_model"], agg["avg_query_latency_ms"],
+                               color=lat_colors)
+        for bar in lat_bars:
+            axes[1].text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 10,
+                         f"{bar.get_height():.0f}", ha="center", va="bottom", fontsize=8)
         axes[1].set_title("Avg Query Latency (ms)", fontsize=12)
         axes[1].set_ylabel("ms")
 
         # Panel 3: cost
-        axes[2].bar(agg["embedding_model"], agg["cost_estimate_usd"],
-                    color=sns.color_palette("Set3", len(agg)))
+        cost_colors = sns.color_palette("Set3", len(agg))
+        cost_bars = axes[2].bar(agg["embedding_model"], agg["cost_estimate_usd"],
+                                color=cost_colors)
+        for bar in cost_bars:
+            axes[2].text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.0001,
+                         f"${bar.get_height():.4f}", ha="center", va="bottom", fontsize=7)
         axes[2].set_title("Cost Estimate (USD)", fontsize=12)
         axes[2].set_ylabel("USD")
 
-        fig.suptitle("Q4: Embedding Model Comparison", fontsize=13, y=1.02)
-        fig.tight_layout()
+        fig.suptitle("Q4: Embedding Model Comparison", fontsize=13)
+        fig.subplots_adjust(wspace=0.35, top=0.90)
         return _save_fig(fig, output_dir, "embedding_comparison")
 
 
@@ -383,6 +397,13 @@ def plot_judge_radar(results: list[ExperimentResult | dict], output_dir: Path) -
         fig, ax = plt.subplots(figsize=(10, 10), subplot_kw={"projection": "polar"})
         colors = sns.color_palette("husl", len(top))
 
+        # Shorten labels for legend readability
+        short_labels = {
+            "heading_semantic": "head_sem",
+            "embedding_semantic": "emb_sem",
+            "sliding_window": "slide_win",
+        }
+
         for i, r in enumerate(top):
             if isinstance(r, dict):
                 js = r["judge_scores"]
@@ -391,17 +412,24 @@ def plot_judge_radar(results: list[ExperimentResult | dict], output_dir: Path) -
                 js = r.judge_scores.model_dump()
                 label = _config_label(r.config.model_dump())
 
+            # Shorten the label
+            for long, short in short_labels.items():
+                label = label.replace(long, short)
+
             values = [js[k] for k in judge_keys]
             values += values[:1]
-            ax.plot(angles, values, "o-", color=colors[i], label=label, linewidth=2)
-            ax.fill(angles, values, color=colors[i], alpha=0.1)
+            ax.plot(angles, values, "o-", color=colors[i], label=label, linewidth=2,
+                    markersize=6)
+            ax.fill(angles, values, color=colors[i], alpha=0.05)
 
         ax.set_xticks(angles[:-1])
-        ax.set_xticklabels(axes_names, fontsize=10)
-        ax.set_ylim(0, 5.5)
-        ax.set_title("LLM Judge 5-Axis Radar (Top 5 Configs)", fontsize=14, pad=20)
-        ax.legend(loc="upper right", bbox_to_anchor=(1.3, 1.1), fontsize=8)
-        fig.tight_layout()
+        ax.set_xticklabels(axes_names, fontsize=11, fontweight="bold")
+        ax.set_ylim(3.0, 5.2)
+        ax.set_rticks([3.5, 4.0, 4.5, 5.0])
+        ax.set_title("LLM Judge 5-Axis Radar (Top 5 Configs)", fontsize=14, pad=25)
+        ax.legend(loc="upper right", bbox_to_anchor=(1.35, 1.05), fontsize=9,
+                  frameon=True, framealpha=0.9)
+        fig.subplots_adjust(right=0.75)
         return _save_fig(fig, output_dir, "judge_radar")
 
 
@@ -414,16 +442,21 @@ def plot_latency_vs_quality(df: pd.DataFrame, output_dir: Path) -> Path:
             ax.scatter(group["avg_query_latency_ms"], group["ndcg_at_5"],
                        label=rtype, color=colors.get(rtype, "gray"), s=80, alpha=0.7,
                        edgecolors="black", linewidth=0.5)
-            # Label the best point per retriever
-            best = group.loc[group["ndcg_at_5"].idxmax()]
-            ax.annotate(best["label"], (best["avg_query_latency_ms"], best["ndcg_at_5"]),
-                        fontsize=7, ha="left", va="bottom",
-                        xytext=(5, 5), textcoords="offset points")
+
+        # Annotate only the single best config overall to avoid label overlap
+        best_overall = df.loc[df["ndcg_at_5"].idxmax()]
+        ax.annotate(
+            best_overall["label"],
+            (best_overall["avg_query_latency_ms"], best_overall["ndcg_at_5"]),
+            fontsize=8, ha="left", va="bottom",
+            xytext=(8, 8), textcoords="offset points",
+            arrowprops={"arrowstyle": "->", "color": "gray", "lw": 0.8},
+        )
 
         ax.set_xlabel("Avg Query Latency (ms)", fontsize=12)
         ax.set_ylabel("NDCG@5", fontsize=12)
         ax.set_title("Latency vs Quality Trade-off", fontsize=14)
-        ax.legend()
+        ax.legend(fontsize=10)
         fig.tight_layout()
         return _save_fig(fig, output_dir, "latency_vs_quality")
 
