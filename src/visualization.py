@@ -301,8 +301,15 @@ def plot_reranking_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
             return _save_fig(fig, output_dir, "reranking_comparison")
 
         pair_df = pd.DataFrame(pairs)
-        fig, ax = plt.subplots(figsize=(14, 8))
-        sns.barplot(data=pair_df, x="config", y="delta", hue="metric", ax=ax,
+
+        # Recall@5 and Precision@5 are always 0 (reranking reorders, doesn't change the set)
+        # Show only MRR and NDCG@5 which actually change, and note the zero-delta metrics
+        rank_metrics = pair_df[pair_df["metric"].isin(["MRR", "NDCG@5"])]
+        zero_metrics = [m for m in pair_df["metric"].unique()
+                        if pair_df[pair_df["metric"] == m]["delta"].abs().sum() == 0]
+
+        fig, ax = plt.subplots(figsize=(14, 7))
+        sns.barplot(data=rank_metrics, x="config", y="delta", hue="metric", ax=ax,
                     palette="Set2")
         ax.axhline(y=0, color="black", linewidth=0.8)
         ax.set_title("Q3: Reranking Impact (delta vs base config)", fontsize=14)
@@ -313,6 +320,13 @@ def plot_reranking_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
             label.set_ha("right")
             label.set_fontsize(9)
         ax.legend(title="Metric", fontsize=9)
+        if zero_metrics:
+            ax.annotate(
+                f"Note: {', '.join(zero_metrics)} delta = 0 for all configs\n"
+                "(reranking reorders results but doesn't change the retrieved set)",
+                xy=(0.02, 0.97), xycoords="axes fraction", fontsize=9,
+                va="top", ha="left", style="italic", color="gray",
+            )
         fig.subplots_adjust(bottom=0.20)
         return _save_fig(fig, output_dir, "reranking_comparison")
 
