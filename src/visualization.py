@@ -180,21 +180,20 @@ def plot_embedding_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
 
         fig, axes = plt.subplots(1, 3, figsize=(16, 6), gridspec_kw={"width_ratios": [2, 1, 1]})
 
-        # Panel 1: retrieval metrics
+        # Panel 1: retrieval metrics — no per-bar labels (too crowded with 4 bars/group)
         x = np.arange(len(agg))
         width = 0.2
         colors = sns.color_palette("Set1", 4)
         for i, metric in enumerate(_METRICS):
-            bars = axes[0].bar(x + i * width, agg[metric], width,
-                               label=_METRIC_LABELS[metric], color=colors[i])
-            for bar in bars:
-                axes[0].text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
-                             f"{bar.get_height():.3f}", ha="center", va="bottom", fontsize=7)
+            axes[0].bar(x + i * width, agg[metric], width,
+                        label=_METRIC_LABELS[metric], color=colors[i])
         axes[0].set_xticks(x + width * 1.5)
         axes[0].set_xticklabels(agg["embedding_model"])
         axes[0].set_title("Retrieval Metrics", fontsize=12)
-        axes[0].set_ylim(0, 1.15)
+        axes[0].set_ylim(0, 1.05)
         axes[0].legend(fontsize=8, loc="lower right")
+        axes[0].yaxis.set_major_locator(plt.MultipleLocator(0.1))
+        axes[0].grid(axis="y", alpha=0.3)
 
         # Panel 2: latency
         lat_colors = sns.color_palette("Set2", len(agg))
