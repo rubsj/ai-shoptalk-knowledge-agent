@@ -15,14 +15,21 @@ from pathlib import Path
 
 import pytest
 
+from unittest.mock import MagicMock, patch
+
 from src.extraction import (
+    _describe_page_images,
+    _extract_page_content,
+    _extract_text_from_dict_block,
     _is_header_or_footer,
     clean_text,
     extract_all_pdfs,
     extract_pdf,
+    load_document,
     remove_headers_footers,
+    save_document,
 )
-from src.schemas import Document
+from src.schemas import Document, DocumentMetadata, PageInfo
 
 # Path to test PDFs (relative to repo root, resolved at runtime)
 _PDF_DIR = Path(__file__).parent.parent / "data" / "pdfs"
@@ -254,3 +261,226 @@ class TestExtractAllPdfs:
     def test_empty_dir_returns_empty_list(self, tmp_path: Path):
         docs = extract_all_pdfs(tmp_path)
         assert docs == []
+
+
+# ---------------------------------------------------------------------------
+# TestRemoveHeadersFooters — edge cases for else branches (lines 124-134)
+# ---------------------------------------------------------------------------
+
+
+class TestRemoveHeadersFootersEdgeCases:
+    def test_all_three_header_lines_are_headers(self):
+        """When all 3 header lines match, the for-else branch fires (line 125)."""
+        lines = ["3", "Page 5", "arXiv:1234"]  # all headers
+        lines += [f"Body line {i} with content." for i in range(10)]
+        text = "\n".join(lines)
+        result = remove_headers_footers(text, 0, 10)
+        assert "Body line 0" in result
+        assert "3\n" not in result.split("\n")[0]
+
+    def test_all_three_footer_lines_are_footers(self):
+        """When all 3 footer lines match, the for-else branch fires (line 134)."""
+        lines = [f"Body line {i} with content." for i in range(10)]
+        lines += ["42", "Page 10", "arXiv:9999"]  # all footers
+        text = "\n".join(lines)
+        result = remove_headers_footers(text, 9, 10)
+        assert "Body line 0" in result
+        assert "42" not in result.split("\n")[-1]
+
+    def test_all_header_and_footer_lines_are_headers(self):
+        """Both head and foot for-else branches fire."""
+        lines = ["1", "Page 1", "NEURAL INFO"]
+        lines += [f"Body {i}" for i in range(10)]
+        lines += ["99", "Page 99", "arXiv:0000"]
+        text = "\n".join(lines)
+        result = remove_headers_footers(text, 0, 100)
+        assert "Body 0" in result
+        assert "Body 9" in result
+
+
+# ---------------------------------------------------------------------------
+# TestDescribePageImages (mocked vision LLM, lines 163-188)
+# ---------------------------------------------------------------------------
+
+
+class TestDescribePageImages:
+    def test_returns_description_when_visuals_found(self):
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.content = "Figure 1 shows a transformer architecture."
+        with patch("src.extraction.litellm.completion", return_value=mock_response):
+            result = _describe_page_images(b"\x89PNG\r\n", page_number=0)
+        assert "Figure 1" in result
+
+    def test_returns_empty_when_no_visuals(self):
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.content = "NO_VISUAL_ELEMENTS"
+        with patch("src.extraction.litellm.completion", return_value=mock_response):
+            result = _describe_page_images(b"\x89PNG\r\n", page_number=0)
+        assert result == ""
+
+
+# ---------------------------------------------------------------------------
+# TestExtractTextFromDictBlock (lines 197-202)
+# ---------------------------------------------------------------------------
+
+
+class TestExtractTextFromDictBlock:
+    def test_extracts_text_from_block(self):
+        block = {
+            "lines": [
+                {"spans": [{"text": "Hello "}, {"text": "world"}]},
+                {"spans": [{"text": "Second line"}]},
+            ]
+        }
+        result = _extract_text_from_dict_block(block)
+        assert "Hello world" in result
+        assert "Second line" in result
+
+    def test_empty_lines(self):
+        block = {"lines": []}
+        assert _extract_text_from_dict_block(block) == ""
+
+    def test_skips_whitespace_only_spans(self):
+        block = {"lines": [{"spans": [{"text": "   "}]}]}
+        result = _extract_text_from_dict_block(block)
+        assert result == ""
+
+
+# ---------------------------------------------------------------------------
+# TestExtractPageContent with describe_images=True (lines 231-268)
+# ---------------------------------------------------------------------------
+
+
+class TestExtractPageContentWithImages:
+    def _make_mock_page(self, has_images: bool = True):
+        page = MagicMock()
+
+        text_block = {
+            "type": 0,
+            "bbox": [72, 100, 500, 200],
+            "lines": [{"spans": [{"text": "Some text content"}]}],
+        }
+        blocks = [text_block]
+        if has_images:
+            image_block = {"type": 1, "bbox": [72, 250, 500, 400]}
+            blocks.append(image_block)
+
+        page.get_text.side_effect = lambda fmt=None: (
+            {"blocks": blocks} if fmt == "dict" else "Some text content"
+        )
+        pixmap = MagicMock()
+        pixmap.tobytes.return_value = b"\x89PNG\r\n"
+        page.get_pixmap.return_value = pixmap
+        return page
+
+    def test_describe_images_true_with_image_blocks(self):
+        page = self._make_mock_page(has_images=True)
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.content = "Figure 1: attention scores"
+        with patch("src.extraction.litellm.completion", return_value=mock_response):
+            result = _extract_page_content(page, 0, 10, describe_images=True, vision_model="gpt-4o-mini")
+        assert "Visual Content" in result
+        assert "attention scores" in result
+
+    def test_describe_images_true_no_image_blocks(self):
+        page = self._make_mock_page(has_images=False)
+        result = _extract_page_content(page, 0, 10, describe_images=True, vision_model="gpt-4o-mini")
+        assert "Visual Content" not in result
+
+    def test_describe_images_false(self):
+        page = MagicMock()
+        page.get_text.return_value = "Plain text from page."
+        result = _extract_page_content(page, 0, 10, describe_images=False, vision_model="gpt-4o-mini")
+        assert "Plain text from page" in result
+
+    def test_vision_exception_handled_gracefully(self):
+        page = self._make_mock_page(has_images=True)
+        with patch("src.extraction.litellm.completion", side_effect=RuntimeError("API down")):
+            result = _extract_page_content(page, 0, 10, describe_images=True, vision_model="gpt-4o-mini")
+        assert "Some text content" in result
+        assert "Visual Content" not in result
+
+
+# ---------------------------------------------------------------------------
+# TestSaveLoadDocument (lines 332-338, 345)
+# ---------------------------------------------------------------------------
+
+
+class TestSaveLoadDocument:
+    def _make_doc(self) -> Document:
+        return Document(
+            content="Test content for save/load.",
+            metadata=DocumentMetadata(source="test.pdf", title="Test", author="Author", page_count=1),
+            pages=[PageInfo(page_number=0, text="Test content for save/load.", char_count=27)],
+        )
+
+    def test_save_creates_file(self, tmp_path: Path):
+        doc = self._make_doc()
+        out = save_document(doc, tmp_path / "doc.json")
+        assert out.exists()
+
+    def test_save_load_roundtrip(self, tmp_path: Path):
+        doc = self._make_doc()
+        path = save_document(doc, tmp_path / "doc.json")
+        loaded = load_document(path)
+        assert loaded is not None
+        assert loaded.content == doc.content
+        assert loaded.metadata.source == doc.metadata.source
+
+    def test_load_nonexistent_returns_none(self, tmp_path: Path):
+        result = load_document(tmp_path / "nope.json")
+        assert result is None
+
+    def test_save_creates_parent_dirs(self, tmp_path: Path):
+        doc = self._make_doc()
+        path = save_document(doc, tmp_path / "sub" / "dir" / "doc.json")
+        assert path.exists()
+
+
+# ---------------------------------------------------------------------------
+# TestExtractPdfEmptyContent (line 313)
+# ---------------------------------------------------------------------------
+
+
+class TestExtractPdfEmptyContent:
+    def test_empty_pdf_raises_value_error(self, tmp_path: Path):
+        """A PDF with no extractable text should raise ValueError."""
+        import fitz
+        pdf_path = tmp_path / "empty.pdf"
+        doc = fitz.open()
+        doc.new_page()
+        doc.save(str(pdf_path))
+        doc.close()
+        with pytest.raises(ValueError, match="No extractable text"):
+            extract_pdf(pdf_path)
+
+
+# ---------------------------------------------------------------------------
+# TestExtractAllPdfsCacheMiss (lines 387-397)
+# ---------------------------------------------------------------------------
+
+
+class TestExtractAllPdfsCacheMiss:
+    @_skip_if_no_pdfs
+    def test_cache_miss_extracts_and_saves(self, tmp_path: Path):
+        cache_dir = tmp_path / "cache"
+        docs = extract_all_pdfs(_PDF_DIR, cache_dir=cache_dir)
+        assert len(docs) == 4
+        # Check JSON cache files were created
+        cached_files = list(cache_dir.glob("*.json"))
+        assert len(cached_files) == 4
+        # Check validation .txt files
+        validation_files = list((cache_dir / "validation").glob("*.txt"))
+        assert len(validation_files) == 4
+
+    @_skip_if_no_pdfs
+    def test_cache_hit_skips_extraction(self, tmp_path: Path):
+        cache_dir = tmp_path / "cache"
+        # First run: cache miss
+        extract_all_pdfs(_PDF_DIR, cache_dir=cache_dir)
+        # Second run: cache hit
+        docs = extract_all_pdfs(_PDF_DIR, cache_dir=cache_dir)
+        assert len(docs) == 4

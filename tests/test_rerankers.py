@@ -209,3 +209,41 @@ class TestCohereReranker:
         with patch("src.rerankers.cohere_reranker.cohere.ClientV2"):
             reranker = CohereReranker(api_key="test")
         assert isinstance(reranker, BaseReranker)
+
+    def test_retry_on_rate_limit(self) -> None:
+        """Rate limit hit once, succeeds on second attempt (lines 54-59)."""
+        from cohere.errors.too_many_requests_error import TooManyRequestsError
+
+        with patch("src.rerankers.cohere_reranker.cohere.ClientV2") as MockClient:
+            mock_client = MagicMock()
+            mock_response = MagicMock()
+            mock_response.results = [_make_cohere_item(0, 0.9)]
+            mock_client.rerank.side_effect = [
+                TooManyRequestsError(body="rate limited"),
+                mock_response,
+            ]
+            MockClient.return_value = mock_client
+            reranker = CohereReranker(api_key="test-key")
+        reranker._client = mock_client
+
+        with patch("src.rerankers.cohere_reranker.time.sleep"):
+            results = [_make_result("doc", 0.8, rank=1)]
+            out = reranker.rerank("query", results, top_k=1)
+        assert len(out) == 1
+
+    def test_rate_limit_exhausted_raises(self) -> None:
+        """All retries exhausted raises the TooManyRequestsError (lines 60-61)."""
+        from cohere.errors.too_many_requests_error import TooManyRequestsError
+
+        with patch("src.rerankers.cohere_reranker.cohere.ClientV2") as MockClient:
+            mock_client = MagicMock()
+            mock_client.rerank.side_effect = TooManyRequestsError(body="rate limited")
+            MockClient.return_value = mock_client
+            reranker = CohereReranker(api_key="test-key")
+        reranker._client = mock_client
+
+        with patch("src.rerankers.cohere_reranker.time.sleep"):
+            with pytest.raises(TooManyRequestsError):
+                results = [_make_result("doc", 0.8, rank=1)]
+                reranker.rerank("query", results, top_k=1)
+
