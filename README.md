@@ -4,7 +4,7 @@ I built a RAG system from scratch to answer questions about academic papers. No 
 
 I tested 46 configurations across a grid: 5 chunking strategies, 4 embedding models, 3 retrieval methods, 2 rerankers. The best pipeline hit NDCG@5 = 0.896 and Recall@5 = 1.0. The LLM judge averaged 4.77/5.0 across 5 quality axes.
 
-In P2, I measured RAG quality gaps (0.747 Recall@5 but only 0.511 faithfulness). P5 closes that gap. 7 sessions, ~30h, 7 ADRs, 606 tests.
+In P2, I measured RAG quality gaps (0.747 Recall@5 but only 0.511 faithfulness). P5 closes that gap. 7 sessions, ~30h, 7 ADRs, 627 tests.
 
 ## Key Results
 
@@ -210,7 +210,7 @@ Local embeddings (Ollama nomic-embed-text, $0) close 78% of the quality gap betw
 | CLI | Click + Rich | Three commands (ingest, serve, evaluate). Rich for progress bars and formatted output. |
 | Web UI | Streamlit | Upload PDFs, configure pipeline, ask questions. Five panels. |
 | Visualization | Matplotlib + Seaborn | 11 static charts for the README and experiment analysis. Git-trackable PNGs. |
-| Testing | pytest + pytest-cov | 606 tests, 95%+ coverage. Mocks for all external APIs. |
+| Testing | pytest + pytest-cov | 627 tests, 97% coverage. Mocks for all external APIs. |
 
 ## Quick Start
 
@@ -240,7 +240,7 @@ streamlit run src/streamlit_app.py
 # → Opens browser at localhost:8501
 
 # Run tests
-pytest  # 606 tests, 95%+ coverage
+pytest  # 627 tests, 97% coverage
 ```
 
 Optional: local embeddings with Ollama (free, no API key needed):
@@ -304,7 +304,7 @@ Required API keys: `OPENAI_API_KEY` (embeddings + generation), `COHERE_API_KEY` 
 ├── docs/
 │   ├── adr/                   # 7 Architecture Decision Records
 │   └── architecture/          # 4 Mermaid architecture diagrams
-└── tests/                     # 606 tests, 95%+ coverage
+└── tests/                     # 627 tests, 97% coverage
 ```
 
 ---
