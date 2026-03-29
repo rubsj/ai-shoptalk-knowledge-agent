@@ -479,7 +479,7 @@ The experiment report **must** explicitly answer these questions with data:
 
 | # | Deliverable | Content | Day |
 |---|-------------|---------|-----|
-| D11 | README.md | Problem, architecture (Mermaid diagram), results, experiment findings, demo link, setup | Day 7 |
+| D11 | README.md | Problem, architecture (4 Mermaid diagrams: class hierarchy, ingestion sequence, query sequence, system context), results, experiment findings, setup | Day 7 |
 | D12 | ADR-001: FAISS over ChromaDB | Low-level control for experiments vs P4's ChromaDB | Day 1 |
 | D13 | ADR-002: No LangChain — first-principles RAG | Building from ABCs teaches what LangChain hides | Day 1 |
 | D14 | ADR-003: Hybrid retrieval with min-max score fusion | Why naive combination fails. α optimization | Day 2 |
@@ -606,7 +606,9 @@ The project is not complete until you can answer:
 │   ├── iteration_log.json             ← (v5) Traceable config change log
 │   └── charts/                        ← Generated PNGs
 ├── tests/                             ← pytest suite (≥95% coverage)
-└── docs/adr/                          ← Architecture Decision Records
+└── docs/
+    ├── adr/                          ← Architecture Decision Records
+    └── architecture/                 ← Mermaid architecture diagrams (4 files)
 ```
 
 ---

@@ -519,13 +519,15 @@ At the end of every session, Sonnet must:
 - [x] `tests/test_streamlit_app.py` — helper function tests (15 tests, all mocked)
 - [x] **Checkpoint:** 606 tests, 94% coverage (src/). Branch: `feat/p5-day6-ui`.
 
-### Day 7 — Documentation Sprint
-- [ ] README.md (gold standard: title → badges → key results → architecture Mermaid → ADR table → tech stack → quick start)
-- [ ] Loom recording (2-min walkthrough)
-- [ ] Self-evaluation questions answered (6 from PRD v4)
-- [ ] Final ≥95% coverage verified across all modules
-- [ ] Final git push + Notion update
-- [ ] **P5 COMPLETE**
+### Day 7 — Documentation Sprint ✅ COMPLETE
+- [x] README.md (gold standard: results, architecture Mermaid diagrams, findings, ADR table, tech stack, quick start, known gaps)
+- [x] Architecture diagrams: 4 Mermaid files in docs/architecture/ (class, ingestion, query, system context)
+- [x] Self-evaluation questions answered (6 from PRD v4) in docs/self-evaluation.md
+- [x] Final ≥95% coverage verified: 627 tests, 97% coverage (up from 94%)
+- [x] PRD.md updated: D11 description + directory structure for docs/architecture/
+- [ ] Loom recording (2-min walkthrough) — batched separately
+- [x] Final git push + PR
+- [x] **P5 COMPLETE**
 
 ---
 
