@@ -191,7 +191,6 @@ def plot_embedding_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
         axes[0].set_xticklabels(agg["embedding_model"])
         axes[0].set_title("Retrieval Metrics", fontsize=12)
         axes[0].set_ylim(0, 1.05)
-        axes[0].legend(fontsize=8, loc="lower right")
         axes[0].yaxis.set_major_locator(plt.MultipleLocator(0.1))
         axes[0].grid(axis="y", alpha=0.3)
 
@@ -220,7 +219,11 @@ def plot_embedding_comparison(df: pd.DataFrame, output_dir: Path) -> Path:
         axes[2].set_ylabel("USD")
 
         fig.suptitle("Q4: Embedding Model Comparison", fontsize=13)
-        fig.subplots_adjust(wspace=0.35, top=0.90)
+        # Place legend below the figure, spanning all panels
+        handles, labels = axes[0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc="lower center", ncol=4, fontsize=10,
+                   bbox_to_anchor=(0.5, -0.02), frameon=True)
+        fig.subplots_adjust(wspace=0.35, top=0.90, bottom=0.15)
         return _save_fig(fig, output_dir, "embedding_comparison")
 
 
