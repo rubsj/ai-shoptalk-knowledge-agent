@@ -7,7 +7,6 @@ at the cost of slower inference. Same dimensionality as nomic-embed-text
 
 from __future__ import annotations
 
-import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
@@ -38,7 +37,9 @@ class MpnetEmbedder(BaseEmbedder):
             texts, convert_to_numpy=True, show_progress_bar=False,
         ).astype(np.float32)
         embeddings = np.ascontiguousarray(embeddings)
-        faiss.normalize_L2(embeddings)
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+        norms = np.maximum(norms, 1e-12)
+        embeddings /= norms
         return embeddings
 
     def embed_query(self, query: str) -> np.ndarray:

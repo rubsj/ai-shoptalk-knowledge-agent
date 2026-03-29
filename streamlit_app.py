@@ -13,9 +13,16 @@ P5's value is the RAG pipeline, not another REST wrapper.
 
 from __future__ import annotations
 
+import os
 import tempfile
 import time
 from pathlib import Path
+
+# Prevent segfault (exit 139) when Streamlit forks on macOS:
+# - TOKENIZERS_PARALLELISM: stops HF tokenizers from forking
+# - LOKY_MAX_CPU_COUNT: stops joblib/loky worker pool forks
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+os.environ.setdefault("LOKY_MAX_CPU_COUNT", "1")
 
 import streamlit as st
 
@@ -108,6 +115,17 @@ def run_query(
 # ---------------------------------------------------------------------------
 # Streamlit page layout
 # ---------------------------------------------------------------------------
+
+
+@st.cache_resource
+def _get_embedder(model_name: str | None):
+    """Cache the embedder so heavy models (mpnet: 420MB) survive Streamlit reruns.
+
+    Forces device='cpu' for local models because PyTorch MPS (Metal GPU) is not
+    fork-safe — Streamlit's file watcher forks the process, and the forked child
+    segfaults (exit 139) when it touches MPS-allocated tensors.
+    """
+    return create_embedder(model_name, device="cpu")
 
 
 def _render_sidebar() -> dict:  # pragma: no cover
@@ -246,9 +264,9 @@ def _process_documents(ui: dict) -> None:  # pragma: no cover
         for doc in documents:
             all_chunks.extend(chunker.chunk(doc))
 
-        # Embed
+        # Embed — cached to avoid reloading 420MB mpnet on every Streamlit rerun
         try:
-            embedder = create_embedder(cfg.embedding_model)
+            embedder = _get_embedder(cfg.embedding_model)
         except OllamaUnavailableError:
             st.error(
                 "Ollama is not running. Start it with:\n\n"
