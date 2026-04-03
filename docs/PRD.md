@@ -1,14 +1,14 @@
 # PRD: P5 — ShopTalk Knowledge Management Agent
 
 > **This is the product requirements and architecture contract.**
-> Claude Code: read this + both CLAUDE.md files before starting. Use this for WHAT to build and WHY.
+> Claude Code: read this + both ../CLAUDE.md files before starting. Use this for WHAT to build and WHY.
 > Claude Code Opus handles implementation planning. Do NOT re-debate architecture decisions — they are final.
 
 **Project:** P5 — ShopTalk Knowledge Management Agent: Production RAG System
 **Timeline:** 7 sessions (~30h total), revised plan with +2 learning/experiment days prioritizing depth
 **Owner:** Developer (Java/TS background, completed P1 + P2 + P3 + P4)
 **Source of Truth:** [Notion Requirements](https://www.notion.so/Mini_Project_5_requirements-2ffdb630640a81668269f59ead053417)
-**Concepts Primer:** `p5-concepts-primer.html` in project root
+**Concepts Primer:** `learning/concepts-primer.html`
 **PRD Version:** v5 (v4 + iteration logs, reproducibility verification — aligned with updated bootcamp requirements)
 
 ---

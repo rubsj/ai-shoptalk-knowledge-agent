@@ -1,6 +1,6 @@
 # CLAUDE.md — P5: ShopTalk Knowledge Management Agent
 
-> **Read this file + PRD.md at the start of EVERY session.**
+> **Read this file + docs/PRD.md at the start of EVERY session.**
 > This is your persistent memory across sessions. Update the "Current State" section before ending each session.
 
 ---
@@ -10,8 +10,8 @@
 - **Project:** P5 — ShopTalk Knowledge Management Agent: Production RAG System
 - **Location:** `rubsj/05-shoptalk-knowledge-agent` (standalone repo, extracted from ai-portfolio monorepo)
 - **Timeline:** 7 sessions (~30h total), revised plan with learning/experiment days prioritizing depth
-- **PRD:** `PRD.md` in this directory — the product requirements contract (v4, hardware upgrade + expanded timeline)
-- **Concepts Primer:** `p5-concepts-primer.html` in project root — deep reference for chunking, hybrid retrieval, score fusion, NDCG, cross-encoders, ABC pattern, citation extraction
+- **PRD:** `docs/PRD.md` — the product requirements contract (v4, hardware upgrade + expanded timeline)
+- **Concepts Primer:** `docs/learning/concepts-primer.html` — deep reference for chunking, hybrid retrieval, score fusion, NDCG, cross-encoders, ABC pattern, citation extraction
 
 ---
 
@@ -35,7 +35,7 @@
 
 ### Session Workflow
 ```
-1. Opus: "Read CLAUDE.md and PRD.md. Today is Day [N]. Plan implementation."
+1. Opus: "Read CLAUDE.md and docs/PRD.md. Today is Day [N]. Plan implementation."
 2. Opus produces: file-by-file plan, function signatures, key logic, validation criteria
 3. Sonnet: "Execute the plan. Start with [first file]."
 4. Sonnet implements, tests, commits
