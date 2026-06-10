@@ -309,6 +309,6 @@ Required API keys: `OPENAI_API_KEY` (embeddings + generation), `COHERE_API_KEY` 
 
 ---
 
-Part of a [9-project AI engineering sprint](https://github.com/rubsj/ai-portfolio). Built Feb–May 2026.
+Part of a [9-project AI engineering portfolio](https://github.com/rubsj/ai-portfolio). Built 2026.
 
-Built by **Ruby Jha** · [LinkedIn](https://linkedin.com/in/jharuby) · [GitHub](https://github.com/rubsj/ai-portfolio)
+Built by **Ruby Jha** · [Website](https://rubyjha.dev) · [LinkedIn](https://linkedin.com/in/jharuby) · [GitHub](https://github.com/rubsj/ai-portfolio)
